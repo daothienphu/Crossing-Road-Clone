@@ -9,101 +9,73 @@ void gotoXY(int x, int y);
 #pragma endregion
 
 #pragma region Classes def
-//class CPEOPLE {
-//	int mX, mY;
-//	bool mState;
-//public:
-//	CPEOPLE();
-//	void Up(int);
-//	void Left(int);
-//	void Right(int);
-//	void Down(int);
-//	bool isImpact(const CVEHICLE*&);
-//	bool isImpact(const CANIMAL*&);
-//	bool isFinish();
-//	bool isDead();
-//};
-//class CVEHICLE {
-//	int mX, mY;
-//public:
-//	virtual void Move(int, int);
-//	//...
-//};
-//class CTRUCK : public CVEHICLE {
-//public:
-//	//...
-//};
-//class CCAR : public CVEHICLE {
-//public:
-//	//...
-//};
-//class CANIMAL {
-//	int mX, mY;
-//public:
-//	virtual void Move(int, int);
-//	virtual void Tell();
-//};
-//class CDINOSAUR : public CANIMAL {
-//public:
-//	//...
-//};
-//class CBIRD : public CANIMAL {
-//public:
-//	//...
-//};
-//
-//class CGAME {
-//	CTRUCK* axt;
-//	CCAR* axh;
-//	CDINOSAUR* akl;
-//	CBIRD* ac;
-//	CPEOPLE cn;
-//public:
-//	CGAME();
-//	void drawGame();
-//	~CGAME();
-//	CPEOPLE getPeople();
-//	CVEHICLE* getVehicle();
-//	CANIMAL* getAnimal();
-//	void resetGame();
-//	void exitGame(HANDLE);
-//	void startGame();
-//	void loadGame(istream);
-//	void saveGame(istream);
-//	void pauseGame(HANDLE);
-//	void resumeGame(HANDLE);
-//	void updatePosPeople(char);
-//	void updatePosVehicle();
-//	void updatePosAnimal();
-//}
-//
-//
-//
-//char MOVING;
-//CGAME cg;
-//
-//void SubThread()
-//{
-//	while (IS_RUNNING) {
-//		if (!cg.getPeople().isDead())
-//		{
-//			cg.updatePosPeople(MOVING);
-//
-//		}
-//		MOVING = ' ';
-//		cg.updatePosVehicle();
-//		cg.updatePosAnimal();
-//		cg.drawGame();
-//		if (cg.getPeople().isImpact(cg.getVehicle() ||
-//			cg.getPeople().isImpact(cg.getAnimal())
-//		{
-//
-//		}
-//		if (cg.getPeople().isFinish()) {
-//
-//
-//		}
-//		Sleep(100);
-//	}
-//}
+class People {
+private:
+	int x, y;
+	bool isAlive;
+public:
+	People();
+
+	//update position
+	void up(int);
+	void left(int);
+	void right(int);
+	void down(int);
+
+	bool isCollided(const Vehicle*&);
+	bool isCollided(const Animal*&);
+
+	bool isFinish();
+	bool isAlive();
+};
+
+class Vehicle {
+	int x, y;
+public:
+	virtual void move(int, int);
+};
+class Truck : public Vehicle {
+public:
+};
+class Car : public Vehicle {
+public:
+};
+
+class Animal {
+	int x,y;
+public:
+	virtual void move(int, int);
+	virtual void roar();
+};
+class Dinosaur : public Animal {
+public:
+};
+class Bird : public Animal {
+public:
+};
+
+class Game {
+	Truck* trucks;
+	Car* cars;
+	Dinosaur* dinosaurs;
+	Bird* birds;
+	People people;
+public:
+	Game();
+	void drawGame();
+	~Game();
+	People getPeople();
+	Vehicle* getVehicle();
+	Animal* getAnimal();
+	void reset();
+	void exit(HANDLE);
+	void start();
+	void loadGame(istream);
+	void saveGame(istream);
+	void pauseGame(HANDLE);
+	void resumeGame(HANDLE);
+	void updatePosPeople(char);
+	void updatePosVehicle();
+	void updatePosAnimal();
+};
 #pragma endregion
