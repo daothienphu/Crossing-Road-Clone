@@ -9,26 +9,6 @@ void gotoXY(int x, int y);
 #pragma endregion
 
 #pragma region Classes def
-class People {
-private:
-	int x, y;
-	bool isAlive;
-public:
-	People();
-
-	//update position
-	void up(int);
-	void left(int);
-	void right(int);
-	void down(int);
-
-	bool isCollided(const Vehicle*&);
-	bool isCollided(const Animal*&);
-
-	bool isFinish();
-	bool isAlive();
-};
-
 class Vehicle {
 	int x, y;
 public:
@@ -52,6 +32,26 @@ public:
 };
 class Bird : public Animal {
 public:
+};
+
+class People {
+private:
+	int x, y;
+	bool state;
+public:
+	People();
+
+	//update position
+	void up(int);
+	void left(int);
+	void right(int);
+	void down(int);
+
+	bool isCollided(const Vehicle*&);
+	bool isCollided(const Animal*&);
+
+	bool isFinish();
+	bool isAlive();
 };
 
 class Game {
