@@ -1,71 +1,76 @@
 #include "Header.h"
-#include <iomanip>
-#include <vector>
-#define halfup "\xdf"
-#define halfdown "\xdc"
-#define whole "\xdb"
 
-#define black50 "\x1B[30m"
-#define red50 "\x1B[31m"
-#define green50 "\x1B[32m"
-#define yellow50 "\x1B[33m"
-#define blue50 "\x1B[34m"
-#define magenta50 "\x1B[35m"
-#define cyan50 "\x1B[36m"
-#define white50 "\x1B[37m"
+struct Size {
+    int w; int h;
+};
 
-#define blackBG50 "\x1B[40m"
-#define redBG50 "\x1B[41m"
-#define greenBG50 "\x1B[42m"
-#define yellowBG50 "\x1B[43m"
-#define blueBG50 "\x1B[44m"
-#define magentaBG50 "\x1B[45m"
-#define cyanBG50 "\x1B[46m"
-#define whiteBG50 "\x1B[47m"
-
-#define black "\x1B[90m"
-#define red "\x1B[91m"
-#define green "\x1B[92m"
-#define yellow "\x1B[93m"
-#define blue "\x1B[94m"
-#define magenta "\x1B[95m"
-#define cyan "\x1B[96m"
-#define white "\x1B[97m"
-
-#define blackBG "\x1B[100m"
-#define redBG "\x1B[101m"
-#define greenBG "\x1B[102m"
-#define yellowBG "\x1B[103m"
-#define blueBG "\x1B[104m"
-#define magentaBG "\x1B[105m"
-#define cyanBG "\x1B[106m"
-#define whiteBG "\x1B[107m"
-
-void printPalette() {
-    int i = 30;
-    while (i < 108) {
-        string res = "";
-        int j = i;
-        while (j) {
-            char tmp = char(j % 10 + '0');
-            res = tmp + res;
-            j /= 10;
-        }
-
-        string color = "\x1B[" + res + 'm';
-        cout << color << setw(5) << i;
-
-        switch (i) {
-        case 37:
-        case 97: i += 3; cout << endl; break;
-        case 47: i += 43; cout << endl << blackBG50; break;
-        case 107: cout << blackBG50 << white50;
-        default: i++; break;
-        }
+class dino {
+private:
+    int x, y, w, h;
+public:
+    dino(int X, int Y) {
+        x = X;
+        y = Y;
+        w = 19;
+        h = 11;
     }
+    void setPos(int X, int Y) {
+        x = X;
+        y = Y;
+    }
+    void renderDino();
+    COORD getPos() {
+        COORD coord;
+        coord.X = x;
+        coord.Y = y;
+        return coord;
+    }
+    Size getSize() {
+        Size size;
+        size.w = w;
+        size.h = h;
+        return size;
+    }
+};
+
+void renderRedBG(int x, int y, int w, int h) {
+    cout << redBG50;
+    for (int i = 0; i < h; ++i) {
+        gotoXY(x, y + i);
+        for (int j = 0; j < w; ++j)
+            cout << " ";
+        cout << endl;
+    }
+    cout << blackBG50;
 }
 
-void renderDino(int x, int y) {
+void renderWhiteBG(int x, int y, int w, int h) {
+    cout << whiteBG50;
+    for (int i = 0; i < h; ++i) {
+        gotoXY(x, y + i);
+        for (int j = 0; j < w; ++j)
+            cout << " ";
+    }
+    cout << blackBG50;
+}
+
+class Canvas
+{
+private:
+    dino& D;
+public:
+    Canvas(dino& d) : D(d) {};
+    void drawCanvas() {
+        renderWhiteBG(0, 0, 80, 20);
+        D.renderDino();
+    }
+    void drawCanvas(COORD co, Size si) {
+        renderWhiteBG(co.X, co.Y, si.w, si.h);
+        D.renderDino();
+    }
+};
+
+void dino::renderDino() {
     gotoXY(x, y);
     cout << whiteBG50 << green50 << halfdown << whole << whole << whole << blackBG50 << halfup << whiteBG50 << whole << whole << halfdown;
     gotoXY(x, y + 1);
@@ -97,24 +102,54 @@ void renderDino(int x, int y) {
     gotoXY(x + 12, y + 10);
     cout << halfup << halfup;
 }
-void renderwhiteBG(int x, int y, int w, int h) {
-    gotoXY(x, y);
-    cout << whiteBG50;
-    for (int i = 0; i < h; ++i) {
-        for (int j = 0; j < w; ++j)
-            cout << " ";
-        cout << endl;
-    }
-    cout << blackBG50;
-}
-int main() {
-    fixSizedConsoleWindow();
 
+WORD getKey() {
+    HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD events;
+    INPUT_RECORD buffer;
+    PeekConsoleInput(handle, &buffer, 1, &events);
+    if (events > 0)
+    {
+        ReadConsoleInput(handle, &buffer, 1, &events);
+        return buffer.Event.KeyEvent.wVirtualKeyCode;
+    }
+    else return 0;
+}
+
+bool delay(int millisec) {
+    sleep_for(milliseconds(millisec));
+    return true;
+}
+
+int main() {
+    int x = 10, y = 6;
+    dino Dino(x, y);
+    Canvas canvas(Dino);
+    fixSizedConsoleWindow();
     //gotoXY(144,41); //coords_max(144, 41);     
     //cout << 1; //(scroll up pls)
-    printPalette();
-    renderwhiteBG(0, 4, 40, 16);
-    renderDino(10, 6);
-    gotoXY(0, 20);
+    //printPalette();
+    renderWhiteBG(0, 0, 80, 20);
+
+    while (1 && delay(100)) {
+        Size dinoSize = Dino.getSize();
+        COORD oldCoord = Dino.getPos();
+        switch (getKey()) {
+        case 87:
+        case 119: Dino.setPos(x, --y); break;
+        case 83:
+        case 115: Dino.setPos(x, ++y); break;
+        case 97:
+        case 65: Dino.setPos(--x, y); break;
+        case 100:
+        case 68: Dino.setPos(++x, y); break;
+        default: Dino.setPos(x, y); break;
+        }
+        canvas.drawCanvas(oldCoord, dinoSize);
+    }    
+
+
+
+
     return 0;
 }
