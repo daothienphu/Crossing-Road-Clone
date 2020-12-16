@@ -89,7 +89,7 @@ public:
 #pragma region Obstacles
 class Car : public Obstacle{};
 class Dino : public Obstacle{};
-class Bird : public Obstacle{}l
+class Bird : public Obstacle {};
 #pragma endregion
 
 class Player : public GameObject {
