@@ -21,3 +21,51 @@ void gotoXY(int x, int y) {
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 #pragma endregion
+
+#pragma region GameObject
+
+class GameObject {
+private:
+protected:
+	int x, y; // coordinate of bottom-left corner
+	int w, h; // box size
+	int row; // path number for checking collision
+public:
+	GameObject() : x(0), y(0), w(0), h(0), row(0) {}
+	GameObject(int x, int y, int w, int h, int row) : x(x), y(y), w(w), h(h), row(0) {}
+
+	virtual void move() = 0;
+	virtual void render() = 0;
+	//virtual void collision() = 0;
+};
+
+enum Direction { LEFT, RIGHT };
+
+class Obstacle : public GameObject {
+private:
+protected:
+	int veclocity;
+	Direction direction; // may need a direction
+public:
+	Obstacle() : veclocity(0), direction(RIGHT) {}
+	Obstacle(int veclocity, Direction direction = RIGHT) : veclocity(veclocity), direction(direction) {}
+
+	void move();
+	void render() = 0;
+	//void collision();
+};
+
+#pragma region Obstacles
+class Car : public Obstacle{};
+class Dino : public Obstacle{};
+class Bird : public Obstacle{}l
+#pragma endregion
+
+class Player : public GameObject {
+private:
+protected:
+public:
+	void move();
+	void render();
+};
+#pragma endregion
