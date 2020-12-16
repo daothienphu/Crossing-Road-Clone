@@ -5,6 +5,7 @@
 #include <vector>
 #include <thread>
 #include <chrono>
+
 #pragma region Define Colors
 #define halfup "\xdf"
 #define halfdown "\xdc"
@@ -106,3 +107,17 @@ public:
 	void render();
 };
 #pragma endregion
+
+#pragma region GameCore
+
+class GameCore {
+private:
+public:
+	void start();
+	void pause();
+	void resume();
+	void update(int gamerate);
+	void load(); //istream
+	void save(); //ostream
+
+};
