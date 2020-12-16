@@ -131,18 +131,18 @@ int main() {
     //printPalette();
     renderWhiteBG(0, 0, 80, 20);
 
-    while (1 && delay(100)) {
+    while (1 && delay(50)) {
         Size dinoSize = Dino.getSize();
         COORD oldCoord = Dino.getPos();
         switch (getKey()) {
         case 87:
-        case 119: Dino.setPos(x, --y); break;
+        case 119: Dino.setPos(x, y-=2); break;
         case 83:
-        case 115: Dino.setPos(x, ++y); break;
+        case 115: Dino.setPos(x, y+=2); break;
         case 97:
-        case 65: Dino.setPos(--x, y); break;
+        case 65: Dino.setPos(x-=2, y); break;
         case 100:
-        case 68: Dino.setPos(++x, y); break;
+        case 68: Dino.setPos(x+=2, y); break;
         default: Dino.setPos(x, y); break;
         }
         canvas.drawCanvas(oldCoord, dinoSize);
