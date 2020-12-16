@@ -8,74 +8,53 @@ void fixSizedConsoleWindow();
 void gotoXY(int x, int y);
 #pragma endregion
 
-#pragma region Classes def
-class Vehicle {
-	int x, y;
-public:
-	virtual void move(int, int);
-};
-class Truck : public Vehicle {
-public:
-};
-class Car : public Vehicle {
-public:
-};
+#pragma region GameObject
 
-class Animal {
-	int x,y;
-public:
-	virtual void move(int, int);
-	virtual void roar();
-};
-class Dinosaur : public Animal {
-public:
-};
-class Bird : public Animal {
-public:
-};
-
-class People {
+class GameObject {
 private:
-	int x, y;
-	bool state;
+protected:
+	int x, y; // coordinate of bottom-left corner
+	int w, h; // box size
+	int row;  // path number for checking collision
 public:
-	People();
+	GameObject() : x(0), y(0), w(0), h(0), row(0) {}
+	GameObject(int x, int y, int w, int h, int row) : x(x), y(y), w(w), h(h), row(0) {}
 
-	//update position
-	void up(int);
-	void left(int);
-	void right(int);
-	void down(int);
-
-	bool isCollided(const Vehicle*&);
-	bool isCollided(const Animal*&);
-
-	bool isFinish();
-	bool isAlive();
+	virtual void move() = 0;
+	virtual void render() = 0;
+	//virtual void collision() = 0;
 };
 
-class Game {
-	Truck* trucks;
-	Car* cars;
-	Dinosaur* dinosaurs;
-	Bird* birds;
-	People people;
+enum Direction { LEFT, RIGHT };
+
+class Obstacle : public GameObject {
+private:
+protected:
+	int veclocity;
+	Direction direction; // may need a direction
 public:
-	Game();
-	void drawGame();
-	~Game();
-	People getPeople();
-	Vehicle* getVehicle();
-	Animal* getAnimal();
-	void reset();
-	void exit(HANDLE);
-	void start();
-	void loadGame(istream);
-	void saveGame(istream);
-	void pauseGame(HANDLE);
-	void resumeGame(HANDLE);
-	void updatePosPeople(char);
-	void updatePosVehicle();
-	void updatePosAnimal();
+	Obstacle() : GameObject(), veclocity(0), direction(RIGHT) {}
+	Obstacle(int x, int y, int w, int h, int row, int veclocity, Direction direction = RIGHT) 
+		: GameObject(x, y, w, h, row), veclocity(veclocity), direction(direction) {}
+
+	void move();
+	void render() = 0;
+	//void collision();
+};
+
+#pragma region Obstacles
+class Car : public Obstacle {};
+class Dino : public Obstacle {};
+class Bird : public Obstacle {};
+#pragma endregion
+
+class Player : public GameObject {
+private:
+protected:
+public:
+	Player() : GameObject() {}
+	Player(int x, int y, int w, int h) : GameObject(x, y, w, h, 0) {}
+	void move();
+	void render();
 };
 #pragma endregion
