@@ -102,9 +102,9 @@ public:
 };
 
 #pragma region Obstacles
-class Car : public Obstacle {};
-class Dino : public Obstacle {};
-class Bird : public Obstacle {};
+class Something : public Obstacle {};
+class Will: public Obstacle {};
+class BeDefineLater : public Obstacle {};
 #pragma endregion
 
 class Player : public GameObject {
