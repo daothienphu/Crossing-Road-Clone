@@ -6,6 +6,13 @@
 #include <thread>
 #include <chrono>
 
+#pragma region game config
+
+#define GAME_RATE 50
+enum GAMESTATE {PLAYING, PAUSE, EXIT};
+enum DIRECTION { LEFT, RIGHT };
+#pragma endregion
+
 #pragma region Define Colors
 #define halfup "\xdf"
 #define halfdown "\xdc"
@@ -55,6 +62,11 @@ using namespace std::chrono;
 void fixSizedConsoleWindow();
 void gotoXY(int x, int y);
 void printPalette();
+bool delay(int millisec) {
+	sleep_for(milliseconds(millisec));
+	return true;
+}
+
 #pragma endregion
 
 #pragma region GameObject
@@ -74,16 +86,14 @@ public:
 	//virtual void collision() = 0;
 };
 
-enum Direction { LEFT, RIGHT };
-
 class Obstacle : public GameObject {
 private:
 protected:
 	int veclocity;
-	Direction direction; // may need a direction
+	DIRECTION direction; // may need a direction
 public:
-	Obstacle() : GameObject(), veclocity(0), direction(RIGHT) {}
-	Obstacle(int x, int y, int w, int h, int row, int veclocity, Direction direction = RIGHT) 
+	Obstacle() : GameObject(), veclocity(0), direction(DIRECTION::RIGHT) {}
+	Obstacle(int x, int y, int w, int h, int row, int veclocity, DIRECTION direction = DIRECTION::RIGHT) 
 		: GameObject(x, y, w, h, row), veclocity(veclocity), direction(direction) {}
 
 	void move();
@@ -112,12 +122,58 @@ public:
 
 class GameCore {
 private:
+	GAMESTATE state;
+	GameGraphic graphic;
+	int level;
+	//will need more param
 public:
-	void start();
+	void start()
+	{
+		thread t1(&GameCore::draw, this);
+		thread t2(&GameCore::inputChecking, this);
+		thread t3(&GameCore::gameLogic, this);
+
+		t1.join();
+		t2.join();
+		t3.join();
+	}
+	void draw()
+	{
+		//check game state
+		while(1)
+		{
+			//pre-process graphic
+			graphic.drawGame();
+			delay(GAME_RATE);
+		}
+	}
+	void inputChecking()
+	{
+		while (1)
+		{
+			//check for input
+			delay(50);
+		}
+	}
+	void gameLogic();
+
 	void pause();
 	void resume();
-	void update(int gamerate);
-	void load(); //istream
-	void save(); //ostream
+	//void load();
+	//void save();
 
 };
+
+#pragma endregion
+
+#pragma region GameGraphic
+
+class GameGraphic
+{
+private:
+	//list of param
+public:
+	void drawGame();
+};
+
+#pragma endregion 
