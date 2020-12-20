@@ -116,11 +116,6 @@ WORD getKey() {
     else return 0;
 }
 
-bool delay(int millisec) {
-    sleep_for(milliseconds(millisec));
-    return true;
-}
-
 int main() {
     int x = 10, y = 6;
     dino Dino(x, y);

@@ -51,4 +51,9 @@ void printPalette() {
         }
     }
 }
+
+bool delay(int millisec) {
+    sleep_for(milliseconds(millisec));
+    return true;
+}
 #pragma endregion

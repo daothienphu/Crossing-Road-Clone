@@ -5,6 +5,7 @@
 #include <vector>
 #include <thread>
 #include <chrono>
+#include "GameGraphic.h"
 
 #pragma region game config
 
@@ -54,6 +55,7 @@ enum DIRECTION { LEFT, RIGHT };
 #define cyanBG "\x1B[106m"
 #define whiteBG "\x1B[107m"
 #pragma endregion
+
 using namespace std;
 using namespace std::this_thread;
 using namespace std::chrono;
@@ -62,10 +64,8 @@ using namespace std::chrono;
 void fixSizedConsoleWindow();
 void gotoXY(int x, int y);
 void printPalette();
-bool delay(int millisec) {
-	sleep_for(milliseconds(millisec));
-	return true;
-}
+
+bool delay(int millisec);
 
 #pragma endregion
 
@@ -118,12 +118,14 @@ public:
 };
 #pragma endregion
 
+
+
 #pragma region GameCore
 
 class GameCore {
 private:
 	GAMESTATE state;
-	GameGraphic graphic;
+	GameGraphic gph;
 	int level;
 	//will need more param
 public:
@@ -143,7 +145,7 @@ public:
 		while(1)
 		{
 			//pre-process graphic
-			graphic.drawGame();
+			gph.drawGame();
 			delay(GAME_RATE);
 		}
 	}
@@ -165,15 +167,4 @@ public:
 };
 
 #pragma endregion
-
-#pragma region GameGraphic
-
-class GameGraphic
-{
-private:
-	//list of param
-public:
-	void drawGame();
-};
-
-#pragma endregion 
+ 
