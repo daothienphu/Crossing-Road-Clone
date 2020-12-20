@@ -11,6 +11,14 @@ using namespace std;
 
 #pragma region GameGraphic
 
+class cPlayer {
+public:
+	int X = 0, Y = 0;
+	const vector<wstring> show = {
+		L"."
+	};
+};
+
 class GameGraphic
 {
 private:
@@ -38,14 +46,6 @@ public:
 		gotoXY(x, y + 6); cout << L"             █▀▀▀▄  █   █  █▄▄▄█  █   █" << endl;
 		gotoXY(x, y + 7); cout << L"             █   █  ▀▄▄▄▀  █   █  █▄▄▄▀" << endl;
 	}
-
-	class cPlayer {
-	public:
-		int X = 0, Y = 0;
-		const vector<wstring> show = {
-			L"."
-		};
-	};
 
 	void color(int x) //Change text color to color x
 	{
