@@ -102,8 +102,8 @@ public:
 	}
 	void gameLogic();
 
-	void pause();
-	void resume();
+	//void pause();
+	//void resume();
 	//void load();
 	//void save();
 
