@@ -100,7 +100,23 @@ public:
 			delay(50);
 		}
 	}
-	void gameLogic();
+
+	void gameLogic()
+	{
+		//intilize player at place
+		//intilize obstacles
+		while (1)
+		{
+			//input special case:
+				//pause -> lock this thread
+				//resume -> release thread
+			//check for input -> update pos player
+			//check for obstacles properties -> update pos obst
+			//collision check
+			//if pass -> send signal to check
+			//else set flag game over
+		}
+	}
 
 	//void pause();
 	//void resume();
