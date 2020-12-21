@@ -6,7 +6,6 @@
 #include <thread>
 #include <chrono>
 
-
 #include "GameGraphic.h"
 #include "Header.h"
 
