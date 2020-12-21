@@ -18,10 +18,13 @@ private:
 public:
 	int getX() { return X; }
 	int getY() { return Y; }
-	void moveLeft() { X -= 2; }
-	void moveRight() { X += 2; }
+	void setX(int x) { X = x; }
+	void setX(int y) { Y = y; }
+	void moveLeft() { X -= 2; } // Move 2 blocks
+	void moveRight() { X += 2; } // Move 2 blocks
 	void moveUp() { Y--; }
 	void moveDown() { Y++; }
+	vector<wstring> getSketch() { return Sketch; }
 };
 class cEnemy {
 private:
@@ -144,18 +147,18 @@ public:
 			pColor[nPosY * nScreenWidth + nPosX + i] = colorBackground * 16 + colorCharacter;
 		}
 	}
-	void drawBlock(int X, int Y, vector<wstring> str, int colorBackground, int colorChar) {
-		for (int i = 0; i < str.size(); i++) {
-			for (int j = 0; j < str[i].length(); j++) {
-				if (str[i][j] == '.') {
+	void drawBlock(vector<wstring> Sketch, int X, int Y, int colorBackground, int colorChar) {
+		for (int i = 0; i < Sketch.size(); i++) {
+			for (int j = 0; j < Sketch[i].length(); j++) {
+				if (Sketch[i][j] == '.') {
 					pBuffer[(Y + i) * nScreenWidth + X + j] = L'▄';
 					pColor[(Y + i) * nScreenWidth + X + j] = colorBackground * 16 + colorChar;
 				}
-				if (str[i][j] == '\'') {
+				if (Sketch[i][j] == '\'') {
 					pBuffer[(Y + i) * nScreenWidth + X + j] = L'▀';
 					pColor[(Y + i) * nScreenWidth + X + j] = colorBackground * 16 + colorChar;
 				}
-				if (str[i][j] == 'l') {
+				if (Sketch[i][j] == 'l') {
 					pBuffer[(Y + i) * nScreenWidth + X + j] = L'█';
 					pColor[(Y + i) * nScreenWidth + X + j] = colorBackground * 16 + colorChar;
 				}
@@ -288,8 +291,13 @@ public:
 			}
 			// D - Move right
 			if (bKeyGame[3] == 1) {
-
+				Player.moveRight();
 			}
+
+			// UPDATE GRAPHICS
+
+
+			// DISPLAY
 
 		}
 	}
