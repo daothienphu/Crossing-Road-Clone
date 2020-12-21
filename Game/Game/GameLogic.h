@@ -10,6 +10,13 @@
 #include "GameGraphic.h"
 #include "Header.h"
 
+#pragma region GAME CONFIG
+
+#define PLAYER_H 50
+#define PLAYER_W 50
+
+#pragma endregion
+
 using namespace std;
 using namespace std::this_thread;
 using namespace std::chrono;
@@ -26,9 +33,10 @@ public:
 	GameObject() : x(0), y(0), w(0), h(0), row(0) {}
 	GameObject(int x, int y, int w, int h, int row) : x(x), y(y), w(w), h(h), row(0) {}
 
-	void move()
+	void move(int x, int y)
 	{
-
+		this->x += x;
+		this->y += y;
 	}
 	virtual void render() = 0;
 	//virtual void collision() = 0;
@@ -59,7 +67,7 @@ private:
 protected:
 public:
 	Player() : GameObject() {}
-	Player(int x, int y, int w, int h) : GameObject(x, y, w, h, 0) {}
+	Player(int x, int y, int w = PLAYER_W, int h = PLAYER_H) : GameObject(x, y, w, h, 0) {}
 	void render();
 };
 #pragma endregion
@@ -92,7 +100,7 @@ public:
 			delay(GAME_RATE);
 		}
 	}
-	void inputChecking()
+	void inputChecking(GameObject* &player)
 	{
 		const vector<char> key = { 'W', 'A', 'S', 'D' };
 
@@ -104,31 +112,32 @@ public:
 		}
 		// Move up
 		if (bKey[0] == 1) {
-			// Something here
+			player->move(0, -1);
 		}
 		// Move down
 		if (bKey[2] == 1) {
-			// Something here
+			player->move(0, 1);
 		}
 		// Move left
 		if (bKey[1] == 1) {
-			// Something here
+			player->move(-1, 0);
 		}
 		// Move right
 		if (bKey[3] == 1) {
-			// Something here
+			player->move(1, 0);
 		}
 	}
 
 	void gameLogic()
 	{
-		GameObject* Player;
-		vector<vector<GameObject*>> obs;
 		//intilize player at place
 		//intilize obstacles
+		GameObject* player = new Player(50, 40);
+		vector<vector<GameObject*>> obs;
+		this->initObstacles(level, obs);
 		while (1)
 		{
-			inputChecking();
+			inputChecking(player);
 			//input special case:
 				//pause -> break the game render -> render menu
 				//resume -> break the menu render -> render game
@@ -139,6 +148,15 @@ public:
 			//else set flag game over
 		}
 	}
+
+	void initObstacles(int level, vector<vector<GameObject*>> & obs)
+	{
+		while (level--)
+		{
+			//something to generate
+		}
+	}
+	
 
 	//void pause();
 	//void resume();
