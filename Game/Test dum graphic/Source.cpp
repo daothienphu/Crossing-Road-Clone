@@ -59,6 +59,16 @@ private:
 	HANDLE hConsole;
 	DWORD dwBytesWritten = 0;
 public:
+	void ShowConsoleCursor(bool showFlag)
+	{
+		HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		CONSOLE_CURSOR_INFO     cursorInfo;
+
+		GetConsoleCursorInfo(out, &cursorInfo);
+		cursorInfo.bVisible = showFlag; // set the cursor visibility
+		SetConsoleCursorInfo(out, &cursorInfo);
+	}
 	void FixConsoleWindow() {
 		HWND consoleWindow = GetConsoleWindow();
 		LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
@@ -198,6 +208,7 @@ public:
 		HANDLE hConsole1 = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 		SetConsoleActiveScreenBuffer(hConsole1);
 		hConsole = hConsole1;
+		ShowConsoleCursor(false);
 
 		int choiceMenu = 0; // 0 - Start game, 1 - Load game, 2 - Settings, 3 - Exit
 		// MENU SCREEN
