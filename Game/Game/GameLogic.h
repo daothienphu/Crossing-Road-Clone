@@ -26,7 +26,10 @@ public:
 	GameObject() : x(0), y(0), w(0), h(0), row(0) {}
 	GameObject(int x, int y, int w, int h, int row) : x(x), y(y), w(w), h(h), row(0) {}
 
-	virtual void move() = 0;
+	void move()
+	{
+
+	}
 	virtual void render() = 0;
 	//virtual void collision() = 0;
 };
@@ -41,7 +44,6 @@ public:
 	Obstacle(int x, int y, int w, int h, int row, int veclocity, DIRECTION direction = DIRECTION::RIGHT)
 		: GameObject(x, y, w, h, row), veclocity(veclocity), direction(direction) {}
 
-	void move();
 	void render() = 0;
 	//void collision();
 };
@@ -58,7 +60,6 @@ protected:
 public:
 	Player() : GameObject() {}
 	Player(int x, int y, int w, int h) : GameObject(x, y, w, h, 0) {}
-	void move();
 	void render();
 };
 #pragma endregion
@@ -70,6 +71,7 @@ private:
 	GAMESTATE state;
 	GameGraphic gph;
 	int level;
+	int currentInput;
 	//will need more param
 public:
 	void start()
@@ -120,14 +122,16 @@ public:
 
 	void gameLogic()
 	{
+		GameObject* Player;
+		vector<vector<GameObject*>> obs;
 		//intilize player at place
 		//intilize obstacles
 		while (1)
 		{
 			inputChecking();
 			//input special case:
-				//pause -> lock this thread
-				//resume -> release thread
+				//pause -> break the game render -> render menu
+				//resume -> break the menu render -> render game
 			//check for input -> update pos player
 			//check for obstacles properties -> update pos obst
 			//collision check
