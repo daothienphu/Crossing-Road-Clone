@@ -19,7 +19,8 @@ public:
 	int getX() { return X; }
 	int getY() { return Y; }
 	void setX(int x) { X = x; }
-	void setX(int y) { Y = y; }
+	void setY(int y) { Y = y; }
+	void setXY(int x, int y) { X = x, Y = y; }
 	void moveLeft() { X -= 2; } // Move 2 blocks
 	void moveRight() { X += 2; } // Move 2 blocks
 	void moveUp() { Y--; }
@@ -30,16 +31,19 @@ class cEnemy {
 private:
 	int X = 0, Y = 0;
 	const vector<wstring> Sketch = {
-		L"llll",
-		L"llll"
+		L"ll",
 	};
 public:
 	int getX() { return X; }
 	int getY() { return Y; }
-	void moveLeft() { X -= 2; }
-	void moveRight() { X += 2; }
+	void setX(int x) { X = x; }
+	void setY(int y) { Y = y; }
+	void setXY(int x, int y) { X = x, Y = y; }
+	void moveLeft() { X -= 2; } // Move 2 blocks
+	void moveRight() { X += 2; } // Move 2 blocks
 	void moveUp() { Y--; }
 	void moveDown() { Y++; }
+	vector<wstring> getSketch() { return Sketch; }
 };
 const vector<wstring> Title = {
 	L".'''.  l'''.  .'''.  .'''   .'''   'l'  l.  l  .''''",
@@ -59,16 +63,6 @@ private:
 	HANDLE hConsole;
 	DWORD dwBytesWritten = 0;
 public:
-	void ShowConsoleCursor(bool showFlag)
-	{
-		HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
-
-		CONSOLE_CURSOR_INFO     cursorInfo;
-
-		GetConsoleCursorInfo(out, &cursorInfo);
-		cursorInfo.bVisible = showFlag; // set the cursor visibility
-		SetConsoleCursorInfo(out, &cursorInfo);
-	}
 	void FixConsoleWindow() {
 		HWND consoleWindow = GetConsoleWindow();
 		LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
@@ -105,8 +99,19 @@ public:
 		}
 	}
 	void drawScreen() {
-		drawScreenColor();
-		drawScreenCharacter();
+		for (int i = 0; i < nScreenWidth; i++)
+		{
+			for (int j = 0; j < nScreenHeight; j++)
+			{
+				COORD cPos;
+				cPos.X = i;
+				cPos.Y = j;
+				WriteConsoleOutputAttribute(hConsole, &pColor[j * nScreenWidth + i], 1, cPos, &dwBytesWritten);
+			}
+		}
+		//Sleep(3000);
+		WriteConsoleOutputCharacter(hConsole, pBuffer, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
+		//Sleep(3000);
 	}
 	void drawScreenColor() {
 		/*
@@ -204,17 +209,18 @@ public:
 		drawText(content, X, Y, colorBackground2, colorCharacter2); drawScreen();
 	}
 	void startMenuScreen() {
+		// CONFIGURE SCREEN
 		configure();
 		HANDLE hConsole1 = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 		SetConsoleActiveScreenBuffer(hConsole1);
 		hConsole = hConsole1;
-		ShowConsoleCursor(false);
+
 
 		int choiceMenu = 0; // 0 - Start game, 1 - Load game, 2 - Settings, 3 - Exit
 		// MENU SCREEN
 		while (true) {
 			// CLEAR SCREEN
-			clearScreen(0, 7);
+			clearScreen(0, 1);
 
 			// READING INPUT
 			bool* bKey = new bool[key.size()];
@@ -259,6 +265,7 @@ public:
 				if (choiceMenu == 0) {
 					// START GAME
 					glitchEffect(L" START GAME ", 0, 0, 7, 6, 0, 7);
+					startGameScreen();
 				}
 				else if (choiceMenu == 1) {
 					// LOAD GAME
@@ -277,11 +284,16 @@ public:
 	}
 	void startGameScreen() {
 		cPlayer Player;
-		cEnemy Enemy;
+		Player.setXY(2, 1); // Player spawns at (0, 0)
+		cEnemy Enemy1, Enemy2;
+		Enemy1.setXY(15, 10);
+		Enemy2.setXY(70, 20);
+
 		bool gameOver = false;
 		while (gameOver == false) {
 			// CLEAR SCREEN
-			clearScreen(0, 7);
+			int bg = 0, ch = 7;
+			clearScreen(bg, ch);
 
 			// READ INPUT
 			bool* bKeyGame = new bool[key.size()]; // Check ingame input
@@ -305,11 +317,17 @@ public:
 				Player.moveRight();
 			}
 
-			// UPDATE GRAPHICS
-
+			// UPDATE 
+			if (Enemy1.getX() >= nScreenWidth)Enemy1.setX(15);
+			Enemy1.moveRight();
+			if (Enemy2.getX() <= 0) Enemy2.setX(70);
+			Enemy2.moveLeft();
 
 			// DISPLAY
-
+			drawBlock(Player.getSketch(), Player.getX(), Player.getY(), bg, 7);
+			drawBlock(Enemy1.getSketch(), Enemy1.getX(), Enemy1.getY(), bg, 6); // Red enemy
+			drawBlock(Enemy2.getSketch(), Enemy2.getX(), Enemy2.getY(), bg, 3); // Yellow enemy
+			drawScreen();
 		}
 	}
 
