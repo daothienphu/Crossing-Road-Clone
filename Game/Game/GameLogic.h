@@ -75,12 +75,10 @@ public:
 	void start()
 	{
 		thread t1(&GameCore::draw, this);
-		thread t2(&GameCore::inputChecking, this);
-		thread t3(&GameCore::gameLogic, this);
+		thread t2(&GameCore::gameLogic, this);
 
 		t1.join();
 		t2.join();
-		t3.join();
 	}
 	void draw()
 	{
@@ -94,10 +92,29 @@ public:
 	}
 	void inputChecking()
 	{
-		while (1)
-		{
-			//check for input
-			delay(50);
+		const vector<char> key = { 'W', 'A', 'S', 'D' };
+
+		// INPUT
+		bool* bKey = new bool[key.size()];
+		// Read input
+		for (int i = 0; i < key.size(); i++) {
+			bKey[i] = (GetAsyncKeyState(key.at(i))) != 0;
+		}
+		// Move up
+		if (bKey[0] == 1) {
+			// Something here
+		}
+		// Move down
+		if (bKey[2] == 1) {
+			// Something here
+		}
+		// Move left
+		if (bKey[1] == 1) {
+			// Something here
+		}
+		// Move right
+		if (bKey[3] == 1) {
+			// Something here
 		}
 	}
 
@@ -107,6 +124,7 @@ public:
 		//intilize obstacles
 		while (1)
 		{
+			inputChecking();
 			//input special case:
 				//pause -> lock this thread
 				//resume -> release thread
