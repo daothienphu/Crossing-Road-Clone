@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f0579561-f045-467a-9a64-ce73c3f5df9b}</ProjectGuid>
-    <RootNamespace>Game</RootNamespace>
+    <ProjectGuid>{84c72851-46f5-4905-97e7-cbbc24f83e91}</ProjectGuid>
+    <RootNamespace>Testdumgraphic</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -139,16 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="functions.cpp" />
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GameGraphic.h" />
-    <ClInclude Include="GameLogic.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="GameObstacles.h" />
-    <ClInclude Include="Header.h" />
-    <ClInclude Include="Player.h" />
+    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

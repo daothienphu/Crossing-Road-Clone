@@ -1,10 +1,10 @@
 #include "Header.h"
+#include "GameLogic.h"
+
 
 int main() {
     fixSizedConsoleWindow();
-	
-	gotoXY(144,41); //coords_max(144, 41);     
-	cout << 1; //(scroll up pls)
-
+    GameCore gc;
+    gc.start();
     return 0;
 }
