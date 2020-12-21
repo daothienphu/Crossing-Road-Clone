@@ -34,7 +34,7 @@ public:
 		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord); // Place the cursor at (x, y)
 	}
 
-	void printTitle(int x, int y) {
+	void printTitle(int x, int y) {//Error, don't use this function
 		// width = 52, height = 8
 		// Get error in char, string, use wstring
 		gotoXY(x, y);     cout << L"▄▀▀▀▄  █▀▀▀▄  ▄▀▀▀▄  ▄▀▀▀   ▄▀▀▀   ▀█▀  █▄  █  ▄▀▀▀▀" << endl;
@@ -93,7 +93,7 @@ public:
 		L"llll"
 	};
 
-	void draw(wchar_t*& pBuffer, WORD*& pColor, int X, int Y, vector<wstring> str, int colorBackground, int colorChar) {
+	void draw(wchar_t*& pBuffer, WORD*& pColor, int X, int Y, vector<wstring> str, int colorBackground, int colorChar) { //drawBlock
 		//cout << "Bug" << endl;
 		// background_color * 16 + character_color
 		DWORD dwBytesWritten = 0;
