@@ -2,6 +2,7 @@
 #include <string>
 #include<iostream>
 #include<vector>
+#pragma comment(lib, "winmm.lib")
 using namespace std;
 const wstring detail = L"▄▀█▓░╚╝╔╗║═";
 
@@ -35,7 +36,7 @@ private:
 	int prevX = 0, prevY = 0;
 	int X = 0, Y = 0;
 	const vector<wstring> Sketch = {
-		L"ll",
+		L"..",
 	};
 	int color;
 public:
@@ -126,49 +127,50 @@ public:
 				cPos.X = i;
 				cPos.Y = j;
 				WriteConsoleOutputAttribute(hConsole, &pColor[j * nScreenWidth + i], 1, cPos, &dwBytesWritten);
+				//Sleep(50);
 			}
 		}
-		//Sleep(3000);
+		//Sleep(2000);
 		WriteConsoleOutputCharacter(hConsole, pBuffer, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
-		//Sleep(3000);
+		Sleep(3000);
 	}
-	void drawScreenColor() {
-		/*
-		BOOL WINAPI WriteConsoleOutputAttribute(
-			_In_        HANDLE  hConsoleOutput, // A handle to console screen buffer
-			_In_  const WORD    *lpAttribute, // Color to print
-			_In_        DWORD   nLength, // The number of character cells to be set to the specified color attributes.
-			_In_        COORD   dwWriteCoord, // A COORD structure that specifies the character coordinates of the first cell whose attributes are to be set.
-			_Out_       LPDWORD lpNumberOfAttrsWritten // A pointer to a variable that receives the number of character cells whose attributes were actually set.
-		);
-		If the function succeeds, the return value is nonzero.
-		If the function fails, the return value is zero.
-		*/
+	//void drawScreenColor() {
+	//	/*
+	//	BOOL WINAPI WriteConsoleOutputAttribute(
+	//		_In_        HANDLE  hConsoleOutput, // A handle to console screen buffer
+	//		_In_  const WORD    *lpAttribute, // Color to print
+	//		_In_        DWORD   nLength, // The number of character cells to be set to the specified color attributes.
+	//		_In_        COORD   dwWriteCoord, // A COORD structure that specifies the character coordinates of the first cell whose attributes are to be set.
+	//		_Out_       LPDWORD lpNumberOfAttrsWritten // A pointer to a variable that receives the number of character cells whose attributes were actually set.
+	//	);
+	//	If the function succeeds, the return value is nonzero.
+	//	If the function fails, the return value is zero.
+	//	*/
 
-		for (int i = 0; i < nScreenWidth; i++) {
-			for (int j = 0; j < nScreenHeight; j++) {
-				COORD cPos;
-				cPos.X = i;
-				cPos.Y = j;
-				WriteConsoleOutputAttribute(hConsole, &pColor[j * nScreenWidth + i], 1, cPos, &dwBytesWritten);
-			}
-		}
-	}
-	void drawScreenCharacter() {
-		/*
-		BOOL WINAPI WriteConsoleOutputCharacter(
-			_In_  HANDLE  hConsoleOutput, // A handle to console screen buffer
-			_In_  LPCTSTR lpCharacter, // Characters to write on screen
-			_In_  DWORD   nLength, // Number of characters to write
-			_In_  COORD   dwWriteCoord, // Coordinate of first character to write
-			_Out_ LPDWORD lpNumberOfCharsWritten // A pointer to a variable that contains number of chars written
-		);
-		If the function succeeds, the return value is nonzero.
-		If the function fails, the return value is zero.
-		*/
-		//DWORD dwBytesWritten = 0;
-		WriteConsoleOutputCharacter(hConsole, pBuffer, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
-	}
+	//	for (int i = 0; i < nScreenWidth; i++) {
+	//		for (int j = 0; j < nScreenHeight; j++) {
+	//			COORD cPos;
+	//			cPos.X = i;
+	//			cPos.Y = j;
+	//			WriteConsoleOutputAttribute(hConsole, &pColor[j * nScreenWidth + i], 1, cPos, &dwBytesWritten);
+	//		}
+	//	}
+	//}
+	//void drawScreenCharacter() {
+	//	/*
+	//	BOOL WINAPI WriteConsoleOutputCharacter(
+	//		_In_  HANDLE  hConsoleOutput, // A handle to console screen buffer
+	//		_In_  LPCTSTR lpCharacter, // Characters to write on screen
+	//		_In_  DWORD   nLength, // Number of characters to write
+	//		_In_  COORD   dwWriteCoord, // Coordinate of first character to write
+	//		_Out_ LPDWORD lpNumberOfCharsWritten // A pointer to a variable that contains number of chars written
+	//	);
+	//	If the function succeeds, the return value is nonzero.
+	//	If the function fails, the return value is zero.
+	//	*/
+	//	//DWORD dwBytesWritten = 0;
+	//	WriteConsoleOutputCharacter(hConsole, pBuffer, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
+	//}
 	void gotoXY(int x, int y) {  // Place the cursor at (x, y)
 		COORD coord;
 		coord.X = x;
@@ -234,6 +236,9 @@ public:
 		SetConsoleActiveScreenBuffer(hConsole1);
 		hConsole = hConsole1;
 
+		// SOUND
+		//PlaySound(TEXT("Eric Skiff - A Night Of Dizzy Spells.wav"), NULL, SND_ASYNC);
+
 
 		int choiceMenu = 0; // 0 - Start game, 1 - Load game, 2 - Settings, 3 - Exit
 		// MENU SCREEN
@@ -254,7 +259,6 @@ public:
 			if (bKey[2] == 1) {
 				choiceMenu = (choiceMenu + 1) % 4;
 			}
-
 			// DISPLAY CURRENT MENU
 			drawText(L"Press W to move up, S to move down", 0, 4, 0, 7);
 			drawText(L" START GAME ", 0, 0, 0, 7);
@@ -307,11 +311,15 @@ public:
 		cEnemy Enemy1;//, Enemy2;
 		Enemy1.setXY(15, 10);
 		//Enemy2.setXY(70, 20);
-		int bg = 0;
-		clearScreen(0, 0);
+		int count = 0;
 		bool gameOver = false;
-		while (gameOver == false){
-			clearScreen(0, 2);
+		while (gameOver == false) {
+			cout << count << endl;
+			count++;
+			// CLEAR SCREEN
+			int bg = 0, ch = 7;
+			clearScreen(bg, ch);
+			Sleep(50);
 
 			// READ INPUT
 			bool* bKeyGame = new bool[key.size()]; // Check ingame input
