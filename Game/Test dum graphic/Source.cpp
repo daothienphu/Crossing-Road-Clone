@@ -3,11 +3,14 @@
 #include<iostream>
 #include<vector>
 using namespace std;
-const wstring detail = L" ▄▀█▓░╚╝╔╗║═";
+const wstring detail = L"▄▀█▓░╚╝╔╗║═";
 
 #define nScreenWidth 100
 #define nScreenHeight 40
 const vector<char> key = { 'W', 'A', 'S', 'D' };
+
+WORD* pColor = new WORD[nScreenWidth * nScreenHeight]; // Character array
+wchar_t* pBuffer = new wchar_t[nScreenWidth * nScreenHeight]; // Color array
 
 class cPlayer {
 private:
@@ -29,20 +32,35 @@ public:
 };
 class cEnemy {
 private:
+	int prevX = 0, prevY = 0;
 	int X = 0, Y = 0;
 	const vector<wstring> Sketch = {
 		L"ll",
 	};
+	int color;
 public:
+	cEnemy() = default;
+	cEnemy(int Color) {
+		color = Color;
+	}
 	int getX() { return X; }
 	int getY() { return Y; }
+	int getColor() { return color; }
 	void setX(int x) { X = x; }
 	void setY(int y) { Y = y; }
 	void setXY(int x, int y) { X = x, Y = y; }
-	void moveLeft() { X -= 2; } // Move 2 blocks
-	void moveRight() { X += 2; } // Move 2 blocks
+	void moveLeft() { 
+		prevX = X;
+		X -= 2;
+	} // Move 2 blocks
+	void moveRight() { 
+		prevX = X;
+		X += 2; } // Move 2 blocks
 	void moveUp() { Y--; }
 	void moveDown() { Y++; }
+	void draw() {
+
+	}
 	vector<wstring> getSketch() { return Sketch; }
 };
 const vector<wstring> Title = {
@@ -58,8 +76,8 @@ const vector<wstring> Title = {
 
 class cScreen {
 private:
-	WORD* pColor = new WORD[nScreenWidth * nScreenHeight]; // Character array
-	wchar_t* pBuffer = new wchar_t[nScreenWidth * nScreenHeight]; // Color array
+	//WORD* pColor = new WORD[nScreenWidth * nScreenHeight]; // Character array
+	//wchar_t* pBuffer = new wchar_t[nScreenWidth * nScreenHeight]; // Color array
 	HANDLE hConsole;
 	DWORD dwBytesWritten = 0;
 public:
@@ -94,7 +112,8 @@ public:
 		for (int i = 0; i < nScreenWidth; i++) {
 			for (int j = 0; j < nScreenHeight; j++) {
 				pBuffer[j * nScreenWidth + i] = L' '; // Fill screen with blank space
-				pColor[j * nScreenWidth + i] = colorBackground * 16 + colorCharacter; // Set color
+				if(pColor[j * nScreenWidth + i] != colorCharacter)
+					pColor[j * nScreenWidth + i] = colorBackground * 16 + colorCharacter; // Set color
 			}
 		}
 	}
@@ -285,15 +304,14 @@ public:
 	void startGameScreen() {
 		cPlayer Player;
 		Player.setXY(2, 1); // Player spawns at (0, 0)
-		cEnemy Enemy1, Enemy2;
+		cEnemy Enemy1;//, Enemy2;
 		Enemy1.setXY(15, 10);
-		Enemy2.setXY(70, 20);
-
+		//Enemy2.setXY(70, 20);
+		int bg = 0;
+		clearScreen(0, 0);
 		bool gameOver = false;
-		while (gameOver == false) {
-			// CLEAR SCREEN
-			int bg = 0, ch = 7;
-			clearScreen(bg, ch);
+		while (gameOver == false){
+			clearScreen(0, 2);
 
 			// READ INPUT
 			bool* bKeyGame = new bool[key.size()]; // Check ingame input
@@ -320,13 +338,14 @@ public:
 			// UPDATE 
 			if (Enemy1.getX() >= nScreenWidth)Enemy1.setX(15);
 			Enemy1.moveRight();
-			if (Enemy2.getX() <= 0) Enemy2.setX(70);
-			Enemy2.moveLeft();
+			//if (Enemy2.getX() <= 0) Enemy2.setX(70);
+			//Enemy2.moveLeft();
 
 			// DISPLAY
-			drawBlock(Player.getSketch(), Player.getX(), Player.getY(), bg, 7);
+			Sleep(990);
+			drawBlock(Player.getSketch(), Player.getX(), Player.getY(), bg, 2);
 			drawBlock(Enemy1.getSketch(), Enemy1.getX(), Enemy1.getY(), bg, 6); // Red enemy
-			drawBlock(Enemy2.getSketch(), Enemy2.getX(), Enemy2.getY(), bg, 3); // Yellow enemy
+			//drawBlock(Enemy2.getSketch(), Enemy2.getX(), Enemy2.getY(), bg, 3); // Yellow enemy
 			drawScreen();
 		}
 	}

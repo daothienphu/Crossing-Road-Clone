@@ -1,5 +1,5 @@
 #pragma once
-#include "GameObject.h"\
+#include "GameObject.h"
 
 #pragma region PLAYER CONFIG
 
@@ -14,7 +14,6 @@ protected:
 public:
 	Player() : GameObject() {}
 	Player(int x, int y, int w = PLAYER_W, int h = PLAYER_H) : GameObject(x, y, w, h, 0) {}
-	void render();
 };
 #pragma endregion
 

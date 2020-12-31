@@ -2,54 +2,48 @@
 
 #pragma region Util
 void fixSizedConsoleWindow() {
-    RECT windowRes;
-    const HWND window = GetDesktopWindow();
-    GetWindowRect(window, &windowRes);
+	system("MODE 300, 44");
 
-    HWND consoleWindow = GetConsoleWindow();
-    MoveWindow(consoleWindow, (windowRes.right - 1080) / 2, (windowRes.bottom - 720) / 2, 1080, 720, TRUE);
+	RECT windowRes;
+	const HWND window = GetDesktopWindow();
+	GetWindowRect(window, &windowRes);
 
-    LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
-    style = style & ~(WS_MAXIMIZEBOX) & ~(WS_THICKFRAME);
+	HWND consoleWindow = GetConsoleWindow();
+	MoveWindow(consoleWindow, (windowRes.right - 1080) / 2, (windowRes.bottom - 720) / 2, 1080, 720, TRUE);
 
-    SetWindowLong(consoleWindow, GWL_STYLE, style);
+	LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
+	style = style & ~(WS_MAXIMIZEBOX) & ~(WS_THICKFRAME);
 
-    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetWindowLong(consoleWindow, GWL_STYLE, style);
 
-    CONSOLE_CURSOR_INFO     cursorInfo;
+	CONSOLE_CURSOR_INFO     cursorInfo;
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    GetConsoleCursorInfo(out, &cursorInfo);
-    cursorInfo.bVisible = false; // set the cursor visibility
-    SetConsoleCursorInfo(out, &cursorInfo);
+	GetConsoleCursorInfo(hConsole, &cursorInfo);
+	cursorInfo.bVisible = false; // set the cursor visibility
+	SetConsoleCursorInfo(hConsole, &cursorInfo);
+
+	CONSOLE_SCREEN_BUFFER_INFOEX csbiex;
+	csbiex.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
+	GetConsoleScreenBufferInfoEx(hConsole, &csbiex);
+	csbiex.ColorTable[0] = RGB(16, 16, 60); // Default background color - dark blue
+	csbiex.ColorTable[1] = RGB(63, 81, 181); // Light blue
+	csbiex.ColorTable[2] = RGB(255, 87, 34); // Orange
+	csbiex.ColorTable[3] = RGB(255, 235, 59); // Yellow
+	csbiex.ColorTable[4] = RGB(76, 175, 80); // Green
+	csbiex.ColorTable[5] = RGB(156, 39, 176); // Purple
+	csbiex.ColorTable[6] = RGB(237, 28, 36); // Red
+	csbiex.ColorTable[7] = RGB(242, 242, 242); // Dark white
+	csbiex.ColorTable[8] = RGB(248, 248, 248); // White
+	csbiex.ColorTable[9] = RGB(20, 20, 20); // Black
+	SetConsoleScreenBufferInfoEx(hConsole, &csbiex);
 }
+
 void gotoXY(int x, int y) {
 	COORD coord;
 	coord.X = x;
 	coord.Y = y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-}
-void printPalette() {
-    int i = 30;
-    while (i < 108) {
-        string res = "";
-        int j = i;
-        while (j) {
-            char tmp = char(j % 10 + '0');
-            res = tmp + res;
-            j /= 10;
-        }
-
-        string color = "\x1B[" + res + 'm';
-        cout << color << setw(5) << i;
-
-        switch (i) {
-        case 37:
-        case 97: i += 3; cout << endl; break;
-        case 47: i += 43; cout << endl << blackBG50; break;
-        case 107: cout << blackBG50 << white50;
-        default: i++; break;
-        }
-    }
 }
 
 bool delay(int millisec) {
