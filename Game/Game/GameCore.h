@@ -11,6 +11,9 @@
 #include "Player.h"
 #include "GameObstacles.h"
 
+#define MAX_OBJECTS_PER_LANE 10
+#define LANE_HEIGHT 50
+
 using namespace std;
 using namespace std::this_thread;
 using namespace std::chrono;
@@ -29,7 +32,8 @@ private:
 
 	GAMESTATE state;
 	int level;
-	//will need more param
+	
+	GameObject* player;
 public:
 	GameCore() {
 		state = GAMESTATE::PLAYING;
@@ -40,6 +44,7 @@ public:
 	};
 	~GameCore() = default;
 
+#pragma region GRAPHIC
 	void clearScreen(int colorBackground, int colorCharacter) {
 		for (int i = 0; i < screenWidth; i++) {
 			for (int j = 0; j < screenHeight; j++) {
@@ -128,6 +133,7 @@ public:
 		int choiceMenu = 0; // 0 - Start game, 1 - Load game, 2 - Settings, 3 - Exit
 		// MENU SCREEN
 		while (true) {
+			delay(50);
 			// CLEAR SCREEN
 			clearScreen(0, 1);
 			charToBlock(Title, 46, 10, 0, 7);
@@ -181,6 +187,9 @@ public:
 			}
 		}
 	}
+
+
+#pragma endregion
 
 	void start()
 	{
@@ -248,7 +257,48 @@ public:
 		while (level--)
 		{
 			//something to generate
+			//following these rules:
+			//	1: each lanes will have maximum MAX_OBJECTS_PER_LANE = 10(by defualt) obstacles
+			//	2: each level will have __(fill in this) lanes
+			//	3: the 1st ROW will hold objects of the 1st lane. 
+			//	   If there are less objects than the MAX, the rest of that lane will be fill will NULL
+			//	4: Continue for lane 2nd (by default)
+			//	5: Keep do until out of lanes
+			//theses rules help us optimize the check collision
 		}
+	}
+
+
+	bool checkCollision(vector<vector<GameObject*>> &obs, int level)
+	{
+		//calculate the player in which lane
+		BOUNDINGBOX pla = player->getBoundingBox();
+		int lane = pla.x / LANE_HEIGHT;
+
+		for (int i = lane - 1; i < lane; i++)
+		{
+			for (int j = 0; i < MAX_OBJECTS_PER_LANE; i++)
+			{
+				if (obs[i][j] == nullptr) break;
+				BOUNDINGBOX ob = obs[i][j]->getBoundingBox();
+				if (checkCollisionOnHorizontal(pla, ob) && checkCollisionOnVerticle(pla, ob) == true) return true;
+				else continue;
+			}
+		}
+	}
+
+	bool checkCollisionOnHorizontal(BOUNDINGBOX &a, BOUNDINGBOX &b)
+	{
+		if(a.x > b.x) return this->checkCollisionOnHorizontal(b, a);
+		if (a.x + a.w > b.x) return true;
+		else return false;
+	}
+
+	bool checkCollisionOnVerticle(BOUNDINGBOX& a, BOUNDINGBOX& b)
+	{
+		if (a.y > b.y) return this->checkCollisionOnHorizontal(b, a);
+		if (a.y + a.h > b.y) return true;
+		else return false;
 	}
 };
 

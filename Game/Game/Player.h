@@ -10,6 +10,7 @@
 
 class Player : public GameObject {
 private:
+	//sprite or render storage will be here
 protected:
 public:
 	Player() : GameObject() {}

@@ -38,7 +38,6 @@ public:
 		return { x,y,w,h };
 	}
 
-
 	//virtual void render(int bgColor = 0, int charColor = 7) {
 	//	GameCore::pColor[y * screenWidth + x] = bgColor * 16 + charColor;
 	//	GameCore::pBuffer[y * screenWidth + x] = L'▄';

@@ -5,8 +5,9 @@ int main() {
     //gameGraphics will be obsoleted.
     fixSizedConsoleWindow();
     GameCore gc;
-    gc.start();
-    gc.gameLogic();
+    gc.renderStartScreen();
+    //gc.start();
+    //gc.gameLogic();
 
     return 0;
 }
