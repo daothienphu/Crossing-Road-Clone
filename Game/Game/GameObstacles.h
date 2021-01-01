@@ -27,6 +27,7 @@ public:
 };
 
 #pragma region Obstacles
+
 class Something : public Obstacle {};
 class Will : public Obstacle {};
 class BeDefineLater : public Obstacle {};
