@@ -199,7 +199,7 @@ public:
 		t1.join();
 		//t2.join();
 	}
-	void inputChecking(GameObject* &player)
+	void inputChecking()
 	{
 		const vector<char> key = { 'W', 'A', 'S', 'D' };
 
@@ -237,7 +237,7 @@ public:
 		this->initObstacles(level, obs);
 		while (1)
 		{
-			inputChecking(player);
+			inputChecking();
 			//pause and resume missing.
 			//input special case:
 				//pause -> break the game render -> render menu
