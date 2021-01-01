@@ -244,7 +244,15 @@ public:
 				//resume -> break the menu render -> render game
 			//check for input -> update pos player
 			//check for obstacles properties -> update pos obst
+			for(auto lane: obs)
+				for (auto ob : lane)
+				{
+					ob->move(5, 0);
+				}
+			//draw game here
+
 			//collision check
+			bool flag = this->checkCollision(obs, level);
 			//if pass -> send signal to check
 			//else set flag game over
 		}
