@@ -273,7 +273,7 @@ public:
 	{
 		//calculate the player in which lane
 		BOUNDINGBOX pla = player->getBoundingBox();
-		int lane = pla.x / LANE_HEIGHT;
+		int lane = (pla.x / LANE_HEIGHT) + 1;
 
 		for (int i = lane - 1; i < lane; i++)
 		{
@@ -281,7 +281,7 @@ public:
 			{
 				if (obs[i][j] == nullptr) break;
 				BOUNDINGBOX ob = obs[i][j]->getBoundingBox();
-				if (checkCollisionOnHorizontal(pla, ob) && checkCollisionOnVerticle(pla, ob) == true) return true;
+				if (checkCollisionOnHorizontal(pla, ob) && checkCollisionOnVerticle(pla, ob)) return true;
 				else continue;
 			}
 		}
