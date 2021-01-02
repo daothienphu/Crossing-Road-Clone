@@ -62,7 +62,6 @@ struct BOUNDINGBOX {
 
 class Items {
 protected:
-	GraphicsController gc;
 public:
 	virtual vector<wstring>& getBufferData() = 0;
 	virtual coord getPos() = 0;
@@ -71,18 +70,43 @@ public:
 
 class Menu {
 protected:
+	vector<wstring> bufferData;
 public:
+	Menu() {
+		bufferData.clear();
+	}
+	~Menu() = default;
+	vector<wstring>& getBufferData() {
+		return bufferData;
+	}
 };
 class Button : public Menu {
-protected:
-	vector<wstring> bufferData;
 public:
+	Button() {
+		bufferData.emplace_back(L"Unnamed Button");
+	}
+	Button(wstring text) {
+		bufferData.emplace_back(text);
+	}
+	~Button() = default;
+
+	void setButtonText(wstring text) {
+		bufferData.emplace_back(text);
+	}
 };
 class Text: public Menu {
-	//x, y, content, bg and fg color, w h
-protected:
-	vector<wstring> bufferData;
 public:
+	Text() {
+		bufferData.emplace_back(L"SomeText");
+	}
+	Text(wstring text) {
+		bufferData = text;
+	}
+	~Text() = default;
+
+	void setText(wstring text) {
+		bufferData = text;
+	}
 };
 class GameMenu: public Items{
 protected:
@@ -92,8 +116,14 @@ public:
 	vector<wstring>& getBufferData() {
 		return bufferData;
 	};
-	void add(Menu* menu) {
-		return;
+	void add(Menu* menu, int spacing) {
+		if (!compo.empty())
+			for (int i = 0; i < spacing; ++i) {
+				bufferData.emplace_back(L" ");
+			}
+		bufferData.emplace_back(menu->getBufferData());
+		//////add something more for vertical centering
+		compo.emplace_back(menu);
 	}
 	coord getPos()
 	{
@@ -104,12 +134,42 @@ public:
 
 class Lane {
 protected:
+	vector<wstring> BufferData;
 public:
+	//setBufferData
+	vector<wstring>& getBufferData() {
+		return BufferData;
+	}
 };
 class Map : public Items {
 protected:
 	vector<Lane> lanes;
+	vector<wstring> bufferData;
 public:
+	Map() {
+		lanes.clear();
+		bufferData.clear();
+	}
+	~Map() {
+		lanes.clear();
+		bufferData.clear();
+	}
+
+	vector<wstring>& getBufferData() {
+		return bufferData;
+	}
+
+	void add(Map* lane, int spacing) {
+		if (!lanes.empty())
+			for (int i = 0; i < spacing; ++i) {
+				bufferData.emplace_back(L" ");
+			}
+		vector<wstring> tmp = lane->getBufferData();
+		for (int i = 0; i < tmp.size(); ++i) {
+			bufferData.emplace_back(tmp[i]);
+		} //////add something more for vertical centering
+		lanes.emplace_back(lane);
+	}
 };
 
 class GameObject: public Items {
@@ -207,7 +267,6 @@ public:
 	}
 };
 
-
 class GameCore{
 protected:
 	vector<Items*> menuHier; //hierarchy
@@ -227,10 +286,16 @@ public:
 		delete graphic;
 	}
 
-	void start() {
+	void startMainScreen() {
 		Items* startMenu = new GameMenu;
+		Button b(L" START GAME ");
+		
 
-		//graphic->setBuffer(startMenu.getBufferData(), 0,0,0,7);
+		graphic->setBuffer(startMenu->getBufferData(), 0, 0, 0, 7);
+	}
+
+	void start() {
+		
 	}
 };
 
