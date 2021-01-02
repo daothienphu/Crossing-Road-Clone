@@ -260,6 +260,13 @@ public:
 		delete player;
 		//delete obstacles too
 	}
+
+	int random(int a, int b)
+	{
+		long long r = rand() * rand() + rand() * rand();
+		return a + (r % (b - a + 1));
+	}
+
 	void initObstacles(int level, vector<vector<GameObject*>> & obs)
 	{
 		while (level--)
@@ -273,9 +280,16 @@ public:
 			//	4: Continue for lane 2nd (by default)
 			//	5: Keep do until out of lanes
 			//theses rules help us optimize the check collision
+
+			obs.push_back(vector <GameObject*>());
+			vector <GameObject*>& l = obs.back();
+			int num = random(level, min(MAX_OBJECTS_PER_LANE, level * 2));
+			for (int i = 0; i < num; i++)
+				l.push_back(new GameObject());
+			for (int i = num; i < MAX_OBJECTS_PER_LANE; i++)
+				l.push_back(nullptr);
 		}
 	}
-
 
 	bool checkCollision(vector<vector<GameObject*>> &obs, int level)
 	{
