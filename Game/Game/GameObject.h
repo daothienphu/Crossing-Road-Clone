@@ -12,7 +12,6 @@
 #pragma region GameObject
 
 class GameObject {
-private:
 protected:
 	int x, y; // coordinate of top-left corner
 	int oldX, oldY;

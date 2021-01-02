@@ -5,6 +5,7 @@
 #include <vector>
 #include <thread>
 #include <chrono>
+#include <future>
 
 #include "Header.h"
 #include "GameObject.h"
@@ -45,7 +46,7 @@ public:
 	~GameCore() = default;
 
 #pragma region GRAPHIC
-	void clearScreen(int colorBackground, int colorCharacter) {
+	void clearScreen(int colorBackground = 0, int colorCharacter = 7) {
 		for (int i = 0; i < screenWidth; i++) {
 			for (int j = 0; j < screenHeight; j++) {
 				pBuffer[j * screenWidth + i] = L' '; // Fill screen with blank space
@@ -193,12 +194,30 @@ public:
 
 	void start()
 	{
-		thread t1(&GameCore::renderStartScreen, this);
-		//thread t2(&GameCore::gameLogic, this);
-
+		/*promise<int> p;
+		auto f = p.get_future();
+		thread t1(&GameCore::renderStartScreen, move(p));
 		t1.join();
-		//t2.join();
+		if (f.get() == 1) {
+			t1.~thread();
+			thread t2(&GameCore::gameLogic, this);
+			t2.join();
+
+		}*/
+		thread t2(&GameCore::testGameLogic, this);
+		t2.join();
+
+		
+
+		
+		
 	}
+
+	void testGameLogic() {
+		player = new Player(72, 38);
+		
+	}
+
 	void inputChecking()
 	{
 		const vector<char> key = { 'W', 'A', 'S', 'D' };
@@ -232,6 +251,7 @@ public:
 	{
 		//intilize player at place
 		//intilize obstacles
+		clearScreen();
 		GameObject* player = new Player(50, 40);
 		vector<vector<GameObject*>> obs;
 		this->initObstacles(level, obs);
@@ -250,7 +270,8 @@ public:
 					ob->move(5, 0);
 				}
 			//draw game here
-
+			drawScreen();
+			
 			//collision check
 			bool flag = this->checkCollision(obs, level);
 			//if pass -> send signal to check
@@ -294,14 +315,12 @@ public:
 			}
 		}
 	}
-
 	bool checkCollisionOnHorizontal(BOUNDINGBOX &a, BOUNDINGBOX &b)
 	{
 		if(a.x > b.x) return this->checkCollisionOnHorizontal(b, a);
 		if (a.x + a.w > b.x) return true;
 		else return false;
 	}
-
 	bool checkCollisionOnVerticle(BOUNDINGBOX& a, BOUNDINGBOX& b)
 	{
 		if (a.y > b.y) return this->checkCollisionOnHorizontal(b, a);
