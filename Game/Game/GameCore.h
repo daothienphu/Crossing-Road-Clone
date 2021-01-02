@@ -101,6 +101,7 @@ public:
 		}
 		WriteConsoleOutputCharacter(hConsole, pBuffer, screenWidth * screenHeight, { 0, 0 }, &dwBytesWritten);
 	}
+
 	void drawScreen() {
 		for (int i = 0; i < screenHeight; i++)
 		{

@@ -31,11 +31,51 @@ const vector<wstring> Title = {
 #pragma endregion
 
 #pragma region Util
-void fixSizedConsoleWindow();
+void fixSizedConsoleWindow() {
+	system("MODE 300, 44");
+
+	RECT windowRes;
+	const HWND window = GetDesktopWindow();
+	GetWindowRect(window, &windowRes);
+
+	HWND consoleWindow = GetConsoleWindow();
+	MoveWindow(consoleWindow, (windowRes.right - 1080) / 2, (windowRes.bottom - 720) / 2, 1080, 720, TRUE);
+
+	LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
+	style = style & ~(WS_MAXIMIZEBOX) & ~(WS_THICKFRAME);
+
+	SetWindowLong(consoleWindow, GWL_STYLE, style);
+
+	CONSOLE_CURSOR_INFO     cursorInfo;
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	GetConsoleCursorInfo(hConsole, &cursorInfo);
+	cursorInfo.bVisible = false; // set the cursor visibility
+	SetConsoleCursorInfo(hConsole, &cursorInfo);
+
+	CONSOLE_SCREEN_BUFFER_INFOEX csbiex;
+	csbiex.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
+	GetConsoleScreenBufferInfoEx(hConsole, &csbiex);
+	csbiex.ColorTable[0] = RGB(16, 16, 60); // Default background color - dark blue
+	csbiex.ColorTable[1] = RGB(63, 81, 181); // Light blue
+	csbiex.ColorTable[2] = RGB(255, 87, 34); // Orange
+	csbiex.ColorTable[3] = RGB(255, 235, 59); // Yellow
+	csbiex.ColorTable[4] = RGB(76, 175, 80); // Green
+	csbiex.ColorTable[5] = RGB(156, 39, 176); // Purple
+	csbiex.ColorTable[6] = RGB(237, 28, 36); // Red
+	csbiex.ColorTable[7] = RGB(242, 242, 242); // Dark white
+	csbiex.ColorTable[8] = RGB(248, 248, 248); // White
+	csbiex.ColorTable[9] = RGB(20, 20, 20); // Black
+	SetConsoleScreenBufferInfoEx(hConsole, &csbiex);
+}
 void gotoXY(int x, int y);
 void printPalette();
 
-bool delay(int millisec);
+bool delay(int millisec)
+{
+	sleep_for(milliseconds(millisec));
+	return true;
+}
 
 
 struct coord {
@@ -62,7 +102,6 @@ struct BOUNDINGBOX {
 
 class Items {
 protected:
-	GraphicsController gc;
 public:
 	virtual vector<wstring>& getBufferData() = 0;
 	virtual coord getPos() = 0;
@@ -73,6 +112,7 @@ class Menu {
 protected:
 public:
 };
+
 class Button : public Menu {
 protected:
 	vector<wstring> bufferData;
@@ -119,7 +159,7 @@ protected:
 	vector<wstring> bufferData;
 public:
 	GameObject() : x(0), y(0), w(0), h(0), bufferData({L" "}) {}
-	GameObject(int x, int y, int w, int h, vector<wstring> bufferData) : x(x), y(y), w(w), h(h), bufferData(bufferData) {}
+	GameObject(int x, int y, int w, int h) : x(x), y(y), w(w), h(h) {}
 
 	coord getPos() {
 		return { x, y };
@@ -136,7 +176,7 @@ class Obstacles: public GameObject {
 protected:
 public:
 	Obstacles() : GameObject(0, 0, 0, 0, { L" " }) {}
-	Obstacles(int x, int y, int w, int h, vector<wstring> bufferData) : GameObject(x, y, w, h, bufferData) {}
+	Obstacles(int x, int y, int w, int h) : GameObject(x, y, w, h, bufferData) {}
 };
 
 #pragma region OBSTACLES LIST
@@ -167,23 +207,36 @@ public:
 
 class Player : public GameObject {
 protected:
-	const vector<wstring> bufData = { L"" }; //draw the player here
+	//draw the player here
 public:
-	Player() : GameObject(0, 0, 0, 0, this->bufData) {}
-	Player(int x, int y, int w, int h) : GameObject(x, y, w, h, this->bufData) {}
-
-
+	Player() : GameObject(0, 0, 0, 0)
+	{
+		bufferData = vector<wstring>({ L"." });
+	}
+	Player(int x, int y, int w, int h) : GameObject(x, y, w, h)
+	{
+		bufferData = vector<wstring>({ L"." });
+	}
 };
 
 
 class GraphicsController{
 protected:
-	wchar_t* buffer = new wchar_t[screenHeight * screenWidth];
-	WORD* color = new WORD[screenHeight * screenWidth];
+	wchar_t* buffer;
+	WORD* color;
 
 	HANDLE hConsole;
 	DWORD dwBytesWritten;
 public:
+	GraphicsController()
+	{
+		buffer = new wchar_t[screenHeight * screenWidth] {L" "};
+		color = new WORD[screenHeight * screenWidth] {7};
+		HANDLE hConsole1 = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+		SetConsoleActiveScreenBuffer(hConsole1);
+		hConsole = hConsole1;
+	}
+
 	void render() {
 		for (int i = 0; i < screenHeight; i++)
 		{
@@ -197,6 +250,7 @@ public:
 		}
 		WriteConsoleOutputCharacter(hConsole, buffer, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
 	}
+
 	void setBuffer(vector<wstring>& content, int x, int y, int bgColor, int fgColor) {
 		for (int i = 0; i < content.size(); ++i) {
 			for (int j = 0; j < content[i].length(); ++j) {
@@ -205,13 +259,26 @@ public:
 			}
 		}
 	}
+
+	/*void renderAt(int x, int y, int w, int h) {
+		for (int i = 0; i < h; i++)
+		{
+			for (int j = 0; j < w; j++)
+			{
+				COORD tmp;
+				tmp.X = j; tmp.Y = i;
+				WriteConsoleOutputAttribute(hConsole, &color[i * screenWidth + j], 1, tmp, &dwBytesWritten);
+			}
+		}
+		WriteConsoleOutputCharacter(hConsole, buffer, screenWidth * screenHeight, { 0, 0 }, &dwBytesWritten);
+	}*/
 };
 
 
 class GameCore{
 protected:
 	vector<Items*> menuHier; //hierarchy
-	Items* player;
+	GameObject* player;
 
 	GraphicsController* graphic;
 
@@ -227,15 +294,32 @@ public:
 		delete graphic;
 	}
 
+	void test() { cout << player->getBufferData().size() << endl; }
+
 	void start() {
 		Items* startMenu = new GameMenu;
 
 		//graphic->setBuffer(startMenu.getBufferData(), 0,0,0,7);
 	}
+
+	void playScreen(int level)
+	{
+		while (1)
+		{
+			graphic->setBuffer(player->getBufferData(), 10, 10, 0, 7);
+			graphic->render();
+			delay(100);
+		}
+	}
+
+	void pauseScreen() {};
 };
 
 
 int main() {
+	fixSizedConsoleWindow();
 	GameCore gc;
-	gc.start();
+	//gc.test();
+	gc.playScreen(1);
+	return 0;
 }
