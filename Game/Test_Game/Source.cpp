@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <windows.h>
 #include <iomanip>
 #include <vector>
@@ -171,34 +171,49 @@ public:
 	virtual vector<wstring>& getBufferData() {
 		return bufferData;
 	};
+
+	virtual void move(int x, int y) = 0;
 };
 class Obstacles: public GameObject {
 protected:
+	int autoX = 1, autoY = 0;;
 public:
-	Obstacles() : GameObject(0, 0, 0, 0, { L" " }) {}
-	Obstacles(int x, int y, int w, int h) : GameObject(x, y, w, h, bufferData) {}
+	Obstacles() : GameObject(0, 0, 0, 0) {}
+	Obstacles(int x, int y, int w, int h) : GameObject(x, y, w, h) {}
+	
+	virtual void move(int x, int y)
+	{
+		this->x += autoX;
+		this->y += autoY;
+	}
 };
 
 #pragma region OBSTACLES LIST
 class Maybe : public Obstacles {
-	const vector<wstring> bufferData = {L""};
+	vector<wstring> buf;
 public:
-	Maybe() : Obstacles(0, 0, 0, 0, this->bufferData) {}
-	Maybe(int x, int y, int w, int h) : Obstacles(x, y, w, h, this->bufferData) {}
+	Maybe() : Obstacles(0, 0, 0, 0) {}
+	Maybe(int x, int y, int w, int h) : Obstacles(x, y, w, h) {
+		this->bufferData = buf;
+	}
 };
 
 class SomeKindsOf : public Obstacles {
-	const vector<wstring> bufferData = {L""}; //fill in here
+	vector<wstring> buf;
 public:
-	SomeKindsOf() : Obstacles(0, 0, 0, 0, this->bufferData) {}
-	SomeKindsOf(int x, int y, int w, int h) : Obstacles(x, y, w, h, this->bufferData) {}
+	SomeKindsOf() : Obstacles(0, 0, 0, 0) {}
+	SomeKindsOf(int x, int y, int w, int h) : Obstacles(x, y, w, h) {
+		this->bufferData = this->buf;
+	}
 };
 
 class Monster :public Obstacles {
-	const vector<wstring> bufferData = {L""};
+	vector<wstring> buf;
 public:
-	Monster() : Obstacles(0, 0, 0, 0, this->bufferData) {}
-	Monster(int x, int y, int w, int h) : Obstacles(x, y, w, h, this->bufferData) {}
+	Monster() : Obstacles(0, 0, 0, 0) {}
+	Monster(int x, int y, int w, int h) : Obstacles(x, y, w, h) {
+		this->bufferData = this->buf;
+	}
 };
 
 //fell free to declare more class using the above template
@@ -207,15 +222,24 @@ public:
 
 class Player : public GameObject {
 protected:
-	//draw the player here
+	vector<wstring> buf;
 public:
 	Player() : GameObject(0, 0, 0, 0)
 	{
-		bufferData = vector<wstring>({ L"." });
+		buf = { L"█-█",
+				L"█-█"}; //draw player here
+		bufferData = buf;
 	}
 	Player(int x, int y, int w, int h) : GameObject(x, y, w, h)
 	{
-		bufferData = vector<wstring>({ L"." });
+		buf = { L"." };
+		bufferData = buf;
+	}
+
+	virtual void move(int x, int y)
+	{
+		this->x += 2*x;
+		this->y += y;
 	}
 };
 
@@ -306,9 +330,33 @@ public:
 	{
 		while (1)
 		{
-			graphic->setBuffer(player->getBufferData(), 10, 10, 0, 7);
+			graphic->setBuffer(player->getBufferData(), this->player->getPos().x, this->player->getPos().y, 0, 7);
 			graphic->render();
-			delay(100);
+
+			bool* bKeyGame = new bool[key.size()]; // Check ingame input
+			for (int i = 0; i < key.size(); i++) { 	// Read input
+				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
+			}
+			// W - Move up
+			if (bKeyGame[0] == 1) {
+				player->move(0, -1);
+				//Player.moveUp();
+			}
+			// A - Move left
+			if (bKeyGame[1] == 1) {
+				player->move(-1, 0);
+				//Player.moveLeft();
+			}
+			// S - Move down
+			if (bKeyGame[2] == 1) {
+				player->move(0, 1);
+				//Player.moveDown();
+			}
+			// D - Move right
+			if (bKeyGame[3] == 1) {
+				player->move(1, 0);
+				//Player.moveRight();
+			}
 		}
 	}
 
