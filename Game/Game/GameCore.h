@@ -291,6 +291,8 @@ public:
 		}
 	}
 
+	// this should be moved to somewhere, not callable like this
+
 	bool checkCollision(vector<vector<GameObject*>> &obs, int level)
 	{
 		//calculate the player in which lane
@@ -318,7 +320,7 @@ public:
 
 	bool checkCollisionOnVerticle(BOUNDINGBOX& a, BOUNDINGBOX& b)
 	{
-		if (a.y > b.y) return this->checkCollisionOnHorizontal(b, a);
+		if (a.y > b.y) return this->checkCollisionOnVerticle(b, a);
 		if (a.y + a.h > b.y) return true;
 		else return false;
 	}
