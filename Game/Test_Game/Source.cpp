@@ -62,7 +62,10 @@ struct BOUNDINGBOX {
 
 class Items {
 protected:
+	GraphicsController gc;
 public:
+	virtual vector<wstring>& getBufferData() = 0;
+	virtual coord getPos() = 0;
 };
 
 
@@ -90,7 +93,11 @@ public:
 		return bufferData;
 	};
 	void add(Menu* menu) {
-		
+		return;
+	}
+	coord getPos()
+	{
+		return {0, 0};
 	}
 
 };
@@ -107,15 +114,65 @@ public:
 
 class GameObject: public Items {
 protected:
+	int x, y; // coordinate of top-left corner
+	int w, h; // box size
+	vector<wstring> bufferData;
 public:
+	GameObject() : x(0), y(0), w(0), h(0), bufferData({L" "}) {}
+	GameObject(int x, int y, int w, int h, vector<wstring> bufferData) : x(x), y(y), w(w), h(h), bufferData(bufferData) {}
+
+	coord getPos() {
+		return { x, y };
+	}
+	BOUNDINGBOX getBoundingBox() {
+		return { x,y,w,h };
+	}
+
+	virtual vector<wstring>& getBufferData() {
+		return bufferData;
+	};
 };
 class Obstacles: public GameObject {
 protected:
 public:
+	Obstacles() : GameObject(0, 0, 0, 0, { L" " }) {}
+	Obstacles(int x, int y, int w, int h, vector<wstring> bufferData) : GameObject(x, y, w, h, bufferData) {}
 };
+
+#pragma region OBSTACLES LIST
+class Maybe : public Obstacles {
+	const vector<wstring> bufferData = {L""};
+public:
+	Maybe() : Obstacles(0, 0, 0, 0, this->bufferData) {}
+	Maybe(int x, int y, int w, int h) : Obstacles(x, y, w, h, this->bufferData) {}
+};
+
+class SomeKindsOf : public Obstacles {
+	const vector<wstring> bufferData = {L""}; //fill in here
+public:
+	SomeKindsOf() : Obstacles(0, 0, 0, 0, this->bufferData) {}
+	SomeKindsOf(int x, int y, int w, int h) : Obstacles(x, y, w, h, this->bufferData) {}
+};
+
+class Monster :public Obstacles {
+	const vector<wstring> bufferData = {L""};
+public:
+	Monster() : Obstacles(0, 0, 0, 0, this->bufferData) {}
+	Monster(int x, int y, int w, int h) : Obstacles(x, y, w, h, this->bufferData) {}
+};
+
+//fell free to declare more class using the above template
+#pragma endregion
+
+
 class Player : public GameObject {
 protected:
+	const vector<wstring> bufData = { L"" }; //draw the player here
 public:
+	Player() : GameObject(0, 0, 0, 0, this->bufData) {}
+	Player(int x, int y, int w, int h) : GameObject(x, y, w, h, this->bufData) {}
+
+
 };
 
 
@@ -175,9 +232,6 @@ public:
 
 		//graphic->setBuffer(startMenu.getBufferData(), 0,0,0,7);
 	}
-
-
-
 };
 
 
