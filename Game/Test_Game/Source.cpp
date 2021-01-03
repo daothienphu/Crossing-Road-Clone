@@ -19,19 +19,8 @@ enum GAMESTATE { PLAYING, PAUSE, EXIT };
 enum DIRECTION { LEFT, RIGHT };
 #pragma endregion
 
-#pragma region global variables
 using namespace std;
 //const vector<char> key = { 'W', 'A', 'S', 'D', 'P', 'R' };
-const vector<wstring> Title = {
-	L".'''.  l'''.  .'''.  .'''   .'''   'l'  l.  l  .''''",
-	L"l      l'''.  l   l   '''.   '''.   l   l '.l  l ''l",
-	L"'...'  l   l  '...'  '...'  '...'  .l.  l   l  '...l",
-	L" ",
-	L"             l'''.  .'''.  .'''.  l'''.",
-	L"             l'''.  l   l  l...l  l   l",
-	L"             l   l  '...'  l   l  l...'",
-};
-#pragma endregion
 
 #pragma region Util
 void fixSizedConsoleWindow() {

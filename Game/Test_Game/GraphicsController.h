@@ -25,6 +25,7 @@ public:
 
 		//bufferStorage mapping
 		bufferStorage["player"] = player; //player was declare in BufferStorage.h
+		bufferStorage["Title"] = Title;
 	}
 
 	vector<wstring>& getBuffer(string key)
