@@ -44,7 +44,7 @@ void fixSizedConsoleWindow() {
 	GetWindowRect(window, &windowRes);
 
 	HWND consoleWindow = GetConsoleWindow();
-	MoveWindow(consoleWindow, (windowRes.right - 1080) / 2, (windowRes.bottom - 720) / 2, 140, 45, TRUE);
+	MoveWindow(consoleWindow, (windowRes.right - 1080) / 2, (windowRes.bottom - 720) / 2, 1080, 720, TRUE);
 
 	LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
 	style = style & ~(WS_MAXIMIZEBOX) & ~(WS_THICKFRAME);
