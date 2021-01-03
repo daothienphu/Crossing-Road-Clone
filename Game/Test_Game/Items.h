@@ -18,5 +18,5 @@ public:
 		return bufferKey;
 	}
 
-	virtual coord getPos() = 0 {}
+	virtual coord getPos() = 0;
 };
