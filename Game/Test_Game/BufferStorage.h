@@ -20,7 +20,7 @@ extern vector<wstring> title = {
 };
 extern vector<wstring> player = { 
 	L"..",
-	L".."};
+	L"''"};
 extern vector<wstring> enemy1 = { 
 	L". '.  .' .", 
 	L"l.l'll'l.'", 

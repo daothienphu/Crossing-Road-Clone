@@ -71,7 +71,6 @@ void gotoXY(int x, int y) {
 	coord.Y = y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
-
 bool delay(int millisec)
 {
 	sleep_for(milliseconds(millisec));

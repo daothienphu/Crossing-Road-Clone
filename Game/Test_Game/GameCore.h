@@ -38,6 +38,7 @@ public:
 	}
 
 	void start() {
+		graphic->charToBlock();
 		int tmp = titleScreen();
 		graphic->clearBuffer();
 		switch (tmp) {
@@ -54,9 +55,9 @@ public:
 		graphic->setBuffer(graphic->getBuffer(title->getBufferKey()), 47, 12, 0, 7);
 		//4 buttons
 		GameMenu* startButton = new Button("start");
-		GameMenu* loadButton = new Button(0,1,"load");
-		GameMenu* settingButton = new Button(0,2,"settings");
-		GameMenu* exitButton = new Button(0,3,"exit");
+		GameMenu* loadButton = new Button("load");
+		GameMenu* settingButton = new Button("settings");
+		GameMenu* exitButton = new Button("exit");
 		
 		int choice = 0;
 		bool* bKeyGame = new bool[key.size()]{ 0 }; // Check ingame input
@@ -115,7 +116,6 @@ public:
 		vector<wstring> playerBlank{ L"  ", L"  " };
 
 		bool* bKeyGame = new bool[key.size()]{ 0 };
-		//graphic->charToBlock();
 		while (1)
 		{
 			delay(1000/FRAMERATE);
@@ -180,6 +180,8 @@ public:
 
 	}
 	void loadScreen() {};
-	void settingsScreen() {};
+	void settingsScreen() {
+		
+	};
 	void pauseScreen() {};
 };
