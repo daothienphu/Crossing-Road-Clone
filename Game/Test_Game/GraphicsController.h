@@ -3,6 +3,8 @@
 #define screenWidth 145
 #define screenHeight 40
 
+#include "BufferStorage.h"
+
 class GraphicsController {
 protected:
 	wchar_t* buffer;
@@ -10,6 +12,8 @@ protected:
 
 	HANDLE hConsole;
 	DWORD dwBytesWritten;
+
+	unordered_map<string, vector<wstring>> bufferStorage;
 public:
 	GraphicsController()
 	{
@@ -18,6 +22,14 @@ public:
 		HANDLE hConsole1 = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 		SetConsoleActiveScreenBuffer(hConsole1);
 		hConsole = hConsole1;
+
+		//bufferStorage mapping
+		bufferStorage["player"] = player; //player was declare in BufferStorage.h
+	}
+
+	vector<wstring>& getBuffer(string key)
+	{
+		return bufferStorage[key];
 	}
 
 	void render() {

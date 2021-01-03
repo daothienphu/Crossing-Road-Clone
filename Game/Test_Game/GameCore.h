@@ -36,7 +36,7 @@ public:
 		delete graphic;
 	}
 
-	void test() { cout << player->getBufferData().size() << endl; }
+	//void test() { cout << player->getBufferKey().size() << endl; }
 
 	void start() {
 		Items* startMenu = new GameMenu;
@@ -48,7 +48,7 @@ public:
 	{
 		while (1)
 		{
-			graphic->setBuffer(player->getBufferData(), this->player->getPos().x, this->player->getPos().y, 0, 7);
+			graphic->setBuffer(graphic->getBuffer(player->getBufferKey()), this->player->getPos().x, this->player->getPos().y, 0, 7);
 			graphic->render();
 
 			bool* bKeyGame = new bool[key.size()]; // Check ingame input

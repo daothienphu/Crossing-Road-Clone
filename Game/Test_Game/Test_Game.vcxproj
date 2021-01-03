@@ -142,6 +142,7 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BufferStorage.h" />
     <ClInclude Include="GameCore.h" />
     <ClInclude Include="GameMenu.h" />
     <ClInclude Include="GameObject.h" />
@@ -151,6 +152,7 @@
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Obstacles.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

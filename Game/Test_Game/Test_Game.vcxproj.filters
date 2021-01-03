@@ -47,5 +47,11 @@
     <ClInclude Include="GameCore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BufferStorage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

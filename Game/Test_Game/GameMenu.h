@@ -8,14 +8,13 @@ using namespace std;
 class GameMenu : public Items {
 protected:
 	vector<Menu*> compo; //components;
-	vector<wstring> bufferData;
 public:
-	vector<wstring>& getBufferData() {
-		return bufferData;
-	};
+	GameMenu() : Items("GameMenu") {}
+
 	void add(Menu* menu) {
 		return;
 	}
+
 	coord getPos()
 	{
 		return { 0, 0 };

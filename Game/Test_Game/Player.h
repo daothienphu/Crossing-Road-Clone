@@ -6,19 +6,9 @@ using namespace std;
 
 class Player : public GameObject {
 protected:
-	vector<wstring> buf;
 public:
-	Player() : GameObject(0, 0, 0, 0)
-	{
-		buf = { L"█-█",
-				L"█-█" }; //draw player here
-		bufferData = buf;
-	}
-	Player(int x, int y, int w, int h) : GameObject(x, y, w, h)
-	{
-		buf = { L"." };
-		bufferData = buf;
-	}
+	Player() : GameObject(0, 0, 0, 0, "player") {}
+	Player(int x, int y, int w, int h) : GameObject(x, y, w, h, "player") {}
 
 	virtual void move(int x, int y)
 	{
