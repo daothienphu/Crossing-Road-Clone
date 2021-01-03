@@ -2,17 +2,51 @@
 #include <string>
 #include<iostream>
 #include<vector>
-#pragma comment(lib, "winmm.lib")
 using namespace std;
-const wstring detail = L"▄▀█▓░╚╝╔╗║═";
-
-#define nScreenWidth 100
-#define nScreenHeight 40
+const wstring detail = L" ▄▀█▓░╚╝╔╗║═";
+#define nScreenWidth 160
+#define nScreenHeight 45
+#define fps 20
 const vector<char> key = { 'W', 'A', 'S', 'D' };
-
-WORD* pColor = new WORD[nScreenWidth * nScreenHeight]; // Character array
-wchar_t* pBuffer = new wchar_t[nScreenWidth * nScreenHeight]; // Color array
-
+const vector<wstring> e1 = {
+	L". '.  .' .",
+	L"l.l'll'l.'",
+	L" ll.ll.ll",
+	L".l '  ' l."
+};
+const vector<wstring> e2 = {
+	L" '...'",
+	L" l'l'l",
+	L".'l'l'.",
+	L"' ' ' '"
+};
+const vector<wstring> e3 = {
+	L"  '..'",
+	L"l.'ll'.l",
+	L"l'llll'l",
+	L" .l  l."
+};
+const vector<wstring> e4 = {
+	L" .l...l.",
+	L"ll..l..ll",
+	L"l'l'l'l'l",
+	L" ' ' ' '"
+};
+const vector<wstring> Title = { // 52 x 8
+	L".'''.  l'''.  .'''.  .'''   .'''   'l'  l.  l  .''''",
+	L"l      l'''.  l   l   '''.   '''.   l   l '.l  l ''l",
+	L"'...'  l   l  '...'  '...'  '...'  .l.  l   l  '...l",
+	L" ",
+	L" ",
+	L"             l'''.  .'''.  .'''.  l'''.",
+	L"             l'''.  l   l  l...l  l   l",
+	L"             l   l  '...'  l   l  l...'",
+};
+const vector<wstring> GameOver = {
+	L".'''.  .'''.  l. .l  l'''    .'''.  l   l  l'''  l'''.",
+	L"l  ..  l'''l  l ' l  l''     l   l  '. .'  l''   l'''.",
+	L"'...'  l   l  l   l  l...    '...'   '.'   l...  l   l"
+};
 class cPlayer {
 private:
 	int X = 0, Y = 0;
@@ -33,52 +67,44 @@ public:
 };
 class cEnemy {
 private:
-	int prevX = 0, prevY = 0;
 	int X = 0, Y = 0;
-	const vector<wstring> Sketch = {
-		L"..",
-	};
-	int color;
+	vector<wstring> Sketch;
 public:
-	cEnemy() = default;
-	cEnemy(int Color) {
-		color = Color;
+	cEnemy(int x, int y, vector<wstring> sketch) {
+		X = x;
+		Y = y;
+		Sketch = sketch;
 	}
 	int getX() { return X; }
 	int getY() { return Y; }
-	int getColor() { return color; }
 	void setX(int x) { X = x; }
 	void setY(int y) { Y = y; }
 	void setXY(int x, int y) { X = x, Y = y; }
-	void moveLeft() { 
-		prevX = X;
-		X -= 2;
-	} // Move 2 blocks
-	void moveRight() { 
-		prevX = X;
-		X += 2; } // Move 2 blocks
+	void moveLeft() { X -= 2; } // Move 2 blocks
+	void moveRight() { X += 2; } // Move 2 blocks
 	void moveUp() { Y--; }
 	void moveDown() { Y++; }
-	void draw() {
-
+	int width() {
+		int max = Sketch[0].length();
+		for (int i = 0; i < Sketch.size(); i++)
+			if (Sketch[i].length() > max)
+				max = Sketch[i].length();
+		return max;
 	}
+	int height() { return Sketch.size(); }
 	vector<wstring> getSketch() { return Sketch; }
+	void setSketch(vector<wstring> sketch) { Sketch = sketch; }
 };
-const vector<wstring> Title = {
-	L".'''.  l'''.  .'''.  .'''   .'''   'l'  l.  l  .''''",
-	L"l      l'''.  l   l   '''.   '''.   l   l '.l  l ''l",
-	L"'...'  l   l  '...'  '...'  '...'  .l.  l   l  '...l",
-	L" ",
-	L" ",
-	L"             l'''.  .'''.  .'''.  l'''.",
-	L"             l'''.  l   l  l...l  l   l",
-	L"             l   l  '...'  l   l  l...'",
-};
-
+bool checkCollision(cPlayer player, cEnemy* enemy) {
+	if (player.getX() >= enemy->getX() && player.getX() <= enemy->getX() + enemy->width() &&
+		player.getY() >= enemy->getY() && player.getY() <= enemy->getY() + enemy->height())
+		return true;
+	return false;
+}
 class cScreen {
 private:
-	//WORD* pColor = new WORD[nScreenWidth * nScreenHeight]; // Character array
-	//wchar_t* pBuffer = new wchar_t[nScreenWidth * nScreenHeight]; // Color array
+	WORD* pColor = new WORD[nScreenWidth * nScreenHeight]; // Character array
+	wchar_t* pBuffer = new wchar_t[nScreenWidth * nScreenHeight]; // Color array
 	HANDLE hConsole;
 	DWORD dwBytesWritten = 0;
 public:
@@ -89,9 +115,8 @@ public:
 		SetWindowLong(consoleWindow, GWL_STYLE, style);
 	}
 	void configure() {
-		system("MODE 100, 41"); // Set screen size (width, height + 1)
+		system("MODE 160, 45"); // Set screen size (width, height + 1)
 		FixConsoleWindow(); //Fix window size
-
 		// Make custom color palette - up to 16 colors, will update later
 		HANDLE hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE); // A hanle to console screen buffer.
 		CONSOLE_SCREEN_BUFFER_INFOEX csbiex;
@@ -113,64 +138,15 @@ public:
 		for (int i = 0; i < nScreenWidth; i++) {
 			for (int j = 0; j < nScreenHeight; j++) {
 				pBuffer[j * nScreenWidth + i] = L' '; // Fill screen with blank space
-				if(pColor[j * nScreenWidth + i] != colorCharacter)
-					pColor[j * nScreenWidth + i] = colorBackground * 16 + colorCharacter; // Set color
+				pColor[j * nScreenWidth + i] = colorBackground * 16 + colorCharacter; // Set color
 			}
 		}
 	}
 	void drawScreen() {
-		for (int i = 0; i < nScreenWidth; i++)
-		{
-			for (int j = 0; j < nScreenHeight; j++)
-			{
-				COORD cPos;
-				cPos.X = i;
-				cPos.Y = j;
-				WriteConsoleOutputAttribute(hConsole, &pColor[j * nScreenWidth + i], 1, cPos, &dwBytesWritten);
-				//Sleep(50);
-			}
-		}
-		//Sleep(2000);
+		Sleep(1000 / fps); //Rate
+		WriteConsoleOutputAttribute(hConsole, pColor, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
 		WriteConsoleOutputCharacter(hConsole, pBuffer, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
-		Sleep(3000);
 	}
-	//void drawScreenColor() {
-	//	/*
-	//	BOOL WINAPI WriteConsoleOutputAttribute(
-	//		_In_        HANDLE  hConsoleOutput, // A handle to console screen buffer
-	//		_In_  const WORD    *lpAttribute, // Color to print
-	//		_In_        DWORD   nLength, // The number of character cells to be set to the specified color attributes.
-	//		_In_        COORD   dwWriteCoord, // A COORD structure that specifies the character coordinates of the first cell whose attributes are to be set.
-	//		_Out_       LPDWORD lpNumberOfAttrsWritten // A pointer to a variable that receives the number of character cells whose attributes were actually set.
-	//	);
-	//	If the function succeeds, the return value is nonzero.
-	//	If the function fails, the return value is zero.
-	//	*/
-
-	//	for (int i = 0; i < nScreenWidth; i++) {
-	//		for (int j = 0; j < nScreenHeight; j++) {
-	//			COORD cPos;
-	//			cPos.X = i;
-	//			cPos.Y = j;
-	//			WriteConsoleOutputAttribute(hConsole, &pColor[j * nScreenWidth + i], 1, cPos, &dwBytesWritten);
-	//		}
-	//	}
-	//}
-	//void drawScreenCharacter() {
-	//	/*
-	//	BOOL WINAPI WriteConsoleOutputCharacter(
-	//		_In_  HANDLE  hConsoleOutput, // A handle to console screen buffer
-	//		_In_  LPCTSTR lpCharacter, // Characters to write on screen
-	//		_In_  DWORD   nLength, // Number of characters to write
-	//		_In_  COORD   dwWriteCoord, // Coordinate of first character to write
-	//		_Out_ LPDWORD lpNumberOfCharsWritten // A pointer to a variable that contains number of chars written
-	//	);
-	//	If the function succeeds, the return value is nonzero.
-	//	If the function fails, the return value is zero.
-	//	*/
-	//	//DWORD dwBytesWritten = 0;
-	//	WriteConsoleOutputCharacter(hConsole, pBuffer, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
-	//}
 	void gotoXY(int x, int y) {  // Place the cursor at (x, y)
 		COORD coord;
 		coord.X = x;
@@ -224,7 +200,7 @@ public:
 			}
 		}
 	}
-	void glitchEffect(wstring content, int X, int Y, int colorBackground1, int colorBackground2, int colorCharacter1, int colorCharacter2) {
+	void glitchEffectText(wstring content, int X, int Y, int colorBackground1, int colorBackground2, int colorCharacter1, int colorCharacter2) {
 		drawText(content, X, Y, colorBackground2, colorCharacter2); drawScreen();
 		drawText(content, X, Y, colorBackground1, colorCharacter1); drawScreen();
 		drawText(content, X, Y, colorBackground2, colorCharacter2); drawScreen();
@@ -236,15 +212,12 @@ public:
 		SetConsoleActiveScreenBuffer(hConsole1);
 		hConsole = hConsole1;
 
-		// SOUND
-		//PlaySound(TEXT("Eric Skiff - A Night Of Dizzy Spells.wav"), NULL, SND_ASYNC);
-
 
 		int choiceMenu = 0; // 0 - Start game, 1 - Load game, 2 - Settings, 3 - Exit
 		// MENU SCREEN
 		while (true) {
 			// CLEAR SCREEN
-			clearScreen(0, 1);
+			clearScreen(0, 0);
 
 			// READING INPUT
 			bool* bKey = new bool[key.size()];
@@ -259,26 +232,29 @@ public:
 			if (bKey[2] == 1) {
 				choiceMenu = (choiceMenu + 1) % 4;
 			}
+
 			// DISPLAY CURRENT MENU
-			drawText(L"Press W to move up, S to move down", 0, 4, 0, 7);
-			drawText(L" START GAME ", 0, 0, 0, 7);
-			drawText(L"  LOAD GAME ", 0, 1, 0, 7);
-			drawText(L"  SETTINGS  ", 0, 2, 0, 7);
-			drawText(L"    EXIT    ", 0, 3, 0, 7);
+			drawBlock(Title, 54, 15, 0, 7);
+			int xMenu = 74, yMenu = 25;
+			//drawText(L"Press W to move up, S to move down", xMenu, yMenu+4, 0, 7);
+			drawText(L" START GAME ", xMenu, yMenu, 0, 7);
+			drawText(L"  LOAD GAME ", xMenu, yMenu + 1, 0, 7);
+			drawText(L"  SETTINGS  ", xMenu, yMenu + 2, 0, 7);
+			drawText(L"    EXIT    ", xMenu, yMenu + 3, 0, 7);
 			if (choiceMenu == 0) {
-				drawText(L" START GAME ", 0, 0, 7, 0);
+				drawText(L" START GAME ", xMenu, yMenu, 7, 0);
 
 			}
 			else if (choiceMenu == 1) {
-				drawText(L"  LOAD GAME ", 0, 1, 7, 0);
+				drawText(L"  LOAD GAME ", xMenu, yMenu + 1, 7, 0);
 
 			}
 			else if (choiceMenu == 2) {
-				drawText(L"  SETTINGS  ", 0, 2, 7, 0);
+				drawText(L"  SETTINGS  ", xMenu, yMenu + 2, 7, 0);
 
 			}
 			else if (choiceMenu == 3) {
-				drawText(L"    EXIT    ", 0, 3, 7, 0);
+				drawText(L"    EXIT    ", xMenu, yMenu + 3, 7, 0);
 
 			}
 			drawScreen();
@@ -287,73 +263,96 @@ public:
 			if (GetAsyncKeyState(VK_RETURN)) {
 				if (choiceMenu == 0) {
 					// START GAME
-					glitchEffect(L" START GAME ", 0, 0, 7, 6, 0, 7);
+					glitchEffectText(L" START GAME ", xMenu, yMenu, 7, 6, 0, 7);
 					startGameScreen();
 				}
 				else if (choiceMenu == 1) {
 					// LOAD GAME
-					glitchEffect(L"  LOAD GAME ", 0, 1, 7, 6, 0, 7);
+					glitchEffectText(L"  LOAD GAME ", xMenu, yMenu + 1, 7, 6, 0, 7);
 				}
 				else if (choiceMenu == 2) {
 					// SETTINGS
-					glitchEffect(L"  SETTINGS  ", 0, 2, 7, 6, 0, 7);
+					glitchEffectText(L"  SETTINGS  ", xMenu, yMenu + 2, 7, 6, 0, 7);
 				}
 				else if (choiceMenu == 3) {
 					// EXIT
-					glitchEffect(L"    EXIT    ", 0, 3, 7, 6, 0, 7);
+					glitchEffectText(L"    EXIT    ", xMenu, yMenu + 3, 7, 6, 0, 7);
 				}
 			}
 		}
 	}
 	void startGameScreen() {
+		//INITIALISE PLAYER
 		cPlayer Player;
-		Player.setXY(2, 1); // Player spawns at (0, 0)
-		cEnemy Enemy1;//, Enemy2;
-		Enemy1.setXY(15, 10);
-		//Enemy2.setXY(70, 20);
-		int count = 0;
+		Player.setXY(80, 1);
+		//INITIALISE ENEMIES
+		cEnemy* Enemy[4];
+		Enemy[0] = new cEnemy(0, 10, e1);
+		Enemy[1] = new cEnemy(nScreenWidth, 15, e2);
+		Enemy[2] = new cEnemy(50, 20, e3);
+		Enemy[3] = new cEnemy(nScreenWidth - 30, 25, e4);
+
 		bool gameOver = false;
 		while (gameOver == false) {
-			cout << count << endl;
-			count++;
 			// CLEAR SCREEN
-			int bg = 0, ch = 7;
-			clearScreen(bg, ch);
-			Sleep(50);
+			int bg = 0, ch = 0;
+			clearScreen(bg, 7);
+			pBuffer[Player.getY() * nScreenWidth + Player.getX()] = L'.';
 
 			// READ INPUT
 			bool* bKeyGame = new bool[key.size()]; // Check ingame input
 			for (int i = 0; i < key.size(); i++) { 	// Read input
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			}
-			// W - Move up
-			if (bKeyGame[0] == 1) {
-				Player.moveUp();
-			}
-			// A - Move left
-			if (bKeyGame[1] == 1) {
-				Player.moveLeft();
-			}
-			// S - Move down
-			if (bKeyGame[2] == 1) {
-				Player.moveDown();
-			}
-			// D - Move right
-			if (bKeyGame[3] == 1) {
-				Player.moveRight();
-			}
 
 			// UPDATE 
-			if (Enemy1.getX() >= nScreenWidth)Enemy1.setX(15);
-			Enemy1.moveRight();
-			//if (Enemy2.getX() <= 0) Enemy2.setX(70);
-			//Enemy2.moveLeft();
+			// Player
+			if (bKeyGame[0] == 1) // W - Move up
+			{
+				Player.moveUp();
+			}
+			if (bKeyGame[1] == 1) // A - Move left
+			{
+				Player.moveLeft();
+			}
+			if (bKeyGame[2] == 1) 	// S - Move down
+			{
+				Player.moveDown();
+			}
+			if (bKeyGame[3] == 1) // D - Move right
+			{
+				Player.moveRight();
+			}
+			// Enemies
+			if (Enemy[0]->getX() + 10 >= nScreenWidth) Enemy[0]->setX(0);
+			else Enemy[0]->moveRight();
+			if (Enemy[1]->getX() <= 0) Enemy[1]->setX(nScreenWidth - 10);
+			else Enemy[1]->moveLeft();
+			if (Enemy[2]->getX() + 10 >= nScreenWidth) Enemy[2]->setX(0);
+			else Enemy[2]->moveRight();
+			if (Enemy[3]->getX() <= 0) Enemy[3]->setX(nScreenWidth - 10);
+			else Enemy[3]->moveLeft();
+			int score = 0;
+			// GAME LOGIC
+			for (int i = 0; i < 4; i++) {
+				if (checkCollision(Player, Enemy[i]) == true) {
+					clearScreen(0, 7);
+					drawBlock(GameOver, 50, 10, 0, 6);
+					drawText(L"YOUR SCORE: " + to_wstring(score), 70, 20, 0, 7);
+					drawScreen();
+					Sleep(5000);
+					exit(0);
+				}
+			}
 
-			// DISPLAY
-			Sleep(990);
-			drawBlock(Player.getSketch(), Player.getX(), Player.getY(), bg, 2);
-			drawBlock(Enemy1.getSketch(), Enemy1.getX(), Enemy1.getY(), bg, 6); // Red enemy
-			//drawBlock(Enemy2.getSketch(), Enemy2.getX(), Enemy2.getY(), bg, 3); // Yellow enemy
+			// DISPLAY GAME SCREEN
+			drawFrame(0, 0, nScreenWidth, nScreenHeight - 1, 0, 7);
+			drawBlock(Player.getSketch(), Player.getX(), Player.getY(), bg, 7);
+			drawBlock(Enemy[0]->getSketch(), Enemy[0]->getX(), Enemy[0]->getY(), bg, 6); // Red enemy
+			drawBlock(Enemy[1]->getSketch(), Enemy[1]->getX(), Enemy[1]->getY(), bg, 3); // Yellow enemy
+			drawBlock(Enemy[2]->getSketch(), Enemy[2]->getX(), Enemy[2]->getY(), bg, 4); // Green
+			drawBlock(Enemy[3]->getSketch(), Enemy[3]->getX(), Enemy[3]->getY(), bg, 1); // Blue
+			drawText(L"SCORE: " + to_wstring(score), 4, 2, 0, 7);
 			drawScreen();
 		}
 	}
