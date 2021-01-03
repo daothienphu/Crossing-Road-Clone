@@ -102,4 +102,52 @@ bool delay(int millisec)
 	sleep_for(milliseconds(millisec));
 	return true;
 }
+wstring toWstring(int a) {
+	wstring res;
+	if (!a)
+		res = L"0";
+	while (a) {
+		wstring tmp;
+		switch (a % 10) {
+		case 0: tmp = L'0'; break;
+		case 1: tmp = L'1'; break;
+		case 2: tmp = L'2'; break;
+		case 3: tmp = L'3'; break;
+		case 4: tmp = L'4'; break;
+		case 5: tmp = L'5'; break;
+		case 6: tmp = L'6'; break;
+		case 7: tmp = L'7'; break;
+		case 8: tmp = L'8'; break;
+		case 9: tmp = L'9'; break;
+		}
+		res = tmp + res;
+		a /= 10;
+	}
+	return res;
+}
+void toVwstring(int a, vector<wstring>& result) {
+	if (!result.empty()) result.pop_back();
+	wstring res;
+	if (!a)
+		res = {L"0" };
+	while (a) {
+		wstring tmp;
+		switch (a % 10) {
+		case 0: tmp = L'0'; break;
+		case 1: tmp = L'1'; break;
+		case 2: tmp = L'2'; break;
+		case 3: tmp = L'3'; break;
+		case 4: tmp = L'4'; break;
+		case 5: tmp = L'5'; break;
+		case 6: tmp = L'6'; break;
+		case 7: tmp = L'7'; break;
+		case 8: tmp = L'8'; break;
+		case 9: tmp = L'9'; break;
+		}
+		res = tmp + res;
+		a /= 10;
+	}
+	result.emplace_back(res);
+	return;
+}
 #pragma endregion
