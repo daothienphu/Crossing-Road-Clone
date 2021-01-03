@@ -25,6 +25,10 @@ public:
 
 		//bufferStorage mapping
 		bufferStorage["player"] = player; //player was declare in BufferStorage.h
+		bufferStorage["enemy1"] = enemy1;
+		bufferStorage["enemy2"] = enemy2;
+		bufferStorage["enemy3"] = enemy3;
+		bufferStorage["enemy4"] = enemy4;
 	}
 
 	vector<wstring>& getBuffer(string key)
@@ -33,16 +37,7 @@ public:
 	}
 
 	void render() {
-		for (int i = 0; i < screenHeight; i++)
-		{
-			for (int j = 0; j < screenWidth; j++)
-			{
-				COORD cPos;
-				cPos.X = j;
-				cPos.Y = i;
-				WriteConsoleOutputAttribute(hConsole, &color[i * screenWidth + j], 1, cPos, &dwBytesWritten);
-			}
-		}
+		WriteConsoleOutputAttribute(hConsole, color, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
 		WriteConsoleOutputCharacter(hConsole, buffer, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
 	}
 
@@ -55,16 +50,18 @@ public:
 		}
 	}
 
-	/*void renderAt(int x, int y, int w, int h) {
-		for (int i = 0; i < h; i++)
+	void renderAt(int x, int y, string key) {
+		vector<wstring> tmp = bufferStorage[key];
+		for (int i = 0; i < tmp.size(); i++)
 		{
-			for (int j = 0; j < w; j++)
+			for (int j = 0; j < tmp[i].length(); j++)
 			{
-				COORD tmp;
-				tmp.X = j; tmp.Y = i;
-				WriteConsoleOutputAttribute(hConsole, &color[i * screenWidth + j], 1, tmp, &dwBytesWritten);
+				COORD t;
+				t.X = j;
+				t.Y = i;
+				WriteConsoleOutputAttribute(hConsole, &color[i * screenWidth + j], 1, t, &dwBytesWritten);
+				WriteConsoleOutputCharacter(hConsole, &buffer[i * screenWidth + j], 1, t, &dwBytesWritten);
 			}
 		}
-		WriteConsoleOutputCharacter(hConsole, buffer, screenWidth * screenHeight, { 0, 0 }, &dwBytesWritten);
-	}*/
+	}
 };
