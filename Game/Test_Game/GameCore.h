@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <iostream>
 #include <windows.h>
 #include <iomanip>
@@ -47,12 +47,16 @@ public:
 
 	void playScreen(int level)
 	{
-		int playerHeight = graphic->getBuffer(player->getBufferKey()).size();
-		int playerWidth = graphic->getBuffer(player->getBufferKey())[0].length();
+		vector<wstring> playerGraphic = graphic->getBuffer(player->getBufferKey());
+		int playerHeight = playerGraphic.size();
+		int playerWidth = playerGraphic[0].length();
+		vector<wstring> playerBlank{ L"  ", L"  " };
+		//graphic->charToBlock();
 		while (1)
 		{
-			delay(1000/FRAMERATE);
-			graphic->setBuffer(graphic->getBuffer(player->getBufferKey()), this->player->getPos().x, this->player->getPos().y, 0, 7);
+			delay(100/FRAMERATE);
+			graphic->setBuffer(playerBlank, this->player->getOldPos().x, this->player->getOldPos().y, 0, 7);
+			graphic->setBuffer(playerGraphic, this->player->getPos().x, this->player->getPos().y, 0, 7);
 			graphic->render();
 
 			bool* bKeyGame = new bool[key.size()]; // Check ingame input

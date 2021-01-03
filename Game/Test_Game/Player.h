@@ -12,6 +12,8 @@ public:
 
 	virtual void move(int x, int y)
 	{
+		this->oldX = this->x;
+		this->oldY = this->y;
 		this->x += 2 * x;
 		this->y += y;
 	}
