@@ -21,11 +21,12 @@ public:
 		hConsole = hConsole1;
 		dwBytesWritten = 0;
 
-		//charToBlock(player);
-		//charToBlock(enemy1);
-		//charToBlock(enemy2);
-		//charToBlock(enemy3);
-		//charToBlock(enemy4);
+		charToBlock(player);
+		charToBlock(enemy1);
+		charToBlock(enemy2);
+		charToBlock(enemy3);
+		charToBlock(enemy4);
+		charToBlock(title);
 		//bufferStorage mapping
 		bufferStorage["player"] = player; //player was declare in BufferStorage.h
 		bufferStorage["enemy1"] = enemy1;
@@ -39,41 +40,17 @@ public:
 		bufferStorage["title"] = title;
 	}
 
-	void charToBlock() {
-		/*for (pair<string, vector<wstring>> graphics : bufferStorage) {
-			for (int i = 0; i < graphics.second.size(); ++i) {
-				for (int j = 0; j < graphics.second[i].length(); ++j) {
-					if (graphics.second[i][j] == L' ')
-						continue;
-					else if (graphics.second[i][j] == L'.')
-						graphics.second[i][j] = L'▄';
-					else if (graphics.second[i][j] == L'\'')
-						graphics.second[i][j] = L'▀';
-					else if (graphics.second[i][j] == L'l')
-						graphics.second[i][j] = L'█';
-				}
-			}
-		}*/
-		charToBlock("title");
-		charToBlock("player");
-		charToBlock("enemy1");
-		charToBlock("enemy2");
-		charToBlock("enemy3");
-		charToBlock("enemy4");
-
-	}
-	void charToBlock(string key) {
-		int n = bufferStorage.at(key).size();
-		for (int i = 0; i < n; ++i) {
-			for (int j = 0; j < bufferStorage.at(key)[i].length(); ++j) {
-				if (bufferStorage.at(key)[i][j] == L' ')
+	void charToBlock(vector<wstring>& graphics) {
+		for (int i = 0; i < graphics.size(); ++i) {
+			for (int j = 0; j < graphics[i].length(); ++j) {
+				if (graphics[i][j] == L' ')
 					continue;
-				else if (bufferStorage.at(key)[i][j] == L'.')
-					bufferStorage.at(key)[i][j] = L'▄';
-				else if (bufferStorage.at(key)[i][j] == L'\'')
-					bufferStorage.at(key)[i][j] = L'▀';
-				else if (bufferStorage.at(key)[i][j] == L'l')
-					bufferStorage.at(key)[i][j] = L'█';
+				else if (graphics[i][j] == L'.')
+					graphics[i][j] = L'▄';
+				else if (graphics[i][j] == L'\'')
+					graphics[i][j] = L'▀';
+				else if (graphics[i][j] == L'l')
+					graphics[i][j] = L'█';
 			}
 		}
 	}
