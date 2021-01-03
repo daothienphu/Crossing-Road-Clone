@@ -5,6 +5,7 @@
 #include <vector>
 #include <thread>
 #include <chrono>
+#include "Utils.h"
 #include "GameObject.h"
 #include "Player.h"
 #include "Obstacles.h"
@@ -53,8 +54,11 @@ public:
 
 	void playScreen(int level)
 	{
+		int playerHeight = graphic->getBuffer(player->getBufferKey()).size();
+		int playerWidth = graphic->getBuffer(player->getBufferKey())[0].length();
 		while (1)
 		{
+			delay(1000/FRAMERATE);
 			graphic->setBuffer(graphic->getBuffer(player->getBufferKey()), this->player->getPos().x, this->player->getPos().y, 0, 7);
 			graphic->render();
 
@@ -63,22 +67,22 @@ public:
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			}
 			// W - Move up
-			if (bKeyGame[0] == 1) {
+			if (bKeyGame[0] == 1 && player->getPos().y > 0) {
 				player->move(0, -1);
 				//Player.moveUp();
 			}
 			// A - Move left
-			if (bKeyGame[1] == 1) {
+			if (bKeyGame[1] == 1 && player->getPos().x>0) {
 				player->move(-1, 0);
 				//Player.moveLeft();
 			}
 			// S - Move down
-			if (bKeyGame[2] == 1) {
+			if (bKeyGame[2] == 1 && player->getPos().y < screenHeight - playerHeight) {
 				player->move(0, 1);
 				//Player.moveDown();
 			}
 			// D - Move right
-			if (bKeyGame[3] == 1) {
+			if (bKeyGame[3] == 1 && player->getPos().x < screenWidth - 1 - playerWidth) {
 				player->move(1, 0);
 				//Player.moveRight();
 			}
