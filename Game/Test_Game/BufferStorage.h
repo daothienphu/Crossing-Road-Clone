@@ -18,9 +18,23 @@ extern vector<wstring> title = {
 	L"             l'''.  l   l  l...l  l   l",
 	L"             l   l  '...'  l   l  l...'",
 };
+extern vector<wstring> start = {
+	L"  PLAY  " };
+extern vector<wstring> load = {
+	L"  LOAD  " };
+extern vector<wstring> settings = {
+	L"SETTINGS" };
+extern vector<wstring> Exit = {
+	L"  EXIT  " };
+extern vector<wstring> frame = {
+	L"╔═╗",
+	L"║ ║"
+	L"╚═╝" };
+
+
 extern vector<wstring> player = {
 	L"..",
-	L".."};
+	L"''"};
 extern vector<wstring> enemy1 = {
 	L". '.  .' .", 
 	L"l.l'll'l.'", 
@@ -41,15 +55,29 @@ extern vector<wstring> enemy4 = {
 	L"ll..l..ll", 
 	L"l'l'l'l'l", 
 	L" ' ' ' ' " };
-extern vector<wstring> start = {
-	L"  PLAY  " };
-extern vector<wstring> load = {
-	L"  LOAD  " };
-extern vector<wstring> settings = {
-	L"SETTINGS" };
-extern vector<wstring> Exit = {
-	L"  EXIT  " };
-extern vector<wstring> settingTitle = {
+
+
+extern vector<wstring> settingsTitle = {
 	L"This is setting screen." };
+extern vector<wstring> sound = {
+	L"SOUND:" };
+extern vector<wstring> on = {
+	L"  ON" };
+extern vector<wstring> off = {
+	L" OFF" };
+extern vector<wstring> back = {
+	L"BACK" };
+
+
+extern vector<wstring> pauseTitle = {
+	L"This is pause screen." };
+extern vector<wstring> resume = {
+	L"RESUME" };
+extern vector<wstring> restart = {
+	L"RESTART" };
+
+
+extern vector<wstring> exitTitle = {
+	L"HOW DARE YOU EXIT OUR MARVELOUS GAME YOU UNCULTURED SWINE" };
 
 //then go to GraphicController and map it to the unordered_map using the syntax: bufferStorage["name"] = name;

@@ -33,11 +33,26 @@ public:
 		bufferStorage["enemy2"] = enemy2;
 		bufferStorage["enemy3"] = enemy3;
 		bufferStorage["enemy4"] = enemy4;
+
+		bufferStorage["title"] = title;
 		bufferStorage["start"] = start;
 		bufferStorage["load"] = load;
 		bufferStorage["settings"] = settings;
 		bufferStorage["exit"] = Exit;
-		bufferStorage["title"] = title;
+
+		bufferStorage["settingsTitle"] = settingsTitle;
+		bufferStorage["sound"] = sound;
+		bufferStorage["on"] = on;
+		bufferStorage["off"] = off;
+		bufferStorage["back"] = back;
+
+
+		bufferStorage["pauseTitle"] = pauseTitle;
+		bufferStorage["resumeButton"] = resume;
+		bufferStorage["restartButton"] = restart;
+
+
+		bufferStorage["exitTitle"] = exitTitle;
 	}
 
 	void charToBlock(vector<wstring>& graphics) {
@@ -53,6 +68,9 @@ public:
 					graphics[i][j] = L'█';
 			}
 		}
+	}
+	void createFrame(int x, int y, int w, int h, bool transparentBG = true) {
+		vector<wstring> Frame{L""};		
 	}
 
 	vector<wstring>& getBuffer(string key)
