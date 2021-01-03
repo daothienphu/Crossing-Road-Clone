@@ -205,6 +205,14 @@ public:
 		drawText(content, X, Y, colorBackground1, colorCharacter1); drawScreen();
 		drawText(content, X, Y, colorBackground2, colorCharacter2); drawScreen();
 	}
+	void drawMap() {
+		for (int i = 0; i < 5; i+=2) {
+			for (int j = 0; j < 5; j++)
+				for (int k = 0; k < nScreenWidth; k++)
+					pColor[(5 * i + j) * nScreenWidth + k] = 1 * 16;
+		}
+	
+	}
 	void startMenuScreen() {
 		// CONFIGURE SCREEN
 		configure();
@@ -347,6 +355,7 @@ public:
 			}
 
 			// DISPLAY GAME SCREEN
+			//drawMap();
 			drawFrame(0, 0, nScreenWidth, nScreenHeight - 1, 0, 7);
 			drawBlock(Player.getSketch(), Player.getX(), Player.getY(), bg, 7);
 			drawBlock(Enemy[0]->getSketch(), Enemy[0]->getX(), Enemy[0]->getY(), bg, 6); // Red enemy
