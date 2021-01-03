@@ -115,7 +115,7 @@ public:
 		SetWindowLong(consoleWindow, GWL_STYLE, style);
 	}
 	void configure() {
-		system("MODE 160, 45"); // Set screen size (width, height + 1)
+		system("MODE 160, 46"); // Set screen size (width, height + 1)
 		FixConsoleWindow(); //Fix window size
 		// Make custom color palette - up to 16 colors, will update later
 		HANDLE hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE); // A hanle to console screen buffer.
@@ -356,7 +356,7 @@ public:
 
 			// DISPLAY GAME SCREEN
 			//drawMap();
-			drawFrame(0, 0, nScreenWidth, nScreenHeight - 1, 0, 7);
+			drawFrame(0, 0, nScreenWidth, nScreenHeight, 0, 7);
 			drawBlock(Player.getSketch(), Player.getX(), Player.getY(), bg, 7);
 			drawBlock(Enemy[0]->getSketch(), Enemy[0]->getX(), Enemy[0]->getY(), bg, 6); // Red enemy
 			drawBlock(Enemy[1]->getSketch(), Enemy[1]->getX(), Enemy[1]->getY(), bg, 3); // Yellow enemy
