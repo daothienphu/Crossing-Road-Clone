@@ -21,11 +21,12 @@ public:
 		hConsole = hConsole1;
 		dwBytesWritten = 0;
 
-		//charToBlock(player);
-		//charToBlock(enemy1);
-		//charToBlock(enemy2);
-		//charToBlock(enemy3);
-		//charToBlock(enemy4);
+		charToBlock(player);
+		charToBlock(enemy1);
+		charToBlock(enemy2);
+		charToBlock(enemy3);
+		charToBlock(enemy4);
+		charToBlock(title);
 		//bufferStorage mapping
 		bufferStorage["player"] = player; //player was declare in BufferStorage.h
 		bufferStorage["enemy1"] = enemy1;
@@ -57,20 +58,20 @@ public:
 	//	//bufferStorage["enemy3"] = enemy3;
 	//	//bufferStorage["enemy4"] = enemy4;
 	//}
-	//void charToBlock(vector<wstring>& graphics) {
-	//	for (int i = 0; i < graphics.size(); ++i) {
-	//		for (int j = 0; j < graphics[i].length(); ++j) {
-	//			if (graphics[i][j] == L' ')
-	//				continue;
-	//			else if (graphics[i][j] == L'.')
-	//				graphics[i][j] == L'▄';
-	//			else if (graphics[i][j] == L'\'')
-	//				graphics[i][j] == L'▀';
-	//			else if (graphics[i][j] == L'l')
-	//				graphics[i][j] == L'█';
-	//		}
-	//	}
-	//}
+	void charToBlock(vector<wstring>& graphics) {
+		for (int i = 0; i < graphics.size(); ++i) {
+			for (int j = 0; j < graphics[i].length(); ++j) {
+				if (graphics[i][j] == L' ')
+					continue;
+				else if (graphics[i][j] == L'.')
+					graphics[i][j] = L'▄';
+				else if (graphics[i][j] == L'\'')
+					graphics[i][j] = L'▀';
+				else if (graphics[i][j] == L'l')
+					graphics[i][j] = L'█';
+			}
+		}
+	}
 	//void charToBlock(string key) {
 	//	int n = bufferStorage.at(key).size();
 	//	for (int i = 0; i < n; ++i) {

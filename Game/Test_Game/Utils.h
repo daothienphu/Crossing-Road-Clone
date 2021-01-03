@@ -31,28 +31,17 @@ using namespace std::chrono;
 
 #pragma region Util
 void fixSizedConsoleWindow() {
-	RECT windowRes;
-	const HWND window = GetDesktopWindow();
-	GetWindowRect(window, &windowRes);
-
+	system("MODE 145, 40"); // Set screen size (width, height + 1)
+	//Fix window size
 	HWND consoleWindow = GetConsoleWindow();
-	MoveWindow(consoleWindow, (windowRes.right - 1080) / 2, (windowRes.bottom - 720) / 2, 1080, 720, TRUE);
-
 	LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
 	style = style & ~(WS_MAXIMIZEBOX) & ~(WS_THICKFRAME);
-
 	SetWindowLong(consoleWindow, GWL_STYLE, style);
-
-	CONSOLE_CURSOR_INFO     cursorInfo;
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
-	GetConsoleCursorInfo(hConsole, &cursorInfo);
-	cursorInfo.bVisible = false; // set the cursor visibility
-	SetConsoleCursorInfo(hConsole, &cursorInfo);
-
+	// Make custom color palette - up to 16 colors, will update later
+	HANDLE hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE); // A hanle to console screen buffer.
 	CONSOLE_SCREEN_BUFFER_INFOEX csbiex;
 	csbiex.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
-	GetConsoleScreenBufferInfoEx(hConsole, &csbiex);
+	GetConsoleScreenBufferInfoEx(hConsoleOutput, &csbiex);
 	csbiex.ColorTable[0] = RGB(16, 16, 60); // Default background color - dark blue
 	csbiex.ColorTable[1] = RGB(63, 81, 181); // Light blue
 	csbiex.ColorTable[2] = RGB(255, 87, 34); // Orange
@@ -63,7 +52,7 @@ void fixSizedConsoleWindow() {
 	csbiex.ColorTable[7] = RGB(242, 242, 242); // Dark white
 	csbiex.ColorTable[8] = RGB(248, 248, 248); // White
 	csbiex.ColorTable[9] = RGB(20, 20, 20); // Black
-	SetConsoleScreenBufferInfoEx(hConsole, &csbiex);
+	SetConsoleScreenBufferInfoEx(hConsoleOutput, &csbiex);
 }
 void gotoXY(int x, int y) {
 	COORD coord;
