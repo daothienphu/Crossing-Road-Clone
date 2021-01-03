@@ -9,7 +9,7 @@ using namespace std;
 
 //draw the sprite here, coresspondence with the variable name
 //remember to use the "extern" keyword to declare a global variable between many file
-extern vector<wstring> player = { L"...." };
+extern vector<wstring> player = { L"." };
 
 extern vector<wstring> Title = {
 	L".'''.  l'''.  .'''.  .'''   .'''   'l'  l.  l  .''''",

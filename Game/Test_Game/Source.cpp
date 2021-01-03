@@ -23,8 +23,8 @@ using namespace std;
 //const vector<char> key = { 'W', 'A', 'S', 'D', 'P', 'R' };
 
 #pragma region Util
-void fixSizedConsoleWindow() {
-	system("MODE 300, 44");
+void fixSizedConsoleWindow(int width, int height) {
+	system(("MODE " + to_string(width) + "," + to_string(height)).c_str());
 
 	RECT windowRes;
 	const HWND window = GetDesktopWindow();
@@ -72,8 +72,9 @@ bool delay(int millisec)
 
 
 int main() {
-	fixSizedConsoleWindow();
-	GameCore gc;
+	int width = 300, height = 44, rate = 50;
+	fixSizedConsoleWindow(width, height);
+	GameCore gc(width, height, rate);
 	//gc.test();
 	gc.playScreen(1);
 	return 0;

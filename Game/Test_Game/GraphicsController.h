@@ -1,11 +1,10 @@
 #pragma once
-#define GAME_RATE 50
-#define screenWidth 145
-#define screenHeight 40
 
 #include "BufferStorage.h"
 
 class GraphicsController {
+private:
+	int screenWidth = 300, screenHeight = 44;
 protected:
 	wchar_t* buffer;
 	WORD* color;
@@ -15,7 +14,7 @@ protected:
 
 	unordered_map<string, vector<wstring>> bufferStorage;
 public:
-	GraphicsController()
+	GraphicsController(int _screenWidth, int _screenHeight): screenWidth(_screenWidth), screenHeight(_screenHeight)
 	{
 		buffer = new wchar_t[screenHeight * screenWidth]{ L" " };
 		color = new WORD[screenHeight * screenWidth]{ 7 };
