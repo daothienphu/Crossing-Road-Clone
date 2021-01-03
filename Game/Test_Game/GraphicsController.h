@@ -34,6 +34,9 @@ public:
 		bufferStorage["enemy3"] = enemy3;
 		bufferStorage["enemy4"] = enemy4;
 
+		bufferStorage["score"] = score;
+		bufferStorage["level"] = level;
+
 		bufferStorage["title"] = title;
 		bufferStorage["start"] = start;
 		bufferStorage["load"] = load;

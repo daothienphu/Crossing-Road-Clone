@@ -105,7 +105,7 @@ public:
 			graphic->render();
 		}		
 	}
-	void playScreen(int level)
+	void playScreen(int Level)
 	{
 		GameObject* enemy1 = new Obstacles(20, 5, 10, 4, "enemy1");
 		vector<wstring> enemy1Blank{L"          ",L"          " ,L"          " ,L"          " };
@@ -116,7 +116,11 @@ public:
 		GameObject* enemy4 = new Obstacles(40, 20, 10, 4, "enemy4");
 		vector<wstring> enemy4Blank{ L"          ",L"          " ,L"          " ,L"          " };
 
-		//the more the slower, fuck physics
+		GameMenu* score = new Button("score");
+		GameMenu* level = new Button("level");
+		vector<wstring> scoreCounter, levelCounter;
+
+		//the more speed it has the slower it is, fuck physics
 		int E1Speed = 10, E2Speed = 4, E3Speed = 6, E4Speed = 8;
 		int speed1, speed2, speed3, speed4 = speed3 = speed2 = speed1 = 0;
 
@@ -126,6 +130,8 @@ public:
 		int playerWidth = playerGraphic[0].length();
 		vector<wstring> playerBlank{ L"  ", L"  " };
 
+
+		int num = 0;
 		bool* bKeyGame = new bool[key.size()]{ 0 };
 		while (1)
 		{
@@ -156,6 +162,13 @@ public:
 				//Player.moveRight();
 			}
 			
+
+			toVwstring(num++, scoreCounter);
+			toVwstring(Level, levelCounter);
+			graphic->setBuffer(graphic->getBuffer(score->getBufferKey()), 2, 1, 0, 7);
+			graphic->setBuffer(scoreCounter, 9, 1, 0, 7);
+			graphic->setBuffer(graphic->getBuffer(level->getBufferKey()), 2, 2, 0, 7);
+			graphic->setBuffer(levelCounter, 9, 2, 0, 7);
 
 
 			graphic->setBuffer(enemy1Blank, enemy1->getOldPos().x, enemy1->getOldPos().y, 0, 7);
