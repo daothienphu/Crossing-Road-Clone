@@ -225,7 +225,7 @@ public:
 				bKey[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			}
 			// W - Move up
-			if (bKey[0] == 1) {
+			if (bKey[0] == 1 ) {
 				choiceMenu = (choiceMenu - 1) % 4;
 			}
 			// S - Move down
@@ -245,18 +245,19 @@ public:
 				drawText(L" START GAME ", xMenu, yMenu, 7, 0);
 
 			}
-			else if (choiceMenu == 1) {
+			else if (choiceMenu == 1 || choiceMenu == -3) {
 				drawText(L"  LOAD GAME ", xMenu, yMenu + 1, 7, 0);
 
 			}
-			else if (choiceMenu == 2) {
+			else if (choiceMenu == 2 || choiceMenu==-2) {
 				drawText(L"  SETTINGS  ", xMenu, yMenu + 2, 7, 0);
 
 			}
-			else if (choiceMenu == 3) {
+			else if (choiceMenu == 3 || choiceMenu ==-1) {
 				drawText(L"    EXIT    ", xMenu, yMenu + 3, 7, 0);
 
 			}
+			drawText(L"choice: " + to_wstring(choiceMenu), xMenu, yMenu + 4, 0, 7);
 			drawScreen();
 
 			// ENTER - Select
