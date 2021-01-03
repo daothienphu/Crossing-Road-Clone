@@ -1,7 +1,4 @@
-#pragma once
-#define GAME_RATE 50
-#define screenWidth 145
-#define screenHeight 40
+﻿#pragma once
 
 #include "BufferStorage.h"
 
@@ -22,49 +19,78 @@ public:
 		HANDLE hConsole1 = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 		SetConsoleActiveScreenBuffer(hConsole1);
 		hConsole = hConsole1;
+		dwBytesWritten = 0;
 
+		charToBlock(player);
+		charToBlock(enemy1);
+		charToBlock(enemy2);
+		charToBlock(enemy3);
+		charToBlock(enemy4);
+		charToBlock(title);
 		//bufferStorage mapping
 		bufferStorage["player"] = player; //player was declare in BufferStorage.h
+		bufferStorage["enemy1"] = enemy1;
+		bufferStorage["enemy2"] = enemy2;
+		bufferStorage["enemy3"] = enemy3;
+		bufferStorage["enemy4"] = enemy4;
+		bufferStorage["start"] = start;
+		bufferStorage["load"] = load;
+		bufferStorage["settings"] = settings;
+		bufferStorage["exit"] = Exit;
+		bufferStorage["title"] = title;
+	}
+
+	void charToBlock(vector<wstring>& graphics) {
+		for (int i = 0; i < graphics.size(); ++i) {
+			for (int j = 0; j < graphics[i].length(); ++j) {
+				if (graphics[i][j] == L' ')
+					continue;
+				else if (graphics[i][j] == L'.')
+					graphics[i][j] = L'▄';
+				else if (graphics[i][j] == L'\'')
+					graphics[i][j] = L'▀';
+				else if (graphics[i][j] == L'l')
+					graphics[i][j] = L'█';
+			}
+		}
 	}
 
 	vector<wstring>& getBuffer(string key)
 	{
 		return bufferStorage[key];
 	}
-
-	void render() {
-		for (int i = 0; i < screenHeight; i++)
-		{
-			for (int j = 0; j < screenWidth; j++)
-			{
-				COORD cPos;
-				cPos.X = j;
-				cPos.Y = i;
-				WriteConsoleOutputAttribute(hConsole, &color[i * screenWidth + j], 1, cPos, &dwBytesWritten);
-			}
-		}
-		WriteConsoleOutputCharacter(hConsole, buffer, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
-	}
-
 	void setBuffer(vector<wstring>& content, int x, int y, int bgColor, int fgColor) {
 		for (int i = 0; i < content.size(); ++i) {
 			for (int j = 0; j < content[i].length(); ++j) {
-				buffer[y * screenWidth + x + j] = content[i].at(j);
-				color[y * screenWidth + x + j] = bgColor * 16 + fgColor;
+				buffer[(y + i) * screenWidth + x + j] = content[i].at(j);
+				color[(y + i) * screenWidth + x + j] = bgColor * 16 + fgColor;
 			}
 		}
 	}
-
-	/*void renderAt(int x, int y, int w, int h) {
-		for (int i = 0; i < h; i++)
+	void clearBuffer() {
+		for (int i = 0; i < screenWidth * screenHeight; ++i) {
+			color[i] = 7;
+			buffer[i] = L' ';
+		}
+		render();
+	}
+	void render() {
+		WriteConsoleOutputAttribute(hConsole, color, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
+		WriteConsoleOutputCharacter(hConsole, buffer, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
+	}
+	void renderAt(int x, int y, string key) {
+		vector<wstring> tmp = bufferStorage[key];
+		for (int i = 0; i < tmp.size(); i++)
 		{
-			for (int j = 0; j < w; j++)
+			for (int j = 0; j < tmp[i].length(); j++)
 			{
-				COORD tmp;
-				tmp.X = j; tmp.Y = i;
-				WriteConsoleOutputAttribute(hConsole, &color[i * screenWidth + j], 1, tmp, &dwBytesWritten);
+				COORD t;
+				t.X = j;
+				t.Y = i;
+				WriteConsoleOutputAttribute(hConsole, &color[i * screenWidth + j], 1, t, &dwBytesWritten);
+				WriteConsoleOutputCharacter(hConsole, &buffer[i * screenWidth + j], 1, t, &dwBytesWritten);
 			}
 		}
-		WriteConsoleOutputCharacter(hConsole, buffer, screenWidth * screenHeight, { 0, 0 }, &dwBytesWritten);
-	}*/
+	}
+	
 };

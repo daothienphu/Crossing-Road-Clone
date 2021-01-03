@@ -6,15 +6,21 @@ using namespace std;
 
 class Obstacles : public GameObject {
 protected:
-	int autoX = 1, autoY = 0;;
+	int autoX = 1, autoY = 0;
 public:
 	Obstacles() : GameObject(0, 0, 0, 0, "unknownObstacles") {}
 	Obstacles(int x, int y, int w, int h, string bufferKey) : GameObject(x, y, w, h, bufferKey) {}
 
 	virtual void move(int x, int y)
 	{
-		this->x += autoX;
-		this->y += autoY;
+		this->oldX = this->x;
+		this->oldY = this->y;
+		this->x += x;
+		this->y += y;
+	}
+	virtual void resetPos(int lane, bool left = true) {
+		this->x = left? 0 : 137;
+		this->y = lane * 5;
 	}
 };
 
@@ -45,3 +51,4 @@ public:
 };
 
 //fell free to declare more class using the above template
+//feel*
