@@ -41,5 +41,15 @@ extern vector<wstring> enemy4 = {
 	L"ll..l..ll", 
 	L"l'l'l'l'l", 
 	L" ' ' ' ' " };
+extern vector<wstring> start = { 
+	L"  PLAY  " };
+extern vector<wstring> load = { 
+	L"  LOAD  " };
+extern vector<wstring> settings = { 
+	L"SETTINGS" };
+extern vector<wstring> Exit = { 
+	L"  EXIT  " };
+extern vector<wstring> settingTitle = {
+	L"This is setting screen." };
 
 //then go to GraphicController and map it to the unordered_map using the syntax: bufferStorage["name"] = name;

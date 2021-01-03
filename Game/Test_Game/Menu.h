@@ -1,19 +1,12 @@
 #pragma once
 #include <vector>
+#include "GameMenu.h"
 
-class Menu {
+class Button : public GameMenu {
 protected:
-public:
-};
 
-class Button : public Menu {
-protected:
-	vector<wstring> bufferData;
 public:
-};
-class Text : public Menu {
-	//x, y, content, bg and fg color, w h
-protected:
-	vector<wstring> bufferData;
-public:
+	Button() : GameMenu(0, 0, "Unnamed Button") {};
+	Button(int x, int y, string key) : GameMenu(x, y, key) {};
+	Button(string key) : GameMenu(0, 0, key) {};
 };

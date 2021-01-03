@@ -1,4 +1,9 @@
 #pragma once
+#define FRAMERATE 60
+#define screenWidth 145
+#define screenHeight 40
+
+
 struct coord {
 	int x, y;
 };
@@ -24,18 +29,8 @@ using namespace std;
 using namespace std::this_thread;
 using namespace std::chrono;
 
-#pragma region game config
-#define FRAMERATE 50
-#define screenWidth 145
-#define screenHeight 40
-enum GAMESTATE { PLAYING, PAUSE, EXIT };
-enum DIRECTION { LEFT, RIGHT };
-#pragma endregion
-
 #pragma region Util
 void fixSizedConsoleWindow() {
-	system("MODE 300, 44");
-
 	RECT windowRes;
 	const HWND window = GetDesktopWindow();
 	GetWindowRect(window, &windowRes);
@@ -70,8 +65,12 @@ void fixSizedConsoleWindow() {
 	csbiex.ColorTable[9] = RGB(20, 20, 20); // Black
 	SetConsoleScreenBufferInfoEx(hConsole, &csbiex);
 }
-void gotoXY(int x, int y);
-void printPalette();
+void gotoXY(int x, int y) {
+	COORD coord;
+	coord.X = x;
+	coord.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
 
 bool delay(int millisec)
 {

@@ -1,7 +1,4 @@
 ﻿#pragma once
-#define GAME_RATE 50
-#define screenWidth 145
-#define screenHeight 40
 
 #include "BufferStorage.h"
 
@@ -22,6 +19,7 @@ public:
 		HANDLE hConsole1 = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 		SetConsoleActiveScreenBuffer(hConsole1);
 		hConsole = hConsole1;
+		dwBytesWritten = 0;
 
 		//charToBlock(player);
 		//charToBlock(enemy1);
@@ -34,6 +32,11 @@ public:
 		bufferStorage["enemy2"] = enemy2;
 		bufferStorage["enemy3"] = enemy3;
 		bufferStorage["enemy4"] = enemy4;
+		bufferStorage["start"] = start;
+		bufferStorage["load"] = load;
+		bufferStorage["settings"] = settings;
+		bufferStorage["exit"] = Exit;
+		bufferStorage["title"] = title;
 	}
 
 	//void charToBlock() {
@@ -54,7 +57,6 @@ public:
 	//	//bufferStorage["enemy3"] = enemy3;
 	//	//bufferStorage["enemy4"] = enemy4;
 	//}
-
 	//void charToBlock(vector<wstring>& graphics) {
 	//	for (int i = 0; i < graphics.size(); ++i) {
 	//		for (int j = 0; j < graphics[i].length(); ++j) {
@@ -69,14 +71,13 @@ public:
 	//		}
 	//	}
 	//}
-
 	//void charToBlock(string key) {
 	//	int n = bufferStorage.at(key).size();
 	//	for (int i = 0; i < n; ++i) {
 	//		for (int j = 0; j < bufferStorage.at(key)[i].length(); ++j) {
-	//			if (bufferStorage.at(key)[i][j] == L' ')
+	//			/*if (bufferStorage.at(key)[i][j] == L' ')
 	//				continue;
-	//			else if (bufferStorage.at(key)[i][j] == L'.')
+	//			else */if (bufferStorage.at(key)[i][j] == L'.')
 	//				bufferStorage.at(key)[i][j] == L'▄';
 	//			else if (bufferStorage.at(key)[i][j] == L'\'')
 	//				bufferStorage.at(key)[i][j] == L'▀';
@@ -90,12 +91,6 @@ public:
 	{
 		return bufferStorage[key];
 	}
-
-	void render() {
-		WriteConsoleOutputAttribute(hConsole, color, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
-		WriteConsoleOutputCharacter(hConsole, buffer, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
-	}
-
 	void setBuffer(vector<wstring>& content, int x, int y, int bgColor, int fgColor) {
 		for (int i = 0; i < content.size(); ++i) {
 			for (int j = 0; j < content[i].length(); ++j) {
@@ -104,7 +99,17 @@ public:
 			}
 		}
 	}
-
+	void clearBuffer() {
+		for (int i = 0; i < screenWidth * screenHeight; ++i) {
+			color[i] = 7;
+			buffer[i] = L' ';
+		}
+		render();
+	}
+	void render() {
+		WriteConsoleOutputAttribute(hConsole, color, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
+		WriteConsoleOutputCharacter(hConsole, buffer, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
+	}
 	void renderAt(int x, int y, string key) {
 		vector<wstring> tmp = bufferStorage[key];
 		for (int i = 0; i < tmp.size(); i++)
@@ -119,4 +124,5 @@ public:
 			}
 		}
 	}
+	
 };

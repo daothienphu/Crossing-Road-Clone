@@ -10,7 +10,6 @@
 int main() {
 	fixSizedConsoleWindow();
 	GameCore gc;
-	//gc.test();
-	gc.playScreen(1);
+	gc.start();
 	return 0;
 }
