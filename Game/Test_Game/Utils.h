@@ -35,27 +35,16 @@ enum DIRECTION { LEFT, RIGHT };
 #pragma region global variables
 using namespace std;
 //const vector<char> key = { 'W', 'A', 'S', 'D', 'P', 'R' };
-const vector<wstring> Title = {
-	L".'''.  l'''.  .'''.  .'''   .'''   'l'  l.  l  .''''",
-	L"l      l'''.  l   l   '''.   '''.   l   l '.l  l ''l",
-	L"'...'  l   l  '...'  '...'  '...'  .l.  l   l  '...l",
-	L" ",
-	L"             l'''.  .'''.  .'''.  l'''.",
-	L"             l'''.  l   l  l...l  l   l",
-	L"             l   l  '...'  l   l  l...'",
-};
 #pragma endregion
 
 #pragma region Util
 void fixSizedConsoleWindow() {
-	system("MODE 300, 44");
-
 	RECT windowRes;
 	const HWND window = GetDesktopWindow();
 	GetWindowRect(window, &windowRes);
 
 	HWND consoleWindow = GetConsoleWindow();
-	MoveWindow(consoleWindow, (windowRes.right - 1080) / 2, (windowRes.bottom - 720) / 2, 1080, 720, TRUE);
+	MoveWindow(consoleWindow, (windowRes.right - 1080) / 2, (windowRes.bottom - 720) / 2, 140, 45, TRUE);
 
 	LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
 	style = style & ~(WS_MAXIMIZEBOX) & ~(WS_THICKFRAME);

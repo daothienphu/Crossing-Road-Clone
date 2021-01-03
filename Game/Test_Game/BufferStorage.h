@@ -32,5 +32,14 @@ extern vector<wstring> enemy4 = {
 	L"ll..l..ll", 
 	L"l'l'l'l'l", 
 	L" ' ' ' ' " };
+const vector<wstring> Title = {
+	L".'''.  l'''.  .'''.  .'''   .'''   'l'  l.  l  .''''",
+	L"l      l'''.  l   l   '''.   '''.   l   l '.l  l ''l",
+	L"'...'  l   l  '...'  '...'  '...'  .l.  l   l  '...l",
+	L" ",
+	L"             l'''.  .'''.  .'''.  l'''.",
+	L"             l'''.  l   l  l...l  l   l",
+	L"             l   l  '...'  l   l  l...'",
+};
 
-//then go to GraphicController and map it to the unordered_map using the syntax: bufferStorage["name"] = name;
+//then go to Utils and map it to the unordered_map using the syntax: bufferStorage["name"] = name;

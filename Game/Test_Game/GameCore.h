@@ -19,9 +19,6 @@ using namespace std;
 const vector<char> key = { 'W', 'A', 'S', 'D', 'P', 'R' };
 
 class GameCore {
-private:
-	int screenWidth = 300, screenHeight = 44, gameRate = 50;
-
 protected:
 	vector<Items*> menuHier; //hierarchy
 	GameObject* player;
@@ -29,13 +26,9 @@ protected:
 	GraphicsController* graphic;
 
 public:
-	GameCore(int _screenWidth, int _screenHeight, int _gameRate): 
-		screenWidth(_screenWidth),
-		screenHeight(_screenHeight),
-		gameRate(_gameRate)
-	{
+	GameCore() {
 		player = new Player;
-		graphic = new GraphicsController(screenWidth, screenHeight);
+		graphic = new GraphicsController();
 	}
 	~GameCore() {
 		for (int i = 0; i < menuHier.size(); ++i)
