@@ -89,7 +89,7 @@ public:
 		SetWindowLong(consoleWindow, GWL_STYLE, style);
 	}
 	void configure() {
-		system("MODE 100, 41"); // Set screen size (width, height + 1)
+		system("MODE 144, 41"); // Set screen size (width, height + 1)
 		FixConsoleWindow(); //Fix window size
 
 		// Make custom color palette - up to 16 colors, will update later
