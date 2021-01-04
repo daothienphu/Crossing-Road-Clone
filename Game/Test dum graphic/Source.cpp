@@ -2,31 +2,33 @@
 #include <string>
 #include<iostream>
 #include<vector>
+#include<cstdlib>
 using namespace std;
 const wstring detail = L" ▄▀█▓░╚╝╔╗║═";
 #define nScreenWidth 160
 #define nScreenHeight 44
 #define fps 20
+enum { darkblue, lightblue, orange, yellow, green, purple, red, darkwhite, white, black };
 const vector<char> key = { 'W', 'A', 'S', 'D' };
-const vector<wstring> e1 = {
+const vector<wstring> e1 = { // 10 x 4
 	L". '.  .' .",
 	L"l.l'll'l.'",
 	L" ll.ll.ll",
 	L".l '  ' l."
 };
-const vector<wstring> e2 = {
+const vector<wstring> e2 = { // 7 x 4
 	L" '...'",
 	L" l'l'l",
 	L".'l'l'.",
 	L"' ' ' '"
 };
-const vector<wstring> e3 = {
+const vector<wstring> e3 = {  // 8 x 4
 	L"  '..'",
 	L"l.'ll'.l",
 	L"l'llll'l",
 	L" .l  l."
 };
-const vector<wstring> e4 = {
+const vector<wstring> e4 = { // 9 x 4
 	L" .l...l.",
 	L"ll..l..ll",
 	L"l'l'l'l'l",
@@ -42,16 +44,30 @@ const vector<wstring> Title = { // 52 x 8
 	L"             l'''.  l   l  l...l  l   l",
 	L"             l   l  '...'  l   l  l...'",
 };
-const vector<wstring> GameOver = {
+const vector<wstring> GameOver = { // 54 x 3
 	L".'''.  .'''.  l. .l  l'''    .'''.  l   l  l'''  l'''.",
 	L"l  ..  l'''l  l ' l  l''     l   l  '. .'  l''   l'''.",
 	L"'...'  l   l  l   l  l...    '...'   '.'   l...  l   l"
+};
+const vector<wstring> Skull = { // 22 x 12
+	L"      ..........",
+	L"   .llllllllllllll.",
+	L" .llllllllllllllllll.",
+	L"llllllllllllllllllllll",
+	L"llllllllllllllllllllll",
+	L"llll      ll      llll",
+	L"ll        ll        ll",
+	L"llllllllll''llllllllll",
+	L" 'llllll      llllll'",
+	L"   'llllllllllllll'",
+	L"    ll  llllll  ll",
+	L"        ''  '' "
 };
 class cPlayer {
 private:
 	int X = 0, Y = 0;
 	const vector<wstring> Sketch = {
-		L"."
+		L"ll"
 	};
 public:
 	int getX() { return X; }
@@ -96,8 +112,8 @@ public:
 	void setSketch(vector<wstring> sketch) { Sketch = sketch; }
 };
 bool checkCollision(cPlayer player, cEnemy* enemy) {
-	if (player.getX() >= enemy->getX() && player.getX() <= enemy->getX() + enemy->width() &&
-		player.getY() >= enemy->getY() && player.getY() <= enemy->getY() + enemy->height())
+	if (player.getX() > enemy->getX() && player.getX() < enemy->getX() + enemy->width() &&
+		player.getY() > enemy->getY() && player.getY() < enemy->getY() + enemy->height())
 		return true;
 	return false;
 }
@@ -146,6 +162,34 @@ public:
 		Sleep(1000 / fps); //Rate
 		WriteConsoleOutputAttribute(hConsole, pColor, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
 		WriteConsoleOutputCharacter(hConsole, pBuffer, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
+	}
+	void drawScreenColor() {
+		WriteConsoleOutputAttribute(hConsole, pColor, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
+	}
+	void drawScreenBuffer() {
+		WriteConsoleOutputCharacter(hConsole, pBuffer, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
+	}
+	void gameOverEffect() {
+		for (int i = 0; i < nScreenWidth; i++)
+			for (int j = 0; j < nScreenHeight; j++)
+				pColor[j * nScreenWidth + i] = 7 * 16 + 0;
+		WriteConsoleOutputAttribute(hConsole, pColor, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
+		Sleep(100);
+		for (int i = 0; i < nScreenWidth; i++)
+			for (int j = 0; j < nScreenHeight; j++)
+				pColor[j * nScreenWidth + i] = 0 * 16 + 7;
+		WriteConsoleOutputAttribute(hConsole, pColor, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
+		Sleep(100);
+		for (int i = 0; i < nScreenWidth; i++)
+			for (int j = 0; j < nScreenHeight; j++)
+				pColor[j * nScreenWidth + i] = 7 * 16 + 0;
+		WriteConsoleOutputAttribute(hConsole, pColor, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
+		Sleep(100);
+		for (int i = 0; i < nScreenWidth; i++)
+			for (int j = 0; j < nScreenHeight; j++)
+				pColor[j * nScreenWidth + i] = 0 * 16 + 7;
+		WriteConsoleOutputAttribute(hConsole, pColor, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
+		Sleep(500);
 	}
 	void gotoXY(int x, int y) {  // Place the cursor at (x, y)
 		COORD coord;
@@ -200,6 +244,59 @@ public:
 			}
 		}
 	}
+	void animationWiggleUpDown(vector<wstring> content, int frame, int x, int y, int colorBackground, int colorCharacter) {
+		int rate = 30;
+		if (frame % rate >= 0 && frame % rate < rate/4)
+			drawBlock(content, x, y, colorBackground, colorCharacter);
+		if (frame % rate >= rate/4 && frame % rate < rate/2)
+			drawBlock(content, x, y - 1, colorBackground, colorCharacter);
+		if (frame % rate >= rate/2 && frame % rate < rate*3/4)
+			drawBlock(content, x, y, colorBackground, colorCharacter);
+		if (frame % rate >= rate*3/4 && frame % rate < rate)
+			drawBlock(content, x, y + 1, colorBackground, colorCharacter);
+	}
+
+	void makeNewStarMap(int* starmap) {
+		for (int i = 0; i < nScreenHeight; i++)
+			for (int j = 0; j < nScreenWidth; j++)
+				starmap[i * nScreenWidth + j] = 0;
+		for (int i = 0; i < 50; i++) {
+			int x = rand() % nScreenWidth , y = rand() % nScreenHeight;
+			pBuffer[y * nScreenWidth + x] = L'.';
+			starmap[y * nScreenWidth + x] = 1;
+		}
+
+	
+	}
+	void drawStars(int* starmap) {
+		for (int i = 0; i < nScreenHeight; i++)
+			for (int j = 0; j < nScreenWidth; j++)
+				if (starmap[i* nScreenWidth + j] == 1)
+					pBuffer[i * nScreenWidth + j] = L'.';
+	}
+	void drawHorizontalLine1(int x, int y, int length, int colorBackground, int colorChar) {
+		for (int i = 0; i < length; i++) {
+			pBuffer[y * nScreenWidth + x + i] = L'═';
+			pColor[y * nScreenWidth + x + i] = colorBackground * 16 + colorChar;
+
+		}
+	}
+	void drawHorizontalLine2(int x, int y, int length, int colorBackground, int colorChar) {
+		for (int i = 0; i < length; i++) {
+			if (i%2==0)pBuffer[y * nScreenWidth + x + i] = L'o';
+			else pBuffer[y * nScreenWidth + x + i] = L' ';
+			pColor[y * nScreenWidth + x + i] = colorBackground * 16 + colorChar;
+
+		}
+	}
+	void drawHorizontalLine3(int x, int y, int length, int colorBackground, int colorChar) {
+		for (int i = 0; i < length; i++) {
+			if (i % 2 == 0)pBuffer[y * nScreenWidth + x + i] = L'-';
+			else pBuffer[y * nScreenWidth + x + i] = L' ';
+			pColor[y * nScreenWidth + x + i] = colorBackground * 16 + colorChar;
+
+		}
+	}
 	void glitchEffectText(wstring content, int X, int Y, int colorBackground1, int colorBackground2, int colorCharacter1, int colorCharacter2) {
 		drawText(content, X, Y, colorBackground2, colorCharacter2); drawScreen();
 		drawText(content, X, Y, colorBackground1, colorCharacter1); drawScreen();
@@ -219,13 +316,14 @@ public:
 		HANDLE hConsole1 = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 		SetConsoleActiveScreenBuffer(hConsole1);
 		hConsole = hConsole1;
-
+		int frame = 0;
+		int* starmap = new int[nScreenWidth * nScreenHeight];
 
 		int choiceMenu = 0; // 0 - Start game, 1 - Load game, 2 - Settings, 3 - Exit
 		// MENU SCREEN
 		while (true) {
 			// CLEAR SCREEN
-			clearScreen(0, 0);
+			clearScreen(9, 7);
 
 			// READING INPUT
 			bool* bKey = new bool[key.size()];
@@ -240,34 +338,40 @@ public:
 			if (bKey[2] == 1) {
 				choiceMenu = (choiceMenu + 1) % 4;
 			}
-
+			int bg = 9, ch = 7;
 			// DISPLAY CURRENT MENU
-			drawBlock(Title, 54, 15, 0, 7);
-			int xMenu = 74, yMenu = 25;
+			drawBlock(Title, 54, 15, bg, ch);
+			int xMenu = 74, yMenu = 27;
 			//drawText(L"Press W to move up, S to move down", xMenu, yMenu+4, 0, 7);
-			drawText(L" START GAME ", xMenu, yMenu, 0, 7);
-			drawText(L"  LOAD GAME ", xMenu, yMenu + 1, 0, 7);
-			drawText(L"  SETTINGS  ", xMenu, yMenu + 2, 0, 7);
-			drawText(L"    EXIT    ", xMenu, yMenu + 3, 0, 7);
+			drawText(L" START GAME ", xMenu, yMenu, bg, ch);
+			drawText(L"  LOAD GAME ", xMenu, yMenu + 1, bg, ch);
+			drawText(L"  SETTINGS  ", xMenu, yMenu + 2, bg, ch);
+			drawText(L"    EXIT    ", xMenu, yMenu + 3, bg, ch);
 			if (choiceMenu == 0) {
-				drawText(L" START GAME ", xMenu, yMenu, 7, 0);
+				drawText(L" START GAME ", xMenu, yMenu, ch, bg);
 
 			}
 			else if (choiceMenu == 1 || choiceMenu == -3) {
-				drawText(L"  LOAD GAME ", xMenu, yMenu + 1, 7, 0);
+				drawText(L"  LOAD GAME ", xMenu, yMenu + 1, ch, bg);
 
 			}
 			else if (choiceMenu == 2 || choiceMenu==-2) {
-				drawText(L"  SETTINGS  ", xMenu, yMenu + 2, 7, 0);
+				drawText(L"  SETTINGS  ", xMenu, yMenu + 2, ch, bg);
 
 			}
 			else if (choiceMenu == 3 || choiceMenu ==-1) {
-				drawText(L"    EXIT    ", xMenu, yMenu + 3, 7, 0);
+				drawText(L"    EXIT    ", xMenu, yMenu + 3, ch, bg);
 
 			}
-			drawText(L"choice: " + to_wstring(choiceMenu), xMenu, yMenu + 4, 0, 7);
+			//drawText(L"choice: " + to_wstring(choiceMenu), xMenu, yMenu + 4, 0, 7);
+			drawText(L"Frame: " + to_wstring(frame), 2, nScreenHeight - 1, bg, ch);
+			if (frame % 15 == 0) makeNewStarMap(starmap);
+			drawStars(starmap);
+			animationWiggleUpDown(e1, frame, 10, 20, black, red);
+			animationWiggleUpDown(e2, frame, 22, 20, black, lightblue);
+			animationWiggleUpDown(e3, frame, 30, 20, black, yellow);
+			animationWiggleUpDown(e4, frame, 40, 20, black, green);
 			drawScreen();
-
 			// ENTER - Select
 			if (GetAsyncKeyState(VK_RETURN)) {
 				if (choiceMenu == 0) {
@@ -288,6 +392,7 @@ public:
 					glitchEffectText(L"    EXIT    ", xMenu, yMenu + 3, 7, 6, 0, 7);
 				}
 			}
+			frame++;
 		}
 	}
 	void startGameScreen() {
@@ -300,12 +405,15 @@ public:
 		Enemy[1] = new cEnemy(nScreenWidth, 15, e2);
 		Enemy[2] = new cEnemy(50, 20, e3);
 		Enemy[3] = new cEnemy(nScreenWidth - 30, 25, e4);
-
+		int frame = 0;
 		bool gameOver = false;
+		//INITIALISE STAR MAP
+		int* starmap = new int[nScreenWidth * nScreenHeight];
+
 		while (gameOver == false) {
 			// CLEAR SCREEN
-			int bg = 0, ch = 0;
-			clearScreen(bg, 7);
+			int bg = 0, ch = 7;
+			clearScreen(bg, ch);
 			pBuffer[Player.getY() * nScreenWidth + Player.getX()] = L'.';
 
 			// READ INPUT
@@ -343,26 +451,38 @@ public:
 			else Enemy[3]->moveLeft();
 			int score = 0;
 			// GAME LOGIC
+			frame++;
 			for (int i = 0; i < 4; i++) {
 				if (checkCollision(Player, Enemy[i]) == true) {
-					clearScreen(0, 7);
-					drawBlock(GameOver, 50, 10, 0, 6);
-					drawText(L"YOUR SCORE: " + to_wstring(score), 70, 20, 0, 7);
+					gameOverEffect();
+					clearScreen(9, 7);
+					drawBlock(GameOver, 53, 12, 9, 6);
+					drawBlock(Skull, 69, 17, 9, 7);
+					drawText(L"YOUR SCORE: " + to_wstring(score), 73, 31, 9, 7);
 					drawScreen();
-					Sleep(5000);
+					Sleep(10000);
 					exit(0);
+					//startMenuScreen();
 				}
 			}
 
 			// DISPLAY GAME SCREEN
 			//drawMap();
-			drawFrame(0, 0, nScreenWidth, nScreenHeight, 0, 7);
+			//drawFrame(0, 0, nScreenWidth, nScreenHeight, 0, 7);
+			if (frame % 15 == 0) makeNewStarMap(starmap);
+			drawStars(starmap);
+			drawHorizontalLine1(0, 9, nScreenWidth, 0, 7);
+			drawHorizontalLine2(2, 14, nScreenWidth - 2, 0, 7);
+			drawHorizontalLine3(0, 19, nScreenWidth, 0, 1);
+			drawHorizontalLine3(0, 24, nScreenWidth, 0, 1);			
+			drawHorizontalLine3(0, 29, nScreenWidth, 0, 1);
 			drawBlock(Player.getSketch(), Player.getX(), Player.getY(), bg, 7);
 			drawBlock(Enemy[0]->getSketch(), Enemy[0]->getX(), Enemy[0]->getY(), bg, 6); // Red enemy
 			drawBlock(Enemy[1]->getSketch(), Enemy[1]->getX(), Enemy[1]->getY(), bg, 3); // Yellow enemy
 			drawBlock(Enemy[2]->getSketch(), Enemy[2]->getX(), Enemy[2]->getY(), bg, 4); // Green
 			drawBlock(Enemy[3]->getSketch(), Enemy[3]->getX(), Enemy[3]->getY(), bg, 1); // Blue
 			drawText(L"SCORE: " + to_wstring(score), 4, 2, 0, 7);
+			drawText(L"Frame: " + to_wstring(frame), 2, nScreenHeight - 1, bg, ch);
 			drawScreen();
 		}
 	}
