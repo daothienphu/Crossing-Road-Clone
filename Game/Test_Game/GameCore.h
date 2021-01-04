@@ -136,8 +136,7 @@ public:
 		while (1)
 		{
 			delay(1000/(FRAMERATE - 20));
-			graphic->setBuffer(playerBlank, this->player->getOldPos().x, this->player->getOldPos().y, 0, 7);
-			graphic->setBuffer(playerGraphic, this->player->getPos().x, this->player->getPos().y, 0, 7);
+			
 
 			for (int i = 0; i < key.size(); i++) { 	// Read input
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
@@ -220,6 +219,8 @@ public:
 				speed4 = 0;
 			}
 			
+			graphic->setBuffer(playerBlank, this->player->getOldPos().x, this->player->getOldPos().y, 0, 7);
+			graphic->setBuffer(playerGraphic, this->player->getPos().x, this->player->getPos().y, 0, 7);
 
 			graphic->render();
 		}

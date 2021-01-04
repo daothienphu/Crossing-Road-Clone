@@ -86,6 +86,10 @@ public:
 				buffer[(y + i) * screenWidth + x + j] = content[i].at(j);
 				color[(y + i) * screenWidth + x + j] = bgColor * 16 + fgColor;
 			}
+			color[(y + i) * screenWidth + x - 2] = bgColor * 16 + fgColor;
+			color[(y + i) * screenWidth + x - 1] = bgColor * 16 + fgColor;
+			color[(y + i) * screenWidth + x + content[i].length()] = bgColor * 16 + fgColor;
+			color[(y + i) * screenWidth + x + content[i].length() + 1] = bgColor * 16 + fgColor;
 		}
 	}
 	void clearBuffer() {
