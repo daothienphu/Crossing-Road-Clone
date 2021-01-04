@@ -5,7 +5,7 @@
 using namespace std;
 const wstring detail = L" ▄▀█▓░╚╝╔╗║═";
 #define nScreenWidth 160
-#define nScreenHeight 45
+#define nScreenHeight 44
 #define fps 20
 const vector<char> key = { 'W', 'A', 'S', 'D' };
 const vector<wstring> e1 = {
