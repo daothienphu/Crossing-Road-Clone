@@ -5,84 +5,187 @@
 
 using namespace std;
 
-//unordered_map<string, vector<wstring>> bufferStorage;
-
 //draw the sprite here, coresspondence with the variable name
-//remember to use the "extern" keyword to declare a global variable between many file
-extern vector<wstring> title = {
-	L".'''.  l'''.  .'''.  .'''   .'''   'l'  l.  l  .''''",
-	L"l      l'''.  l   l   '''.   '''.   l   l '.l  l ''l",
-	L"'...'  l   l  '...'  '...'  '...'  .l.  l   l  '...l",
-	L" ",
-	L"             l'''.  .'''.  .'''.  l'''.",
-	L"             l'''.  l   l  l...l  l   l",
-	L"             l   l  '...'  l   l  l...'",
+extern unordered_map<string, vector<wstring> > BUFFER_MAP = {
+	{
+		"title",
+		vector<wstring>{
+		L".'''.  l'''.  .'''.  .'''   .'''   'l'  l.  l  .''''",
+		L"l      l'''.  l   l   '''.   '''.   l   l '.l  l ''l",
+		L"'...'  l   l  '...'  '...'  '...'  .l.  l   l  '...l",
+		L" ",
+		L"             l'''.  .'''.  .'''.  l'''.",
+		L"             l'''.  l   l  l...l  l   l",
+		L"             l   l  '...'  l   l  l...'",
+		}
+	},
+	{
+		"start",
+		vector<wstring>{
+		L"  PLAY  " 
+		}
+	},
+	{
+		"load",
+		vector<wstring>{
+		L"  LOAD  " 
+		}
+	},
+	{
+		"settings",
+		vector<wstring>{
+		L"SETTINGS"
+		}
+	},
+	{
+		"exit",
+		vector<wstring>{
+		L"  EXIT  "
+		}
+	},
+	{
+		"frame",
+		vector<wstring>{
+		L"╔═╗",
+		L"║ ║",
+		L"╚═╝"
+		}
+	},
+	{
+		"player",
+		vector<wstring>{
+		L"..",
+		L"''"
+		}
+	},
+	{
+		"enemy1",
+		vector<wstring>{
+		L". '.  .' .",
+		L"l.l'll'l.'",
+		L" ll.ll.ll ",
+		L".l '  ' l."
+		}
+	},
+	{
+		"enemy2",
+		vector<wstring>{
+		L" '...' ",
+		L" l'l'l ",
+		L".'l'l'.",
+		L"' ' ' '"
+		}
+	},
+	{
+		"enemy3",
+		vector<wstring>{
+		L"  '..'  ",
+		L"l.'ll'.l",
+		L"l'llll'l",
+		L" .l  l. "
+		}
+	},
+	{
+		"enemy4",
+		vector<wstring>{
+		L" .'...'. ",
+		L"ll..l..ll",
+		L"l'l'l'l'l",
+		L" ' ' ' ' "
+		}
+	},
+	{
+		"score",
+		vector<wstring>{
+		L"SCORE"
+		}
+	},
+	{
+		"level",
+		vector<wstring>{
+		L"LEVEL"
+		}
+	},
+	{
+		"settingsTitle",
+		vector<wstring>{
+		L"This is setting screen."
+		}
+	},
+	{
+		"sound",
+		vector<wstring>{
+		L"SOUND:"
+		}
+	},
+	{
+		"on",
+		vector<wstring>{
+		L"  ON"
+		}
+	},
+	{
+		"off",
+		vector<wstring>{
+		L" OFF"
+		}
+	},
+	{
+		"back",
+		vector<wstring>{
+		L"BACK"
+		}
+	},
+	{
+		"pauseScreen",
+		vector<wstring>{
+		L"This is pause screen."
+		}
+	},
+	{
+		"resume",
+		vector<wstring>{
+		L"RESUME"
+		}
+	},
+	{
+		"restart",
+		vector<wstring>{
+		L"RESTART"
+		}
+	},
+	{
+		"exitTitle",
+		vector<wstring>{
+		L"HOW DARE YOU EXIT OUR MARVELOUS GAME YOU UNCULTURED SWINE"
+		}
+	},
+	/*{
+		"name",
+		vector <wstring> {
+		L"Something here",
+		}
+	},*/
 };
-extern vector<wstring> start = {
-	L"  PLAY  " };
-extern vector<wstring> load = {
-	L"  LOAD  " };
-extern vector<wstring> settings = {
-	L"SETTINGS" };
-extern vector<wstring> Exit = {
-	L"  EXIT  " };
-extern vector<wstring> frame = {
-	L"╔═╗",
-	L"║ ║"
-	L"╚═╝" };
 
+// Any buffer that requires padding to block
+extern vector <string> CHAR_TO_BLOCK = {
+	"player",
+	"enemy1",
+	"enemy2",
+	"enemy3",
+	"enemy4",
+	"title",
+	// "Some string here"
+};
 
-extern vector<wstring> player = {
-	L"..",
-	L"''"};
-extern vector<wstring> enemy1 = {
-	L". '.  .' .", 
-	L"l.l'll'l.'", 
-	L" ll.ll.ll ", 
-	L".l '  ' l."};
-extern vector<wstring> enemy2 = {
-	L" '...' ", 
-	L" l'l'l ", 
-	L".'l'l'.", 
-	L"' ' ' '" };
-extern vector<wstring> enemy3 = {
-	L"  '..'  ", 
-	L"l.'ll'.l", 
-	L"l'llll'l", 
-	L" .l  l. " };
-extern vector<wstring> enemy4 = {
-	L" .'...'. ", 
-	L"ll..l..ll", 
-	L"l'l'l'l'l", 
-	L" ' ' ' ' " };
+// Any buffer that requires a clear buffer (movable GameObject)
+extern vector <string> CLEAR_BUFFER = {
+	"player",
+	"enemy1",
+	"enemy2",
+	"enemy3",
+	"enemy4",
+};
 
-
-extern vector<wstring> score = {
-	L"SCORE" };
-extern vector<wstring> level = {
-	L"LEVEL" };
-
-
-extern vector<wstring> settingsTitle = {
-	L"This is setting screen." };
-extern vector<wstring> sound = {
-	L"SOUND:" };
-extern vector<wstring> on = {
-	L"  ON" };
-extern vector<wstring> off = {
-	L" OFF" };
-extern vector<wstring> back = {
-	L"BACK" };
-
-
-extern vector<wstring> pauseTitle = {
-	L"This is pause screen." };
-extern vector<wstring> resume = {
-	L"RESUME" };
-extern vector<wstring> restart = {
-	L"RESTART" };
-
-
-extern vector<wstring> exitTitle = {
-	L"HOW DARE YOU EXIT OUR MARVELOUS GAME YOU UNCULTURED SWINE" };
 //then go to GraphicController and map it to the unordered_map using the syntax: bufferStorage["name"] = name;

@@ -34,51 +34,17 @@ void fixSizedConsoleWindow() {
 
 	//if u use this, change GameCore constructor to new Player(70,37), dont ask me why
 
-	//system("MODE 145, 40"); // Set screen size (width, height + 1)
-	////Fix window size
-	//HWND consoleWindow = GetConsoleWindow();
-	//LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
-	//style = style & ~(WS_MAXIMIZEBOX) & ~(WS_THICKFRAME);
-	//SetWindowLong(consoleWindow, GWL_STYLE, style);
-	//// Make custom color palette - up to 16 colors, will update later
-	//HANDLE hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE); // A hanle to console screen buffer.
-	//CONSOLE_SCREEN_BUFFER_INFOEX csbiex;
-	//csbiex.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
-	//GetConsoleScreenBufferInfoEx(hConsoleOutput, &csbiex);
-	//csbiex.ColorTable[0] = RGB(16, 16, 60); // Default background color - dark blue
-	//csbiex.ColorTable[1] = RGB(63, 81, 181); // Light blue
-	//csbiex.ColorTable[2] = RGB(255, 87, 34); // Orange
-	//csbiex.ColorTable[3] = RGB(255, 235, 59); // Yellow
-	//csbiex.ColorTable[4] = RGB(76, 175, 80); // Green
-	//csbiex.ColorTable[5] = RGB(156, 39, 176); // Purple
-	//csbiex.ColorTable[6] = RGB(237, 28, 36); // Red
-	//csbiex.ColorTable[7] = RGB(242, 242, 242); // Dark white
-	//csbiex.ColorTable[8] = RGB(248, 248, 248); // White
-	//csbiex.ColorTable[9] = RGB(20, 20, 20); // Black
-	//SetConsoleScreenBufferInfoEx(hConsoleOutput, &csbiex);
-
-	RECT windowRes;
-	const HWND window = GetDesktopWindow();
-	GetWindowRect(window, &windowRes);
-
+	system("MODE 145, 40"); // Set screen size (width, height + 1)
+	//Fix window size
 	HWND consoleWindow = GetConsoleWindow();
-	MoveWindow(consoleWindow, (windowRes.right - 1080) / 2, (windowRes.bottom - 720) / 2, 1080, 720, TRUE);
-
 	LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
 	style = style & ~(WS_MAXIMIZEBOX) & ~(WS_THICKFRAME);
-
 	SetWindowLong(consoleWindow, GWL_STYLE, style);
-
-	CONSOLE_CURSOR_INFO     cursorInfo;
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
-	GetConsoleCursorInfo(hConsole, &cursorInfo);
-	cursorInfo.bVisible = false; // set the cursor visibility
-	SetConsoleCursorInfo(hConsole, &cursorInfo);
-
+	// Make custom color palette - up to 16 colors, will update later
+	HANDLE hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE); // A hanle to console screen buffer.
 	CONSOLE_SCREEN_BUFFER_INFOEX csbiex;
 	csbiex.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
-	GetConsoleScreenBufferInfoEx(hConsole, &csbiex);
+	GetConsoleScreenBufferInfoEx(hConsoleOutput, &csbiex);
 	csbiex.ColorTable[0] = RGB(16, 16, 60); // Default background color - dark blue
 	csbiex.ColorTable[1] = RGB(63, 81, 181); // Light blue
 	csbiex.ColorTable[2] = RGB(255, 87, 34); // Orange
@@ -89,7 +55,41 @@ void fixSizedConsoleWindow() {
 	csbiex.ColorTable[7] = RGB(242, 242, 242); // Dark white
 	csbiex.ColorTable[8] = RGB(248, 248, 248); // White
 	csbiex.ColorTable[9] = RGB(20, 20, 20); // Black
-	SetConsoleScreenBufferInfoEx(hConsole, &csbiex);
+	SetConsoleScreenBufferInfoEx(hConsoleOutput, &csbiex);
+
+	//RECT windowRes;
+	//const HWND window = GetDesktopWindow();
+	//GetWindowRect(window, &windowRes);
+
+	//HWND consoleWindow = GetConsoleWindow();
+	//MoveWindow(consoleWindow, (windowRes.right - 1080) / 2, (windowRes.bottom - 720) / 2, 1080, 720, TRUE);
+
+	//LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
+	//style = style & ~(WS_MAXIMIZEBOX) & ~(WS_THICKFRAME);
+
+	//SetWindowLong(consoleWindow, GWL_STYLE, style);
+
+	//CONSOLE_CURSOR_INFO     cursorInfo;
+	//HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	//GetConsoleCursorInfo(hConsole, &cursorInfo);
+	//cursorInfo.bVisible = false; // set the cursor visibility
+	//SetConsoleCursorInfo(hConsole, &cursorInfo);
+
+	//CONSOLE_SCREEN_BUFFER_INFOEX csbiex;
+	//csbiex.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
+	//GetConsoleScreenBufferInfoEx(hConsole, &csbiex);
+	//csbiex.ColorTable[0] = RGB(16, 16, 60); // Default background color - dark blue
+	//csbiex.ColorTable[1] = RGB(63, 81, 181); // Light blue
+	//csbiex.ColorTable[2] = RGB(255, 87, 34); // Orange
+	//csbiex.ColorTable[3] = RGB(255, 235, 59); // Yellow
+	//csbiex.ColorTable[4] = RGB(76, 175, 80); // Green
+	//csbiex.ColorTable[5] = RGB(156, 39, 176); // Purple
+	//csbiex.ColorTable[6] = RGB(237, 28, 36); // Red
+	//csbiex.ColorTable[7] = RGB(242, 242, 242); // Dark white
+	//csbiex.ColorTable[8] = RGB(248, 248, 248); // White
+	//csbiex.ColorTable[9] = RGB(20, 20, 20); // Black
+	//SetConsoleScreenBufferInfoEx(hConsole, &csbiex);
 }
 void gotoXY(int x, int y) {
 	COORD coord;

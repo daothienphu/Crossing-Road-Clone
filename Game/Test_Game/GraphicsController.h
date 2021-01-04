@@ -20,42 +20,25 @@ public:
 		SetConsoleActiveScreenBuffer(hConsole1);
 		hConsole = hConsole1;
 		dwBytesWritten = 0;
+		bufferStorage = BUFFER_MAP;
+		initCharToBlock();
+		initClearBuffer();
+	}
 
-		charToBlock(player);
-		charToBlock(enemy1);
-		charToBlock(enemy2);
-		charToBlock(enemy3);
-		charToBlock(enemy4);
-		charToBlock(title);
-		//bufferStorage mapping
-		bufferStorage["player"] = player; //player was declare in BufferStorage.h
-		bufferStorage["enemy1"] = enemy1;
-		bufferStorage["enemy2"] = enemy2;
-		bufferStorage["enemy3"] = enemy3;
-		bufferStorage["enemy4"] = enemy4;
+	void initClearBuffer() {
+		for (string c : CLEAR_BUFFER) {
+			wstring tmp = L"";
+			for (int i = 0; i < bufferStorage[c][0].size() /* width */; i++)
+				tmp += L" ";
+			bufferStorage[c + "_clear"] = vector <wstring>{};
+			for (int i = 0; i < bufferStorage[c].size() /* height */; i++)
+				bufferStorage[c + "_clear"].push_back(tmp);
+		}
+	}
 
-		bufferStorage["score"] = score;
-		bufferStorage["level"] = level;
-
-		bufferStorage["title"] = title;
-		bufferStorage["start"] = start;
-		bufferStorage["load"] = load;
-		bufferStorage["settings"] = settings;
-		bufferStorage["exit"] = Exit;
-
-		bufferStorage["settingsTitle"] = settingsTitle;
-		bufferStorage["sound"] = sound;
-		bufferStorage["on"] = on;
-		bufferStorage["off"] = off;
-		bufferStorage["back"] = back;
-
-
-		bufferStorage["pauseTitle"] = pauseTitle;
-		bufferStorage["resumeButton"] = resume;
-		bufferStorage["restartButton"] = restart;
-
-
-		bufferStorage["exitTitle"] = exitTitle;
+	void initCharToBlock() {
+		for (string c : CHAR_TO_BLOCK)
+			charToBlock(bufferStorage[c]);
 	}
 
 	void charToBlock(vector<wstring>& graphics) {
