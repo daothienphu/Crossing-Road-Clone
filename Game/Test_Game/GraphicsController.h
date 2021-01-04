@@ -55,8 +55,71 @@ public:
 			}
 		}
 	}
+	void openFrame(int x, int y, int w, int h) {
+		buffer[y * screenWidth + x] = frame[0][0];
+		buffer[y * screenWidth + x + w - 1] = frame[0][2];
+		color[y * screenWidth + x] = 7;
+		color[y * screenWidth + x + w - 1] = 7;
+		for (int i = 1; i < w - 1; ++i) {
+			buffer[y * screenWidth + x + i] = frame[0][1];
+			color[y * screenWidth + x + i] = 7;	
+		}
+		int UwU = 2;
+		while (1) {
+			buffer[(y + UwU - 1) * screenWidth + x] = frame[2][0];
+			buffer[(y + UwU - 1) * screenWidth + x + w - 1] = frame[2][2];
+			color[(y + UwU - 1) * screenWidth + x] = 7;
+			color[(y + UwU - 1) * screenWidth + x + w - 1] = 7;
+			for (int i = 1; i < w - 1; ++i) {
+				buffer[(y + UwU - 1) * screenWidth + x + i] = frame[2][1];
+				color[(y + UwU - 1) * screenWidth + x + i] = 7;
+			}
+			if (UwU > 2) {
+				buffer[(y + UwU - 2) * screenWidth + x] = frame[1][0];
+				buffer[(y + UwU - 2) * screenWidth + x + w - 1] = frame[1][2];
+				color[(y + UwU - 2) * screenWidth + x] = 7;
+				color[(y + UwU - 2) * screenWidth + x + w - 1] = 7;
+				for (int j = 1; j < w - 1; ++j) {
+					buffer[(y + UwU - 2) * screenWidth + x + j] = L' ';
+					color[(y + UwU - 2) * screenWidth + x + j] = 7;
+				}
+			}
+			UwU++;
+			if (UwU == h + 1)
+				break;
+			render();
+			delay(1000 / (FRAMERATE));
+		}
+	}
 	void createFrame(int x, int y, int w, int h, bool transparentBG = true) {
-		vector<wstring> Frame{L""};		
+		buffer[y * screenWidth + x] = frame[0][0];
+		buffer[y * screenWidth + x + w - 1] = frame[0][2];
+		buffer[(y + h - 1) * screenWidth + x] = frame[2][0];
+		buffer[(y + h - 1) * screenWidth + x + w - 1] = frame[2][2];
+		color[y * screenWidth + x] = 7;
+		color[y * screenWidth + x + w - 1] = 7;
+		color[(y + h - 1) * screenWidth + x] = 7;
+		color[(y + h - 1) * screenWidth + x + w - 1] = 7;
+		for (int i = 1; i < w - 1; ++i) {
+			buffer[y * screenWidth + x + i] = frame[0][1];
+			buffer[(y + h - 1) * screenWidth + x + i] = frame[2][1];
+			color[y * screenWidth + x + i] = 7;
+			color[(y + h - 1) * screenWidth + x + i] = 7;
+		}
+		for (int i = 1; i < h - 1; ++i) {
+			buffer[(y + i) * screenWidth + x] = frame[1][0];
+			buffer[(y + i) * screenWidth + x + w - 1] = frame[1][2];
+			color[(y + i) * screenWidth + x] = 7;
+			color[(y + i) * screenWidth + x + w - 1] = 7;
+		}
+		if (!transparentBG) {
+			for (int i = 1; i < h - 1; ++i) {
+				for (int j = 1; j < w - 1; ++j) {
+					buffer[(y + i) * screenWidth + x + j] = L' ';
+					color[(y + i) * screenWidth + x + j] = 7;
+				}
+			}
+		}
 	}
 
 	vector<wstring>& getBuffer(string key)
@@ -64,6 +127,18 @@ public:
 		return bufferStorage[key];
 	}
 	void setBuffer(vector<wstring>& content, int x, int y, int bgColor, int fgColor) {
+		for (int i = 0; i < content.size(); ++i) {
+			for (int j = 0; j < content[i].length(); ++j) {
+				buffer[(y + i) * screenWidth + x + j] = content[i].at(j);
+				color[(y + i) * screenWidth + x + j] = bgColor * 16 + fgColor;
+			}
+			color[(y + i) * screenWidth + x - 2] = bgColor * 16 + fgColor;
+			color[(y + i) * screenWidth + x - 1] = bgColor * 16 + fgColor;
+			color[(y + i) * screenWidth + x + content[i].length()] = bgColor * 16 + fgColor;
+			color[(y + i) * screenWidth + x + content[i].length() + 1] = bgColor * 16 + fgColor;
+		}
+	}
+	void setBufferWhite(vector<wstring>& content, int x, int y, int bgColor, int fgColor) {
 		for (int i = 0; i < content.size(); ++i) {
 			for (int j = 0; j < content[i].length(); ++j) {
 				buffer[(y + i) * screenWidth + x + j] = content[i].at(j);
