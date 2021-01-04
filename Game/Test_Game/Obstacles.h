@@ -20,7 +20,7 @@ public:
 	}
 	virtual void resetPos(int lane, bool left = true) {
 		this->x = left? 0 : 137;
-		this->y = lane * 7;
+		this->y = lane * 5;
 	}
 };
 

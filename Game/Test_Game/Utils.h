@@ -1,7 +1,7 @@
 #pragma once
 #define FRAMERATE 60
 #define screenWidth 145
-#define screenHeight 40
+#define screenHeight 41
 
 
 struct coord {

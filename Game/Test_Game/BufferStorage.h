@@ -28,7 +28,7 @@ extern vector<wstring> Exit = {
 	L"  EXIT  " };
 extern vector<wstring> frame = {
 	L"╔═╗",
-	L"║ ║"
+	L"║ ║",
 	L"╚═╝" };
 
 
