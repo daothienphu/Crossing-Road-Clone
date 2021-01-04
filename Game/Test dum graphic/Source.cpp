@@ -131,7 +131,7 @@ public:
 		SetWindowLong(consoleWindow, GWL_STYLE, style);
 	}
 	void configure() {
-		system("MODE 160, 46"); // Set screen size (width, height + 1)
+		system("MODE 160, 45"); // Set screen size (width, height + 1)
 		FixConsoleWindow(); //Fix window size
 		// Make custom color palette - up to 16 colors, will update later
 		HANDLE hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE); // A hanle to console screen buffer.
@@ -266,13 +266,16 @@ public:
 			starmap[y * nScreenWidth + x] = 1;
 		}
 
+
 	
 	}
 	void drawStars(int* starmap) {
-		for (int i = 0; i < nScreenHeight; i++)
-			for (int j = 0; j < nScreenWidth; j++)
-				if (starmap[i* nScreenWidth + j] == 1)
+		for (int i = 0; i < nScreenHeight; i++) {
+			for (int j = 0; j < nScreenWidth; j++) {
+				if (starmap[i * nScreenWidth + j] == 1)
 					pBuffer[i * nScreenWidth + j] = L'.';
+			}
+		}
 	}
 	void drawHorizontalLine1(int x, int y, int length, int colorBackground, int colorChar) {
 		for (int i = 0; i < length; i++) {
@@ -414,7 +417,7 @@ public:
 			// CLEAR SCREEN
 			int bg = 0, ch = 7;
 			clearScreen(bg, ch);
-			pBuffer[Player.getY() * nScreenWidth + Player.getX()] = L'.';
+			drawBlock(Player.getSketch(), Player.getX(), Player.getY(), darkblue, lightblue);
 
 			// READ INPUT
 			bool* bKeyGame = new bool[key.size()]; // Check ingame input
