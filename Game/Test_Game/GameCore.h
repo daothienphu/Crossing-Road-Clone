@@ -268,7 +268,7 @@ public:
 		}
 	};
 	void pauseScreen() {
-		graphic->clearBuffer();
+		graphic->openFrame(60, 15, 30, 15);
 		GameMenu* pauseTitle = new Button("pauseTitle");
 		graphic->setBuffer(graphic->getBuffer(pauseTitle->getBufferKey()), 64, 17, 0, 7);
 

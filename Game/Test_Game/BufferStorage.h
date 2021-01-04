@@ -157,7 +157,7 @@ extern unordered_map<string, vector<wstring> > BUFFER_MAP = {
 	{
 		"exitTitle",
 		vector<wstring>{
-		L"HOW DARE YOU EXIT OUR MARVELOUS GAME YOU UNCULTURED SWINE"
+		L"HOW DARE YOU EXIT OUR MARVELOUS GAME YOU UNCULTURED SWINE" //Some bull-headed kid wrote this (not me)
 		}
 	},
 	/*{
