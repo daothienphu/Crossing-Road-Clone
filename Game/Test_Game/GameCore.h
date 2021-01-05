@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include <iostream>
+#include <Windows.h>
+#include <cstdlib>
 #include <windows.h>
 #include <iomanip>
 #include <vector>
@@ -73,7 +75,7 @@ public:
 #pragma endregion
 
 		int count = 0;
-		while (!GetAsyncKeyState(VK_RETURN)) { 
+		while (!GetAsyncKeyState(VK_RETURN)) {
 			delay(1000 / FRAMERATE);
 			count++;
 			if (count == 480) {
@@ -82,9 +84,11 @@ public:
 				graphic->render();
 			}
 		}
+		PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME);
 		graphic->clearBuffer();
 	}
 	void titleScreen() {
+		PlaySound(TEXT("intro.wav"), NULL, SND_FILENAME);
 		GameMenu* title = new Button(46, 8, "title");
 		GameMenu* startButton = new Button("start");
 		GameMenu* loadButton = new Button("load");
@@ -94,10 +98,10 @@ public:
 		Obstacles* enemy2 = new Obstacles(135, 25, 2, BG, 3, "enemy2", graphic);
 		Obstacles* enemy3 = new Obstacles(30, 30, 2, BG, 4, "enemy3", graphic);
 		Obstacles* enemy4 = new Obstacles(115, 35, 3, BG, 6, "enemy4", graphic);
-		
+
 		int choice = 0;
 		bool* bKeyGame = new bool[key.size()]{ 0 };
-		
+
 		while (1) {
 			//slow down the speed for "sensible" input
 			delay(1000 / (FRAMERATE / 6));
@@ -107,8 +111,11 @@ public:
 			for (int i = 0; i < key.size(); i++)
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			if (GetAsyncKeyState(VK_RETURN)) {
-				if (choice == 0)
+				PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME);
+				if (choice == 0) {
+					loadingScreen();
 					playScreen(1);
+				}
 				else if (choice == 1)
 					loadScreen();
 				else if (choice == 2)
@@ -147,9 +154,9 @@ public:
 
 			//change color depends on choice
 			switch (choice) {
-			case 0: 
+			case 0:
 				graphic->setBuffer(graphic->getBuffer(startButton->getBufferKey()), 68, 20, whiteDark, BG); break;
-			case 1: 
+			case 1:
 				graphic->setBuffer(graphic->getBuffer(loadButton->getBufferKey()), 68, 21, whiteDark, BG); break;
 			case 2:
 				graphic->setBuffer(graphic->getBuffer(settingButton->getBufferKey()), 68, 22, whiteDark, BG); break;
@@ -160,18 +167,18 @@ public:
 
 			graphic->createFrame(0, 0, 145, 40);
 			graphic->render();
-		}		
+		}
 	}
 	void playScreen(int Level)
 	{
 		graphic->clearBuffer();
-		player->setPos(70, 37);
+		player->setPos(72, 2);
 		player->clearOldPos(graphic);
 		GameLane* lane1 = new GameLane(1, 1, 1, graphic);
 		GameLane* lane2 = new GameLane(2, 2, 1, graphic);
 		GameLane* lane3 = new GameLane(3, 3, 1, graphic);
 
-		vector<GameLane*> lanes = {lane1, lane2, lane3};
+		vector<GameLane*> lanes = { lane1, lane2, lane3 };
 
 		GameMenu* score = new Button("score");
 		GameMenu* level = new Button("level");
@@ -185,7 +192,7 @@ public:
 
 		while (1)
 		{
-			delay(1000/(FRAMERATE - 20));
+			delay(1000 / (FRAMERATE - 20));
 
 			graphic->clearStars();
 			player->render(graphic);
@@ -196,10 +203,10 @@ public:
 			}
 			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE))
 				pauseScreen();
-			else if (bKeyGame[0] == 1 && player->getPos().y > 0) {
+			else if (bKeyGame[0] == 1 && player->getPos().y > 1) {
 				player->move(0, -1);
 			}
-			else if (bKeyGame[1] == 1 && player->getPos().x > 0) {
+			else if (bKeyGame[1] == 1 && player->getPos().x > 1) {
 				player->move(-1, 0);
 			}
 			else if (bKeyGame[2] == 1 && player->getPos().y < screenHeight - 2 - graphic->getBuffer(player->getBufferKey()).size()) {
@@ -222,10 +229,10 @@ public:
 			graphic->setBuffer(graphic->getBuffer(level->getBufferKey()), 2, 2, BG, 7);
 			graphic->setBuffer(levelCounter, 9, 2, BG, 7);
 			graphic->setBuffer(graphic->getBuffer(laneIndex->getBufferKey()), 2, 4, BG, 7);
-			graphic->setBuffer(laneCounter, 9, 4, BG, 7);			
+			graphic->setBuffer(laneCounter, 9, 4, BG, 7);
 #pragma endregion
 
-		
+
 
 			for (auto l : lanes) l->logic();
 			for (auto l : lanes) l->render(graphic);
@@ -243,6 +250,16 @@ public:
 			graphic->render();
 		}
 
+	}
+	void loadingScreen() {//cuz why not
+		graphic->clearBuffer();
+		graphic->createFrame(31, 27, 84, 3);
+		for (int i = 1; i < 81; i += 5) {
+			vector<wstring> tmp = { L"█████" };
+			graphic->setBuffer(tmp, 32 + i, 28, BG, whiteDark);
+			graphic->render();
+			delay(83 - i);
+		}
 	}
 	void saveScreen() {};
 	void loadScreen() {};
@@ -276,6 +293,7 @@ public:
 			for (int i = 0; i < key.size(); i++)
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			if (GetAsyncKeyState(VK_RETURN)) {
+				PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME);
 				if (choice == 0) {
 					soundOn = !soundOn;
 					//sound stuff hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
@@ -343,6 +361,7 @@ public:
 			for (int i = 0; i < key.size(); i++)
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			if (GetAsyncKeyState(VK_RETURN)) {
+				PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME);
 				if (choice == 3) {
 					soundOn = !soundOn;
 					//sound stuff hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
@@ -401,6 +420,7 @@ public:
 	}
 	void gameoverScreen() {
 		graphic->clearBuffer();
+		PlaySound(TEXT("gameOver.wav"), NULL, SND_FILENAME);
 		GameMenu* gameoverTitle = new Button("gameoverTitle");
 		GameMenu* inspirationalText = new Button("inspirationalText");
 		GameMenu* backButton = new Button("back");
@@ -422,6 +442,7 @@ public:
 				graphic->render();
 			}
 		}
+		PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME);
 	}
 	bool checkCollision(vector<GameLane*> lanes, int &lc)
 	{

@@ -85,8 +85,7 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 	{
 		"player",
 		vector<wstring>{
-		L"..",
-		L"''"
+		L"ll"
 		}
 	},
 	{
