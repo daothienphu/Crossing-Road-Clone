@@ -62,6 +62,11 @@ public:
 	}
 };
 
+class Enemy1 : public Obstacles {
+public:
+
+};
+
 //class Maybe : public Obstacles {
 //	vector<wstring> buf;
 //public:

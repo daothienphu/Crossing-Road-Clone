@@ -108,15 +108,18 @@ public:
 	}
 	void playScreen(int Level)
 	{
-		Obstacles* enemy1 = new Obstacles(20, 5, 2, 0, 1, "enemy1", graphic);
-		/*Obstacles* enemy2 = new Obstacles(10, 10, 3, 0, 3, "enemy2", graphic);
-		Obstacles* enemy3 = new Obstacles(30, 15, 2, 0, 4, "enemy3", graphic);
-		Obstacles* enemy4 = new Obstacles(40, 20, 3, 0, 5, "enemy4", graphic);*/
-		GameLane* lane = new GameLane(2, 3, 1, graphic);
+		GameLane* lane = new GameLane(2, 1, 1, graphic);
+		GameLane* lane2 = new GameLane(3, 2, 1, graphic);
+		GameLane* lane3 = new GameLane(1, 3, 1, graphic);
+
+		vector<GameLane*> lanes = {lane, lane2, lane3};
 
 		GameMenu* score = new Button("score");
 		GameMenu* level = new Button("level");
-		vector<wstring> scoreCounter, levelCounter;
+		GameMenu* laneIndex = new Button("score");
+		vector<wstring> scoreCounter, levelCounter, laneCounter;
+
+		int lc = 0;
 
 
 		vector<wstring> playerGraphic = graphic->getBuffer(player->getBufferKey());
@@ -157,25 +160,28 @@ public:
 
 			toVwstring(num++, scoreCounter);
 			toVwstring(Level, levelCounter);
+			toVwstring(lc, laneCounter);
 			graphic->setBuffer(graphic->getBuffer(score->getBufferKey()), 2, 1, 0, 7);
 			graphic->setBuffer(scoreCounter, 9, 1, 0, 7);
 			graphic->setBuffer(graphic->getBuffer(level->getBufferKey()), 2, 2, 0, 7);
 			graphic->setBuffer(levelCounter, 9, 2, 0, 7);
+			graphic->setBuffer(graphic->getBuffer(laneIndex->getBufferKey()), 2, 4, 0, 7);
+			graphic->setBuffer(laneCounter, 9, 4, 0, 7);
+
+			for (auto l : lanes) l->logic();
+			for (auto l : lanes) l->render(graphic);
 
 
-			enemy1->move(2, 0);
-			lane->logic();
-			/*enemy2->move(-2, 0, graphic);
-			enemy3->move(2, 0, graphic);
-			enemy4->move(-2, 0, graphic);*/
+			//lane->logic();
+			//lane2->logic();
+			//lane3->logic();
 
-			enemy1->render(graphic);
-			lane->render(graphic);
-			/*enemy2->render(graphic);
-			enemy3->render(graphic);
-			enemy4->render(graphic);*/
+			//lane->render(graphic);
+			//lane2->render(graphic);
+			//lane3->render(graphic);
 
 			player->render(graphic);
+			if (this->checkCollision(lanes, lc)) start();
 
 			graphic->render();
 		}
@@ -319,5 +325,19 @@ public:
 			if (GetAsyncKeyState(VK_RETURN))
 				exit(0);
 		}
+	}
+
+	bool checkCollision(vector<GameLane*> lanes, int &lc)
+	{
+		BOUNDINGBOX pla = player->getBoundingBox();
+		int lane = (screenHeight - pla.y - 2) / LANE_HEIGHT - 1;
+		lc = lane;
+		if(lane - 1 < 0 || lane > lanes.size()) return false;
+		GameLane* tmp = lanes[lane - 1];
+		if (tmp->checkCollision(pla, lc))
+		{
+			return true;
+		}
+		return false;
 	}
 };

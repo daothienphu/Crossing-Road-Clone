@@ -93,4 +93,34 @@ public:
 			o->render(graphic);
 		}
 	}
+
+	bool checkCollision(BOUNDINGBOX player, int &lc)
+	{
+		for (auto it : obs) 
+			return (//this->verticleCollision(player, it->getBoundingBox(), lc) 
+				 this->horizontalCollision(player, it->getBoundingBox(), lc));
+	}
+
+	bool verticleCollision(BOUNDINGBOX a, BOUNDINGBOX b, int &lc)
+	{
+		if (a.y > b.y) return this->verticleCollision(b, a, lc);
+		if (b.y - a.y < a.h)
+		{
+			//lc += 1000;
+			return true;
+		}
+		else return false;
+	}
+
+	bool horizontalCollision(BOUNDINGBOX a, BOUNDINGBOX b, int &lc)
+	{
+		if (a.x > b.x) return this->horizontalCollision(b, a, lc);
+		if (a.x + a.w > b.x - 1)
+		{
+			//lc += 1;
+			return true;
+		}
+		else return false;
+	}
+
 };
