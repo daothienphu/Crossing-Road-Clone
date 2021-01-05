@@ -220,8 +220,6 @@ public:
 		int choice = 0; bool soundOn = true;
 		bool* bKeyGame = new bool[key.size()]{ 0 }; // Check ingame input
 		while (1) {
-			//delay to slow down the speed
-			delay(1000 / (FRAMERATE / 8));
 			//default color
 			graphic->setBuffer(graphic->getBuffer(soundButton->getBufferKey()), 68, 21, 0, 7);
 			if (soundOn)
@@ -284,8 +282,6 @@ public:
 		int choice = 0; bool soundOn = true;
 		bool* bKeyGame = new bool[key.size()]{ 0 }; // Check ingame input
 		while (1) {
-			//delay to slow down the speed
-			delay(1000 / (FRAMERATE / 8));
 			//default color
 			graphic->setBuffer(graphic->getBuffer(resumeButton->getBufferKey()), 68, 19, 0, 7);
 			graphic->setBuffer(graphic->getBuffer(restartButton->getBufferKey()), 68, 20, 0, 7);
