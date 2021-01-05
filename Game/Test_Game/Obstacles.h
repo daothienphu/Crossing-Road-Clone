@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "GameObject.h"
+#include "Utils.h"
 using namespace std;
 
 class Obstacles : public GameObject {
@@ -18,7 +19,7 @@ public:
 		fgColor(_fgColor)
 	{}
 
-	virtual void move(int x, int y, GraphicsController*& graphic)
+	void move(int x, int y)
 	{
 		tick++;
 
@@ -27,21 +28,37 @@ public:
 			return; //Nah, not enough
 		
 		tick %= speed;
-		render(graphic);
 		this->oldX = this->x;
 		this->oldY = this->y;
 		this->x += x;
 		this->y += y;
+
+		if (isOutOfBound())
+			resetPos(1, x > 0);
 	}
-	virtual void resetPos(int lane, GraphicsController*& graphic, bool left = true) {
-		this->x = left? 0 : 137;
-		this->y = lane * 5;
-		render(graphic);
+	virtual void resetPos(int lane, bool left = true) {
+		this->x = left? 1 : screenWidth - w;
+		//this->y = lane * 5;
 	}
 
 	void render(GraphicsController*& graphic) {
-		clearOldPos(graphic);
+		clearOldPos(graphic, bgColor, fgColor);
 		GameObject::render(graphic, bgColor, fgColor);
+	}
+
+	void setPos(int x, int y) {
+		this->x = x;
+		this->oldX = x;
+		this->y = y;
+		this->oldY = y;
+	}
+
+	bool isOutOfBound() {
+		return x < 1 || x > screenWidth - 1 - w;
+	}
+
+	int getTick() {
+		return tick;
 	}
 };
 

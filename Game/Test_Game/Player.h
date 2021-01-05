@@ -11,14 +11,16 @@ public:
 	Player(int x, int y, GraphicsController*& graphic) : 
 		GameObject(x, y, graphic->getBuffer("player")[0].size(), graphic->getBuffer("player").size(), "player") {}
 
-	void move(int x, int y, GraphicsController*& graphic)
+	void move(int x, int y)
 	{
 		this->oldX = this->x;
 		this->oldY = this->y;
 		this->x += 2 * x;
 		this->y += y;
+	}
 
-		clearOldPos(graphic);
-		render(graphic, 0, 7);
+	void render(GraphicsController*& graphic) {
+		clearOldPos(graphic, 0, 7);
+		GameObject::render(graphic, 0, 7);
 	}
 };
