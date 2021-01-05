@@ -20,21 +20,16 @@ const vector<char> key = { 'W', 'A', 'S', 'D', 'P', 'R' };
 
 class GameCore {
 protected:
-	vector<Items*> menuHier; //hierarchy
 	GameObject* player;
-
 	GraphicsController* graphic;
-
 public:
 	GameCore() {
 		graphic = new GraphicsController;
 		player = new Player(70, 38, graphic);
 	}
 	~GameCore() {
-		for (int i = 0; i < menuHier.size(); ++i)
-			delete menuHier[i];
-
 		delete graphic;
+		delete player;
 	}
 
 	void start() {
@@ -49,22 +44,19 @@ public:
 		}
 	}
 	int titleScreen() {
-		//title
 		GameMenu* title = new Button(46, 10, "title");
-		//4 buttons
+		graphic->setBuffer(graphic->getBuffer(title->getBufferKey()), 46, 12, 0, 7);
 		GameMenu* startButton = new Button("start");
 		GameMenu* loadButton = new Button("load");
 		GameMenu* settingButton = new Button("settings");
 		GameMenu* exitButton = new Button("exit");
 		
 		int choice = 0;
-		bool* bKeyGame = new bool[key.size()]{ 0 }; // Check ingame input
-		while (1) {
-			//delay to slow down the speed
-			delay(1000 / (FRAMERATE / 8));
+		bool* bKeyGame = new bool[key.size()]{ 0 };
 
-			//has to put here instead of outside the loop due to after the settingsScreen() return.
-			graphic->setBuffer(graphic->getBuffer(title->getBufferKey()), 46, 12, 0, 7);
+		while (1) {
+			//slow down the speed for "sensible" input
+			delay(1000 / (FRAMERATE / 8));
 
 			//default color
 			graphic->setBuffer(graphic->getBuffer(startButton->getBufferKey()), 68, 21, 0, 7);
@@ -72,7 +64,7 @@ public:
 			graphic->setBuffer(graphic->getBuffer(settingButton->getBufferKey()), 68, 23, 0, 7);
 			graphic->setBuffer(graphic->getBuffer(exitButton->getBufferKey()), 68, 24, 0, 7);
 
-			//input
+#pragma region input
 			for (int i = 0; i < key.size(); i++)
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			if (GetAsyncKeyState(VK_RETURN)) {
@@ -88,6 +80,7 @@ public:
 			else if (bKeyGame[2] == 1) {
 				choice = (choice + 1) % 4;
 			}
+#pragma endregion
 
 			//change color depends on choice
 			switch (choice) {
@@ -117,59 +110,44 @@ public:
 		vector<wstring> scoreCounter, levelCounter;
 
 
-		vector<wstring> playerGraphic = graphic->getBuffer(player->getBufferKey());
-		int playerHeight = playerGraphic.size();
-		int playerWidth = playerGraphic[0].length();
-		vector<wstring> playerBlank{ L"  ", L"  " };
-
 
 		int num = 0;
 		bool* bKeyGame = new bool[key.size()]{ 0 };
+
 		while (1)
 		{
 			delay(1000/(FRAMERATE - 20));
 			player->render(graphic, 0, 7);
 
+#pragma region Controls
 			for (int i = 0; i < key.size(); i++) { 	// Read input
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			}
 			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE))
 				pauseScreen();
-			//W A S D
 			else if (bKeyGame[0] == 1 && player->getPos().y > 0) {
 				player->move(0, -1, graphic);
-				//Player.moveUp();
 			}
 			else if (bKeyGame[1] == 1 && player->getPos().x > 0) {
 				player->move(-1, 0, graphic);
-				//Player.moveLeft();
 			}
-			else if (bKeyGame[2] == 1 && player->getPos().y < screenHeight - 1 - playerHeight) {
+			else if (bKeyGame[2] == 1 && player->getPos().y < screenHeight - 1 - graphic->getBuffer(player->getBufferKey()).size()) {
 				player->move(0, 1, graphic);
-				//Player.moveDown();
 			}
-			else if (bKeyGame[3] == 1 && player->getPos().x < screenWidth - 1 - playerWidth) {
+			else if (bKeyGame[3] == 1 && player->getPos().x < screenWidth - 1 - graphic->getBuffer(player->getBufferKey())[0].length()) {
 				player->move(1, 0, graphic);
-				//Player.moveRight();
 			}
-			
+#pragma endregion
 
+#pragma region Score and Level
 			toVwstring(num++, scoreCounter);
 			toVwstring(Level, levelCounter);
 			graphic->setBuffer(graphic->getBuffer(score->getBufferKey()), 2, 1, 0, 7);
 			graphic->setBuffer(scoreCounter, 9, 1, 0, 7);
 			graphic->setBuffer(graphic->getBuffer(level->getBufferKey()), 2, 2, 0, 7);
 			graphic->setBuffer(levelCounter, 9, 2, 0, 7);
+#pragma endregion
 
-
-			/*graphic->setBuffer(enemy1Blank, enemy1->getOldPos().x, enemy1->getOldPos().y, 0, 7);
-			graphic->setBuffer(graphic->getBuffer(enemy1->getBufferKey()), enemy1->getPos().x, enemy1->getPos().y, 0, 1);
-			graphic->setBuffer(enemy2Blank, enemy2->getOldPos().x, enemy2->getOldPos().y, 0, 7);
-			graphic->setBuffer(graphic->getBuffer(enemy2->getBufferKey()), enemy2->getPos().x, enemy2->getPos().y, 0, 3);
-			graphic->setBuffer(enemy3Blank, enemy3->getOldPos().x, enemy3->getOldPos().y, 0, 7);
-			graphic->setBuffer(graphic->getBuffer(enemy3->getBufferKey()), enemy3->getPos().x, enemy3->getPos().y, 0, 4);
-			graphic->setBuffer(enemy4Blank, enemy4->getOldPos().x, enemy4->getOldPos().y, 0, 7);
-			graphic->setBuffer(graphic->getBuffer(enemy4->getBufferKey()), enemy4->getPos().x, enemy4->getPos().y, 0, 6);*/
 			enemy1->render(graphic);
 			enemy2->render(graphic);
 			enemy3->render(graphic);
@@ -184,17 +162,14 @@ public:
 				enemy1->clearOldPos(graphic);
 				enemy1->resetPos(1, graphic);
 			}
-
 			if (enemy2->getPos().x <= 1) {
 				enemy2->clearOldPos(graphic);
 				enemy2->resetPos(2, graphic, false);
 			}
-
 			if (enemy3->getPos().x >= screenWidth - 1 - graphic->getBuffer(enemy3->getBufferKey())[0].length()) {
 				enemy3->clearOldPos(graphic);
 				enemy3->resetPos(3, graphic);
 			}
-			
 			if (enemy4->getPos().x <= 1) {
 				enemy4->clearOldPos(graphic);
 				enemy4->resetPos(4, graphic, false);
@@ -207,7 +182,7 @@ public:
 	}
 	void loadScreen() {};
 	void settingsScreen() {
-		graphic->clearBuffer();
+		graphic->openFrame(60, 15, 30, 20);
 		GameMenu* settingsTitle = new Button("settingsTitle");
 		graphic->setBuffer(graphic->getBuffer(settingsTitle->getBufferKey()), 64, 19, 0, 7);
 
@@ -220,6 +195,8 @@ public:
 		int choice = 0; bool soundOn = true;
 		bool* bKeyGame = new bool[key.size()]{ 0 }; // Check ingame input
 		while (1) {
+			delay(1000 / (FRAMERATE / 8));
+
 			//default color
 			graphic->setBuffer(graphic->getBuffer(soundButton->getBufferKey()), 68, 21, 0, 7);
 			if (soundOn)
@@ -282,6 +259,7 @@ public:
 		int choice = 0; bool soundOn = true;
 		bool* bKeyGame = new bool[key.size()]{ 0 }; // Check ingame input
 		while (1) {
+			delay(1000 / (FRAMERATE / 8));
 			//default color
 			graphic->setBuffer(graphic->getBuffer(resumeButton->getBufferKey()), 68, 19, 0, 7);
 			graphic->setBuffer(graphic->getBuffer(restartButton->getBufferKey()), 68, 20, 0, 7);

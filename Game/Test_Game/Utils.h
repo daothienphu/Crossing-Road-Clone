@@ -1,13 +1,15 @@
 #pragma once
+using namespace std;
+using namespace std::this_thread;
+using namespace std::chrono;
 #define FRAMERATE 60
 #define screenWidth 145
 #define screenHeight 41
 
-
+#pragma region structs 
 struct coord {
 	int x, y;
 };
-
 struct BOUNDINGBOX {
 	int x = 0, y = 0;
 	int w = 0, h = 0;
@@ -24,17 +26,14 @@ struct BOUNDINGBOX {
 		return { x + w, y + h };
 	}
 };
+#pragma endregion
 
-using namespace std;
-using namespace std::this_thread;
-using namespace std::chrono;
-
-#pragma region Util
+#pragma region Utils
 void fixSizedConsoleWindow() {
 
 	//if u use this, change GameCore constructor to new Player(70,37), dont ask me why
 
-	system("MODE 145, 40"); // Set screen size (width, height + 1)
+	system("MODE 145, 41"); // Set screen size (width, height + 1)
 	//Fix window size
 	HWND consoleWindow = GetConsoleWindow();
 	LONG style = GetWindowLong(consoleWindow, GWL_STYLE);

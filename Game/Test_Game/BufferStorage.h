@@ -137,19 +137,19 @@ extern unordered_map<string, vector<wstring> > BUFFER_MAP = {
 		}
 	},
 	{
-		"pauseScreen",
+		"pauseTitle",
 		vector<wstring>{
 		L"This is pause screen."
 		}
 	},
 	{
-		"resume",
+		"resumeButton",
 		vector<wstring>{
 		L"RESUME"
 		}
 	},
 	{
-		"restart",
+		"restartButton",
 		vector<wstring>{
 		L"RESTART"
 		}
@@ -157,7 +157,7 @@ extern unordered_map<string, vector<wstring> > BUFFER_MAP = {
 	{
 		"exitTitle",
 		vector<wstring>{
-		L"HOW DARE YOU EXIT OUR MARVELOUS GAME YOU UNCULTURED SWINE" //Some bull-headed kid wrote this (not me)
+		L"HOW DARE YOU EXIT OUR MARVELOUS GAME YOU UNCULTURED SWINE" //Some bull-headed kid wrote this (not me) //stfu
 		}
 	},
 	/*{

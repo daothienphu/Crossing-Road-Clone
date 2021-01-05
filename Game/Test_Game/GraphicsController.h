@@ -64,7 +64,7 @@ public:
 			buffer[y * screenWidth + x + i] = bufferStorage["frame"][0][1];
 			color[y * screenWidth + x + i] = 7;	
 		}
-		int UwU = 2; // Moi nguoi oi toi bat dc 1 thang wibu nay
+		int UwU = 2; // Moi nguoi oi toi bat dc 1 thang wibu nay  //Hai dat ten bien, the luon
 		while (1) {
 			buffer[(y + UwU - 1) * screenWidth + x] = bufferStorage["frame"][2][0];
 			buffer[(y + UwU - 1) * screenWidth + x + w - 1] = bufferStorage["frame"][2][2];
@@ -85,8 +85,10 @@ public:
 				}
 			}
 			UwU++;
-			if (UwU == h + 1)
+			if (UwU == h + 1) {
+				render();
 				break;
+			}
 			render();
 			delay(1000 / (FRAMERATE));
 		}
