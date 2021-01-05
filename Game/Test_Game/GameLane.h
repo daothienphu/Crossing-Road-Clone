@@ -38,7 +38,7 @@ public:
 				string chosen = "enemy" + to_string(random(1, NUM_ENEMY));
 				if (cur + graphic->getBuffer(chosen)[0].size() + LEAST_SPACE < screenWidth)
 				{
-					obs.push_back(new Obstacles(cur, lane * LANE_HEIGHT, velocity, 0, random(1, 7), chosen, graphic));
+					obs.push_back(new Obstacles(cur, lane * LANE_HEIGHT, velocity, BG, random(1, 7), chosen, graphic));
 					cur += graphic->getBuffer(chosen)[0].size() + LEAST_SPACE;
 				}
 				else
@@ -51,7 +51,7 @@ public:
 			for (int i = 0; i < n; i++)
 			{
 				string chosen = "enemy" + to_string(random(1, NUM_ENEMY));
-				obs.push_back(new Obstacles(0, lane * LANE_HEIGHT, velocity, 0, random(1, 7), chosen, graphic));
+				obs.push_back(new Obstacles(0, lane * LANE_HEIGHT, velocity, BG, random(1, 7), chosen, graphic));
 				sum += graphic->getBuffer(chosen)[0].size();
 			}
 

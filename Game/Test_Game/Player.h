@@ -23,11 +23,11 @@ public:
 
 	void render(GraphicsController*& graphic) {
 		clearOldPos(graphic);
-		GameObject::render(graphic, 0, 7);
+		graphic->setBufferWhite(graphic->getBuffer(bufferKey), x, y, BG, 7);
 	}
 
 	void clearOldPos(GraphicsController*& graphic) {
-		GameObject::clearOldPos(graphic, 0, 7);
+		GameObject::clearOldPos(graphic, BG, 7);
 	}
 
 	void setPos(int x, int y) {

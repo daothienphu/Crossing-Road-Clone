@@ -37,6 +37,7 @@ public:
 
 	// WARNING: ONLY BE CALLED IN CONSTRUCTOR OF GAMELANE
 	// YOU HAVE BEEN WARNED
+	//dont care, imma fuck this up
 	virtual void resetPos(int lane, GraphicsController*& graphic, bool left = true) {
 		this->x = 0;
 		this->y = 0;

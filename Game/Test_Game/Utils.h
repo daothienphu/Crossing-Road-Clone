@@ -1,16 +1,20 @@
 #pragma once
+using namespace std;
+using namespace std::this_thread;
+using namespace std::chrono;
 #define FRAMERATE 60
 #define screenWidth 145
 #define screenHeight 41
-
 #define LANE_HEIGHT 7
 #define LEAST_SPACE 10
 #define NUM_ENEMY 4
+#define BG black
+enum { blueDark = 0, blueLight, orange, yellow, green, purple, red, whiteDark, white, black };
 
+#pragma region structs 
 struct coord {
 	int x, y;
 };
-
 struct BOUNDINGBOX {
 	int x = 0, y = 0;
 	int w = 0, h = 0;
@@ -27,17 +31,14 @@ struct BOUNDINGBOX {
 		return { x + w, y + h };
 	}
 };
+#pragma endregion
 
-using namespace std;
-using namespace std::this_thread;
-using namespace std::chrono;
-
-#pragma region Util
+#pragma region Utils
 void fixSizedConsoleWindow() {
 
 	//if u use this, change GameCore constructor to new Player(70,37), dont ask me why
 
-	system("MODE 145, 40"); // Set screen size (width, height + 1)
+	system("MODE 145, 41"); // Set screen size (width, height + 1)
 	//Fix window size
 	HWND consoleWindow = GetConsoleWindow();
 	LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
@@ -45,6 +46,12 @@ void fixSizedConsoleWindow() {
 	SetWindowLong(consoleWindow, GWL_STYLE, style);
 	// Make custom color palette - up to 16 colors, will update later
 	HANDLE hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE); // A hanle to console screen buffer.
+	
+	CONSOLE_CURSOR_INFO     cursorInfo;
+	GetConsoleCursorInfo(hConsoleOutput, &cursorInfo);
+	cursorInfo.bVisible = false; // set the cursor visibility
+	SetConsoleCursorInfo(hConsoleOutput, &cursorInfo);
+
 	CONSOLE_SCREEN_BUFFER_INFOEX csbiex;
 	csbiex.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
 	GetConsoleScreenBufferInfoEx(hConsoleOutput, &csbiex);
