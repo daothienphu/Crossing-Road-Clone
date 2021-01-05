@@ -32,7 +32,7 @@ public:
 	}
 
 	void clearOldPos(GraphicsController*& graphic) {
-		graphic->setBuffer(graphic->getBuffer(bufferKey + "_clear"), oldX, oldY, 0, 7);
+		graphic->setBuffer(graphic->getBuffer(bufferKey + "_clear"), oldX, oldY, black, 7);
 	}
 
 	virtual void resetPos(int lane, GraphicsController*& graphic, bool left = true) {

@@ -5,6 +5,7 @@ using namespace std::chrono;
 #define FRAMERATE 60
 #define screenWidth 145
 #define screenHeight 41
+enum { blueDark = 0, blueLight, orange, yellow, green, purple, red, whiteDark, white, black };
 
 #pragma region structs 
 struct coord {
@@ -41,6 +42,12 @@ void fixSizedConsoleWindow() {
 	SetWindowLong(consoleWindow, GWL_STYLE, style);
 	// Make custom color palette - up to 16 colors, will update later
 	HANDLE hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE); // A hanle to console screen buffer.
+	
+	CONSOLE_CURSOR_INFO     cursorInfo;
+	GetConsoleCursorInfo(hConsoleOutput, &cursorInfo);
+	cursorInfo.bVisible = false; // set the cursor visibility
+	SetConsoleCursorInfo(hConsoleOutput, &cursorInfo);
+
 	CONSOLE_SCREEN_BUFFER_INFOEX csbiex;
 	csbiex.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
 	GetConsoleScreenBufferInfoEx(hConsoleOutput, &csbiex);

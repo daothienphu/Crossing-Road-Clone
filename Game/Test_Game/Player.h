@@ -19,6 +19,6 @@ public:
 		this->y += y;
 
 		clearOldPos(graphic);
-		render(graphic, 0, 7);
+		render(graphic, black, 7);
 	}
 };
