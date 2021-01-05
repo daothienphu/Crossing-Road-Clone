@@ -9,6 +9,7 @@
 #include "GameObject.h"
 #include "Player.h"
 #include "Obstacles.h"
+#include "GameLane.h"
 #include "Items.h"
 #include "Menu.h"
 #include "GameMenu.h"
@@ -21,7 +22,7 @@ const vector<char> key = { 'W', 'A', 'S', 'D', 'P', 'R' };
 class GameCore {
 protected:
 	vector<Items*> menuHier; //hierarchy
-	GameObject* player;
+	Player* player;
 
 	GraphicsController* graphic;
 
@@ -107,14 +108,20 @@ public:
 	}
 	void playScreen(int Level)
 	{
-		Obstacles* enemy1 = new Obstacles(20, 5, 2, 0, 1, "enemy1", graphic);
-		Obstacles* enemy2 = new Obstacles(10, 10, 3, 0, 3, "enemy2", graphic);
-		Obstacles* enemy3 = new Obstacles(30, 15, 2, 0, 4, "enemy3", graphic);
-		Obstacles* enemy4 = new Obstacles(40, 20, 3, 0, 6, "enemy4", graphic);
+		player->setPos(70, 38);
+		player->clearOldPos(graphic);
+		GameLane* lane1 = new GameLane(1, 1, 1, graphic);
+		GameLane* lane2 = new GameLane(2, 2, 1, graphic);
+		GameLane* lane3 = new GameLane(3, 3, 1, graphic);
+
+		vector<GameLane*> lanes = {lane1, lane2, lane3};
 
 		GameMenu* score = new Button("score");
 		GameMenu* level = new Button("level");
-		vector<wstring> scoreCounter, levelCounter;
+		GameMenu* laneIndex = new Button("score");
+		vector<wstring> scoreCounter, levelCounter, laneCounter;
+
+		int lc = 0;
 
 
 		vector<wstring> playerGraphic = graphic->getBuffer(player->getBufferKey());
@@ -128,7 +135,6 @@ public:
 		while (1)
 		{
 			delay(1000/(FRAMERATE - 20));
-			player->render(graphic, 0, 7);
 
 			for (int i = 0; i < key.size(); i++) { 	// Read input
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
@@ -137,69 +143,38 @@ public:
 				pauseScreen();
 			//W A S D
 			else if (bKeyGame[0] == 1 && player->getPos().y > 0) {
-				player->move(0, -1, graphic);
+				player->move(0, -1);
 				//Player.moveUp();
 			}
 			else if (bKeyGame[1] == 1 && player->getPos().x > 0) {
-				player->move(-1, 0, graphic);
+				player->move(-1, 0);
 				//Player.moveLeft();
 			}
 			else if (bKeyGame[2] == 1 && player->getPos().y < screenHeight - 1 - playerHeight) {
-				player->move(0, 1, graphic);
+				player->move(0, 1);
 				//Player.moveDown();
 			}
 			else if (bKeyGame[3] == 1 && player->getPos().x < screenWidth - 1 - playerWidth) {
-				player->move(1, 0, graphic);
+				player->move(1, 0);
 				//Player.moveRight();
 			}
 			
 
 			toVwstring(num++, scoreCounter);
 			toVwstring(Level, levelCounter);
+			toVwstring(lc, laneCounter);
 			graphic->setBuffer(graphic->getBuffer(score->getBufferKey()), 2, 1, 0, 7);
 			graphic->setBuffer(scoreCounter, 9, 1, 0, 7);
 			graphic->setBuffer(graphic->getBuffer(level->getBufferKey()), 2, 2, 0, 7);
 			graphic->setBuffer(levelCounter, 9, 2, 0, 7);
+			graphic->setBuffer(graphic->getBuffer(laneIndex->getBufferKey()), 2, 4, 0, 7);
+			graphic->setBuffer(laneCounter, 9, 4, 0, 7);
 
+			player->render(graphic);
 
-			/*graphic->setBuffer(enemy1Blank, enemy1->getOldPos().x, enemy1->getOldPos().y, 0, 7);
-			graphic->setBuffer(graphic->getBuffer(enemy1->getBufferKey()), enemy1->getPos().x, enemy1->getPos().y, 0, 1);
-			graphic->setBuffer(enemy2Blank, enemy2->getOldPos().x, enemy2->getOldPos().y, 0, 7);
-			graphic->setBuffer(graphic->getBuffer(enemy2->getBufferKey()), enemy2->getPos().x, enemy2->getPos().y, 0, 3);
-			graphic->setBuffer(enemy3Blank, enemy3->getOldPos().x, enemy3->getOldPos().y, 0, 7);
-			graphic->setBuffer(graphic->getBuffer(enemy3->getBufferKey()), enemy3->getPos().x, enemy3->getPos().y, 0, 4);
-			graphic->setBuffer(enemy4Blank, enemy4->getOldPos().x, enemy4->getOldPos().y, 0, 7);
-			graphic->setBuffer(graphic->getBuffer(enemy4->getBufferKey()), enemy4->getPos().x, enemy4->getPos().y, 0, 6);*/
-			enemy1->render(graphic);
-			enemy2->render(graphic);
-			enemy3->render(graphic);
-			enemy4->render(graphic);
-
-			enemy1->move(2, 0, graphic);
-			enemy2->move(-2, 0, graphic);
-			enemy3->move(2, 0, graphic);
-			enemy4->move(-2, 0, graphic);
-
-			if (enemy1->getPos().x >= screenWidth - 1 - graphic->getBuffer(enemy1->getBufferKey())[0].length()) {
-				enemy1->clearOldPos(graphic);
-				enemy1->resetPos(1, graphic);
-			}
-
-			if (enemy2->getPos().x <= 1) {
-				enemy2->clearOldPos(graphic);
-				enemy2->resetPos(2, graphic, false);
-			}
-
-			if (enemy3->getPos().x >= screenWidth - 1 - graphic->getBuffer(enemy3->getBufferKey())[0].length()) {
-				enemy3->clearOldPos(graphic);
-				enemy3->resetPos(3, graphic);
-			}
-			
-			if (enemy4->getPos().x <= 1) {
-				enemy4->clearOldPos(graphic);
-				enemy4->resetPos(4, graphic, false);
-			}
-			
+			for (auto l : lanes) l->logic();
+			for (auto l : lanes) l->render(graphic);
+			if (this->checkCollision(lanes, lc)) start();
 
 			graphic->render();
 		}
@@ -343,5 +318,19 @@ public:
 			if (GetAsyncKeyState(VK_RETURN))
 				exit(0);
 		}
+	}
+
+	bool checkCollision(vector<GameLane*> lanes, int &lc)
+	{
+		BOUNDINGBOX pla = player->getBoundingBox();
+		int lane = pla.y / LANE_HEIGHT;
+		lc = lane;
+		if(lane - 1 < 0 || lane > lanes.size()) return false;
+		GameLane* tmp = lanes[lane - 1];
+		if (tmp->checkCollision(pla))
+		{
+			return true;
+		}
+		return false;
 	}
 };

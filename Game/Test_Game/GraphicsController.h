@@ -126,16 +126,27 @@ public:
 	{
 		return bufferStorage[key];
 	}
+
+	bool isInScreen(int y, int x) {
+		return 0 <= y && y < screenHeight - 1 && 0 <= x && x <= screenWidth - 1;
+	}
+
 	void setBuffer(vector<wstring>& content, int x, int y, int bgColor, int fgColor) {
 		for (int i = 0; i < content.size(); ++i) {
 			for (int j = 0; j < content[i].length(); ++j) {
+				if (!isInScreen(y + i, x + j))
+					continue;
 				buffer[(y + i) * screenWidth + x + j] = content[i].at(j);
 				color[(y + i) * screenWidth + x + j] = bgColor * 16 + fgColor;
 			}
-			color[(y + i) * screenWidth + x - 2] = bgColor * 16 + fgColor;
+			if (isInScreen(y + i, x - 2))
+				color[(y + i) * screenWidth + x - 2] = bgColor * 16 + fgColor;
+			if (isInScreen(y + i, x - 1))
 			color[(y + i) * screenWidth + x - 1] = bgColor * 16 + fgColor;
-			color[(y + i) * screenWidth + x + content[i].length()] = bgColor * 16 + fgColor;
-			color[(y + i) * screenWidth + x + content[i].length() + 1] = bgColor * 16 + fgColor;
+			if (isInScreen(y + i, x + content[i].length()))
+				color[(y + i) * screenWidth + x + content[i].length()] = bgColor * 16 + fgColor;
+			if (isInScreen(y + i, x + content[i].length() + 1))
+				color[(y + i) * screenWidth + x + content[i].length() + 1] = bgColor * 16 + fgColor;
 		}
 	}
 	void setBufferWhite(vector<wstring>& content, int x, int y, int bgColor, int fgColor) {

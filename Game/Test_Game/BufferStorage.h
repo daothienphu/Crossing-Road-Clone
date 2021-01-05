@@ -187,5 +187,3 @@ extern vector <string> CLEAR_BUFFER = {
 	"enemy3",
 	"enemy4",
 };
-
-//then go to GraphicController and map it to the unordered_map using the syntax: bufferStorage["name"] = name;

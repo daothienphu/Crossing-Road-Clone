@@ -25,19 +25,20 @@ public:
 		return { x,y,w,h };
 	}
 
-	virtual void move(int x, int y, GraphicsController*&) = 0;
+	virtual void move(int x, int y) = 0;
 
 	void render(GraphicsController*& graphic, int bgColor, int fgColor) {
 		graphic->setBuffer(graphic->getBuffer(bufferKey), x, y, bgColor, fgColor);
 	}
 
-	void clearOldPos(GraphicsController*& graphic) {
-		graphic->setBuffer(graphic->getBuffer(bufferKey + "_clear"), oldX, oldY, 0, 7);
+	void clearOldPos(GraphicsController*& graphic, int bgColor, int fgColor) {
+		graphic->setBuffer(graphic->getBuffer(bufferKey + "_clear"), oldX, oldY, bgColor, fgColor);
 	}
 
+	// WARNING: ONLY BE CALLED IN CONSTRUCTOR OF GAMELANE
+	// YOU HAVE BEEN WARNED
 	virtual void resetPos(int lane, GraphicsController*& graphic, bool left = true) {
 		this->x = 0;
 		this->y = 0;
-		clearOldPos(graphic);
 	}
 };
