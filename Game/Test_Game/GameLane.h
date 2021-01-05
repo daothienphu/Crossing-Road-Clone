@@ -99,23 +99,10 @@ public:
 		for (auto it : obs)
 		{
 			BOUNDINGBOX obj = it->getBoundingBox();
-			if (min(player.x + player.w, obj.x + obj.w) > max(player.x, obj.x)) return true;
+			if (min(player.x + player.w, obj.x + obj.w) > max(player.x, obj.x) && 
+				min(player.y + player.h, obj.y + obj.h) > max(player.y, obj.y)) return true;
 		}
 		return false;
-	}
-
-	bool verticleCollision(BOUNDINGBOX a, BOUNDINGBOX b)
-	{
-		if (a.y > b.y) return this->verticleCollision(b, a);
-		if (b.y - a.y < a.h) return true;
-		else return false;
-	}
-
-	bool horizontalCollision(BOUNDINGBOX a, BOUNDINGBOX b)
-	{
-		if (a.x > b.x) return this->horizontalCollision(b, a);
-		if (a.x + a.w > b.x + 2) return true;
-		else return false;
 	}
 
 };

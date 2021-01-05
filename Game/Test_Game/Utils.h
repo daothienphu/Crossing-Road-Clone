@@ -4,7 +4,7 @@
 #define screenHeight 41
 
 #define LANE_HEIGHT 7
-#define LEAST_SPACE 20
+#define LEAST_SPACE 10
 #define NUM_ENEMY 4
 
 struct coord {

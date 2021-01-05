@@ -108,11 +108,13 @@ public:
 	}
 	void playScreen(int Level)
 	{
-		GameLane* lane = new GameLane(2, 1, 1, graphic);
-		GameLane* lane2 = new GameLane(3, 2, 1, graphic);
-		GameLane* lane3 = new GameLane(1, 3, 1, graphic);
+		player->setPos(70, 38);
+		player->clearOldPos(graphic);
+		GameLane* lane1 = new GameLane(1, 1, 1, graphic);
+		GameLane* lane2 = new GameLane(2, 2, 1, graphic);
+		GameLane* lane3 = new GameLane(3, 3, 1, graphic);
 
-		vector<GameLane*> lanes = {lane, lane2, lane3};
+		vector<GameLane*> lanes = {lane1, lane2, lane3};
 
 		GameMenu* score = new Button("score");
 		GameMenu* level = new Button("level");
@@ -168,19 +170,10 @@ public:
 			graphic->setBuffer(graphic->getBuffer(laneIndex->getBufferKey()), 2, 4, 0, 7);
 			graphic->setBuffer(laneCounter, 9, 4, 0, 7);
 
+			player->render(graphic);
+
 			for (auto l : lanes) l->logic();
 			for (auto l : lanes) l->render(graphic);
-
-
-			//lane->logic();
-			//lane2->logic();
-			//lane3->logic();
-
-			//lane->render(graphic);
-			//lane2->render(graphic);
-			//lane3->render(graphic);
-
-			player->render(graphic);
 			if (this->checkCollision(lanes, lc)) start();
 
 			graphic->render();
@@ -330,7 +323,7 @@ public:
 	bool checkCollision(vector<GameLane*> lanes, int &lc)
 	{
 		BOUNDINGBOX pla = player->getBoundingBox();
-		int lane = (screenHeight - pla.y - 2) / LANE_HEIGHT - 1;
+		int lane = pla.y / LANE_HEIGHT;
 		lc = lane;
 		if(lane - 1 < 0 || lane > lanes.size()) return false;
 		GameLane* tmp = lanes[lane - 1];

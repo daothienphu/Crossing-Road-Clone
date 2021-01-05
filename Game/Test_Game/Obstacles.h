@@ -34,16 +34,19 @@ public:
 		this->y += y;
 
 		if (isOutOfBound())
-			resetPos(1, x > 0);
+			resetPos(x > 0);
 	}
-	virtual void resetPos(int lane, bool left = true) {
-		this->x = left? 1 : screenWidth - w;
-		//this->y = lane * 5;
+	virtual void resetPos(bool left = true) {
+		this->x = left? -w + 1 : screenWidth;
 	}
 
 	void render(GraphicsController*& graphic) {
-		clearOldPos(graphic, bgColor, fgColor);
-		GameObject::render(graphic, bgColor, fgColor);
+		clearOldPos(graphic);
+		graphic->setBuffer(graphic->getBuffer(bufferKey), this->x, this->y, bgColor, fgColor);
+	}
+
+	void clearOldPos(GraphicsController*& graphic) {
+		GameObject::clearOldPos(graphic, bgColor, fgColor);
 	}
 
 	void setPos(int x, int y) {
@@ -54,7 +57,7 @@ public:
 	}
 
 	bool isOutOfBound() {
-		return x < 1 || x > screenWidth - 1 - w;
+		return x + w < 1 || x > screenWidth;
 	}
 
 	int getTick() {
