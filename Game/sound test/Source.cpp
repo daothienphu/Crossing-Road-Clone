@@ -7,8 +7,8 @@ using namespace std;
 int main() {
     //PlaySound(TEXT("mywavsound.wav"), NULL, SND_FILENAME); - My erroring code
     int n = 1;
-    LPCWSTR command1{ L"play game_over.wav" };
     LPCWSTR command2{ L"play intro.wav" };
+    LPCWSTR command1{ L"play game_over.wav" };
 
     //while(cin >> n && n != 0)
      //bool played = PlaySound(TEXT("game_over.wav"), NULL, SND_ASYNC);// - the correct code
