@@ -101,7 +101,7 @@ public:
 	void moveUp() { Y--; }
 	void moveDown() { Y++; }
 	int width() {
-		int max = Sketch[0].length();
+		int max = 0;
 		for (int i = 0; i < Sketch.size(); i++)
 			if (Sketch[i].length() > max)
 				max = Sketch[i].length();
@@ -112,7 +112,7 @@ public:
 	void setSketch(vector<wstring> sketch) { Sketch = sketch; }
 };
 bool checkCollision(cPlayer player, cEnemy* enemy) {
-	if (player.getX() > enemy->getX() && player.getX() < enemy->getX() + enemy->width() &&
+	if (player.getX() >= enemy->getX() && player.getX() < enemy->getX() + enemy->width() &&
 		player.getY() > enemy->getY() && player.getY() < enemy->getY() + enemy->height())
 		return true;
 	return false;
@@ -131,7 +131,7 @@ public:
 		SetWindowLong(consoleWindow, GWL_STYLE, style);
 	}
 	void configure() {
-		system("MODE 160, 45"); // Set screen size (width, height + 1)
+		system("MODE 160, 46"); // Set screen size (width, height + 1)
 		FixConsoleWindow(); //Fix window size
 		// Make custom color palette - up to 16 colors, will update later
 		HANDLE hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE); // A hanle to console screen buffer.
@@ -269,6 +269,13 @@ public:
 
 	
 	}
+	void drawRectangle(int x, int y, int width, int height, int colorBackground, int colorChar) {
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				pColor[i * nScreenHeight + j] = colorBackground * 16 + colorChar;
+			}
+		}
+	}
 	void drawStars(int* starmap) {
 		for (int i = 0; i < nScreenHeight; i++) {
 			for (int j = 0; j < nScreenWidth; j++) {
@@ -403,16 +410,23 @@ public:
 		cPlayer Player;
 		Player.setXY(80, 1);
 		//INITIALISE ENEMIES
-		cEnemy* Enemy[4];
+		cEnemy* Enemy[6];
 		Enemy[0] = new cEnemy(0, 10, e1);
 		Enemy[1] = new cEnemy(nScreenWidth, 15, e2);
 		Enemy[2] = new cEnemy(50, 20, e3);
 		Enemy[3] = new cEnemy(nScreenWidth - 30, 25, e4);
+		Enemy[4] = new cEnemy(20, 30, e2);
+		Enemy[5] = new cEnemy(nScreenWidth - 5, 35, e1);
 		int frame = 0;
 		bool gameOver = false;
+		bool* passed = new bool[10];
+		for (int i = 0; i < 10; i++)
+			passed[i] = false;
+		int lane1 = 10;
 		//INITIALISE STAR MAP
 		int* starmap = new int[nScreenWidth * nScreenHeight];
-
+		int score = 0;
+		int level = 1;
 		while (gameOver == false) {
 			// CLEAR SCREEN
 			int bg = 0, ch = 7;
@@ -429,32 +443,61 @@ public:
 			// Player
 			if (bKeyGame[0] == 1) // W - Move up
 			{
+				if (Player.getY() - 1 >= 0)
 				Player.moveUp();
 			}
 			if (bKeyGame[1] == 1) // A - Move left
 			{
-				Player.moveLeft();
+				if (Player.getX() - 2 >= 0)
+					Player.moveLeft();
 			}
 			if (bKeyGame[2] == 1) 	// S - Move down
 			{
+				//if (Player.getY() + 1 <= nScreenHeight - 1)
 				Player.moveDown();
 			}
 			if (bKeyGame[3] == 1) // D - Move right
 			{
+				if (Player.getX() + 2 <= nScreenWidth - 1)
 				Player.moveRight();
 			}
 			// Enemies
-			if (Enemy[0]->getX() + 10 >= nScreenWidth) Enemy[0]->setX(0);
+			if (Enemy[0]->getX() + 10 >= nScreenWidth) 
+				Enemy[0]->setX(0);
 			else Enemy[0]->moveRight();
-			if (Enemy[1]->getX() <= 0) Enemy[1]->setX(nScreenWidth - 10);
+
+			if (Enemy[1]->getX() <= 0) 
+				Enemy[1]->setX(nScreenWidth - 10);
 			else Enemy[1]->moveLeft();
-			if (Enemy[2]->getX() + 10 >= nScreenWidth) Enemy[2]->setX(0);
+
+			if (Enemy[2]->getX() + 10 >= nScreenWidth) 
+				Enemy[2]->setX(0);
 			else Enemy[2]->moveRight();
-			if (Enemy[3]->getX() <= 0) Enemy[3]->setX(nScreenWidth - 10);
+
+			if (Enemy[3]->getX() <= 0) 
+				Enemy[3]->setX(nScreenWidth - 10);
 			else Enemy[3]->moveLeft();
-			int score = 0;
+
+			if (Enemy[4]->getX() + 10 >= nScreenWidth)
+				Enemy[4]->setX(0);
+			else Enemy[4]->moveRight();
+
+			if (Enemy[5]->getX() <= 0) 
+				Enemy[5]->setX(nScreenWidth - 10);
+			else Enemy[5]->moveLeft();
+
+
 			// GAME LOGIC
-			frame++;
+			// Check lane pass
+			bool newscore = false;
+			for (int i = 0; i < 10; i++) {
+				if (Player.getY() >= lane1 + i * 5 && passed[i] == false) {
+					score += 10;
+					newscore = true;
+					passed[i] = true;
+				}
+			}
+			// Check collision
 			for (int i = 0; i < 4; i++) {
 				if (checkCollision(Player, Enemy[i]) == true) {
 					gameOverEffect();
@@ -468,25 +511,34 @@ public:
 					//startMenuScreen();
 				}
 			}
+			
 
 			// DISPLAY GAME SCREEN
 			//drawMap();
 			//drawFrame(0, 0, nScreenWidth, nScreenHeight, 0, 7);
 			if (frame % 15 == 0) makeNewStarMap(starmap);
 			drawStars(starmap);
-			drawHorizontalLine1(0, 9, nScreenWidth, 0, 7);
-			drawHorizontalLine2(2, 14, nScreenWidth - 2, 0, 7);
-			drawHorizontalLine3(0, 19, nScreenWidth, 0, 1);
-			drawHorizontalLine3(0, 24, nScreenWidth, 0, 1);			
-			drawHorizontalLine3(0, 29, nScreenWidth, 0, 1);
+			drawHorizontalLine3(0, 9, nScreenWidth, bg, lightblue);
+			drawHorizontalLine3(0, 14, nScreenWidth, bg, lightblue);
+			drawHorizontalLine3(0, 19, nScreenWidth, bg, lightblue);
+			drawHorizontalLine3(0, 24, nScreenWidth, bg, lightblue);			
+			drawHorizontalLine3(0, 29, nScreenWidth, bg, lightblue);
+			drawHorizontalLine3(0, 34, nScreenWidth, bg, lightblue);
+			drawHorizontalLine3(0, 39, nScreenWidth, bg, lightblue);
 			drawBlock(Player.getSketch(), Player.getX(), Player.getY(), bg, 7);
-			drawBlock(Enemy[0]->getSketch(), Enemy[0]->getX(), Enemy[0]->getY(), bg, 6); // Red enemy
-			drawBlock(Enemy[1]->getSketch(), Enemy[1]->getX(), Enemy[1]->getY(), bg, 3); // Yellow enemy
-			drawBlock(Enemy[2]->getSketch(), Enemy[2]->getX(), Enemy[2]->getY(), bg, 4); // Green
-			drawBlock(Enemy[3]->getSketch(), Enemy[3]->getX(), Enemy[3]->getY(), bg, 1); // Blue
+			drawBlock(Enemy[0]->getSketch(), Enemy[0]->getX(), Enemy[0]->getY(), bg, red);
+			drawBlock(Enemy[1]->getSketch(), Enemy[1]->getX(), Enemy[1]->getY(), bg, yellow);
+			drawBlock(Enemy[2]->getSketch(), Enemy[2]->getX(), Enemy[2]->getY(), bg, green); 
+			drawBlock(Enemy[3]->getSketch(), Enemy[3]->getX(), Enemy[3]->getY(), bg, lightblue);
+			drawBlock(Enemy[4]->getSketch(), Enemy[4]->getX(), Enemy[4]->getY(), bg, yellow);
+			drawBlock(Enemy[5]->getSketch(), Enemy[5]->getX(), Enemy[5]->getY(), bg, red);
 			drawText(L"SCORE: " + to_wstring(score), 4, 2, 0, 7);
 			drawText(L"Frame: " + to_wstring(frame), 2, nScreenHeight - 1, bg, ch);
 			drawScreen();
+
+
+			frame++;
+
 		}
 	}
 
