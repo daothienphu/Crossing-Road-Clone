@@ -37,7 +37,6 @@ class SomeKindsOf : public Obstacles {
 public:
 	SomeKindsOf() : Obstacles(0, 0, 0, 0, "SomeKindsOf") {}
 	SomeKindsOf(int x, int y, int w, int h) : Obstacles(x, y, w, h, "SomeKindsOf") {
-		//this->bufferData = this->buf;
 	}
 };
 
@@ -46,9 +45,7 @@ class Monster :public Obstacles {
 public:
 	Monster() : Obstacles(0, 0, 0, 0, "Monster") {}
 	Monster(int x, int y, int w, int h) : Obstacles(x, y, w, h, "Monster") {
-		//this->bufferData = this->buf;
 	}
 };
 
-//fell free to declare more class using the above template
-//feel*
+//feel free to declare more class using the above template
