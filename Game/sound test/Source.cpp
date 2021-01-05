@@ -6,7 +6,16 @@ using namespace std;
 
 int main() {
     //PlaySound(TEXT("mywavsound.wav"), NULL, SND_FILENAME); - My erroring code
-    PlaySound(TEXT("game_over.wav"), NULL, SND_FILENAME | SND_ASYNC);// - the correct code
+    int n = 1;
+    LPCWSTR command1{ L"play game_over.wav" };
+    LPCWSTR command2{ L"play intro.wav" };
+
+    //while(cin >> n && n != 0)
+     //bool played = PlaySound(TEXT("game_over.wav"), NULL, SND_ASYNC);// - the correct code
+     //cout << played << endl;
+     //mciSendString(command1, NULL, 0, NULL);
+     mciSendString(command2, NULL, 0, NULL);
+     mciSendString(command1, NULL, 0, NULL);
 
     int test = 0;
     cin >> test;

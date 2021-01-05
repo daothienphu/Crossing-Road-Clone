@@ -3,6 +3,7 @@
 #include<iostream>
 #include<vector>
 #include<cstdlib>
+#include <windows.h>
 using namespace std;
 const wstring detail = L" ▄▀█▓░╚╝╔╗║═";
 #define nScreenWidth 160
@@ -10,6 +11,7 @@ const wstring detail = L" ▄▀█▓░╚╝╔╗║═";
 #define fps 20
 enum { darkblue, lightblue, orange, yellow, green, purple, red, darkwhite, white, black };
 const vector<char> key = { 'W', 'A', 'S', 'D' };
+
 const vector<wstring> e1 = { // 10 x 4
 	L". '.  .' .",
 	L"l.l'll'l.'",
@@ -33,6 +35,9 @@ const vector<wstring> e4 = { // 9 x 4
 	L"ll..l..ll",
 	L"l'l'l'l'l",
 	L" ' ' ' '"
+};
+const vector<vector<wstring>> e = {
+	e1, e2, e3, e4
 };
 const vector<wstring> Title = { // 52 x 8
 	L".'''.  l'''.  .'''.  .'''   .'''   'l'  l.  l  .''''",
@@ -83,6 +88,7 @@ public:
 };
 class cEnemy {
 private:
+	int direction; // -1 left, 1 right
 	int X = 0, Y = 0;
 	vector<wstring> Sketch;
 public:
@@ -110,6 +116,9 @@ public:
 	int height() { return Sketch.size(); }
 	vector<wstring> getSketch() { return Sketch; }
 	void setSketch(vector<wstring> sketch) { Sketch = sketch; }
+	void updatePos() {
+	
+	}
 };
 bool checkCollision(cPlayer player, cEnemy* enemy) {
 	if (player.getX() >= enemy->getX() && player.getX() < enemy->getX() + enemy->width() &&
@@ -221,6 +230,23 @@ public:
 			}
 		}
 	}
+	void drawBlock(wstring Sketch, int X, int Y, int colorBackground, int colorChar) {
+			for (int j = 0; j < Sketch.length(); j++) {
+				if (Sketch[j] == '.') {
+					pBuffer[(Y) * nScreenWidth + X + j] = L'▄';
+					pColor[(Y ) * nScreenWidth + X + j] = colorBackground * 16 + colorChar;
+				}
+				if (Sketch[j] == '\'') {
+					pBuffer[(Y ) * nScreenWidth + X + j] = L'▀';
+					pColor[(Y ) * nScreenWidth + X + j] = colorBackground * 16 + colorChar;
+				}
+				if (Sketch[j] == 'l') {
+					pBuffer[(Y ) * nScreenWidth + X + j] = L'█';
+					pColor[(Y ) * nScreenWidth + X + j] = colorBackground * 16 + colorChar;
+				}
+			}
+
+	}
 	void drawFrame(int x, int y, int width, int height, int colorBackground, int colorChar) {
 		for (int i = 0; i < height; i++) { // y iterator
 			for (int j = 0; j < width; j++) { // x iterator
@@ -321,6 +347,7 @@ public:
 	
 	}
 	void startMenuScreen() {
+		PlaySound(TEXT("intro.wav"), NULL, SND_ASYNC);
 		// CONFIGURE SCREEN
 		configure();
 		HANDLE hConsole1 = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
@@ -343,10 +370,14 @@ public:
 			// W - Move up
 			if (bKey[0] == 1 ) {
 				choiceMenu = (choiceMenu - 1) % 4;
+				PlaySound(TEXT("menu_click.wav"), NULL, SND_ASYNC);
+
 			}
 			// S - Move down
 			if (bKey[2] == 1) {
 				choiceMenu = (choiceMenu + 1) % 4;
+				PlaySound(TEXT("menu_click.wav"), NULL, SND_ASYNC);
+
 			}
 			int bg = 9, ch = 7;
 			// DISPLAY CURRENT MENU
@@ -386,8 +417,13 @@ public:
 			if (GetAsyncKeyState(VK_RETURN)) {
 				if (choiceMenu == 0) {
 					// START GAME
+					//PlaySound(TEXT("enter.wav"), NULL, SND_ASYNC);
 					glitchEffectText(L" START GAME ", xMenu, yMenu, 7, 6, 0, 7);
-					startGameScreen();
+					//Sleep(1800);
+					startLoadScreen();
+
+					startGameScreen(1);
+
 				}
 				else if (choiceMenu == 1) {
 					// LOAD GAME
@@ -405,12 +441,42 @@ public:
 			frame++;
 		}
 	}
-	void startGameScreen() {
+	void startLoadScreen() {
+		clearScreen(darkblue, white);
+		drawBlock(L"ll", 75, 22, darkblue, white);
+		drawScreen();
+		PlaySound(TEXT("menu_click.wav"), NULL, SND_ASYNC);
+		Sleep(800);		
+		//clearScreen(darkblue, white);
+		drawBlock(L"ll", 79, 22, darkblue, white);
+		drawScreen();
+		PlaySound(TEXT("menu_click.wav"), NULL, SND_ASYNC);
+		Sleep(800);
+		//clearScreen(darkblue, white);
+		drawBlock(L"ll", 83, 22, darkblue, white);
+		drawScreen();
+		PlaySound(TEXT("menu_click.wav"), NULL, SND_ASYNC);
+		Sleep(800);
+		
+	}
+
+	void startGameScreen(int level) {
+		PlaySound(TEXT("enter.wav"), NULL, SND_ASYNC);
+		LPCWSTR 
+		mciSendString("play wave1.wav", NULL, 0, NULL);
+
+		mciSendString("play wave2.wav", NULL, 0, NULL);
+		int nLane = 5 + level * 2;
+		int lane1 = 10;
 		//INITIALISE PLAYER
 		cPlayer Player;
 		Player.setXY(80, 1);
 		//INITIALISE ENEMIES
-		cEnemy* Enemy[6];
+		cEnemy** Enemy = new cEnemy*[nLane];
+		for (int i = 0; i < nLane; i++) {
+			//Enemy[i] = new cEnemy()
+		
+		}
 		Enemy[0] = new cEnemy(0, 10, e1);
 		Enemy[1] = new cEnemy(nScreenWidth, 15, e2);
 		Enemy[2] = new cEnemy(50, 20, e3);
@@ -419,14 +485,16 @@ public:
 		Enemy[5] = new cEnemy(nScreenWidth - 5, 35, e1);
 		int frame = 0;
 		bool gameOver = false;
-		bool* passed = new bool[10];
-		for (int i = 0; i < 10; i++)
+		//Score
+		bool* passed = new bool[nLane];
+		for (int i = 0;i < nLane ; i++)
 			passed[i] = false;
-		int lane1 = 10;
+		//lane
+
 		//INITIALISE STAR MAP
 		int* starmap = new int[nScreenWidth * nScreenHeight];
 		int score = 0;
-		int level = 1;
+		//int level = 1;
 		while (gameOver == false) {
 			// CLEAR SCREEN
 			int bg = 0, ch = 7;
@@ -495,11 +563,14 @@ public:
 					score += 10;
 					newscore = true;
 					passed[i] = true;
+					PlaySound(TEXT("lane_pass.wav"), NULL, SND_ASYNC);
+
 				}
 			}
 			// Check collision
 			for (int i = 0; i < 4; i++) {
 				if (checkCollision(Player, Enemy[i]) == true) {
+					PlaySound(TEXT("game_over.wav"), NULL, SND_ASYNC);
 					gameOverEffect();
 					clearScreen(9, 7);
 					drawBlock(GameOver, 53, 12, 9, 6);
@@ -510,6 +581,11 @@ public:
 					exit(0);
 					//startMenuScreen();
 				}
+			}
+			// Check level pass
+			if (Player.getY() >= nScreenHeight) {
+				startGameScreen(2);
+
 			}
 			
 
