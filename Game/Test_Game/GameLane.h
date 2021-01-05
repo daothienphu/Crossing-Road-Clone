@@ -94,32 +94,27 @@ public:
 		}
 	}
 
-	bool checkCollision(BOUNDINGBOX player, int &lc)
+	bool checkCollision(BOUNDINGBOX player)
 	{
-		for (auto it : obs) 
-			return (//this->verticleCollision(player, it->getBoundingBox(), lc) 
-				 this->horizontalCollision(player, it->getBoundingBox(), lc));
+		for (auto it : obs)
+		{
+			BOUNDINGBOX obj = it->getBoundingBox();
+			if (min(player.x + player.w, obj.x + obj.w) > max(player.x, obj.x)) return true;
+		}
+		return false;
 	}
 
-	bool verticleCollision(BOUNDINGBOX a, BOUNDINGBOX b, int &lc)
+	bool verticleCollision(BOUNDINGBOX a, BOUNDINGBOX b)
 	{
-		if (a.y > b.y) return this->verticleCollision(b, a, lc);
-		if (b.y - a.y < a.h)
-		{
-			//lc += 1000;
-			return true;
-		}
+		if (a.y > b.y) return this->verticleCollision(b, a);
+		if (b.y - a.y < a.h) return true;
 		else return false;
 	}
 
-	bool horizontalCollision(BOUNDINGBOX a, BOUNDINGBOX b, int &lc)
+	bool horizontalCollision(BOUNDINGBOX a, BOUNDINGBOX b)
 	{
-		if (a.x > b.x) return this->horizontalCollision(b, a, lc);
-		if (a.x + a.w > b.x - 1)
-		{
-			//lc += 1;
-			return true;
-		}
+		if (a.x > b.x) return this->horizontalCollision(b, a);
+		if (a.x + a.w > b.x + 2) return true;
 		else return false;
 	}
 

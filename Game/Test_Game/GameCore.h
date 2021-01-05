@@ -334,7 +334,7 @@ public:
 		lc = lane;
 		if(lane - 1 < 0 || lane > lanes.size()) return false;
 		GameLane* tmp = lanes[lane - 1];
-		if (tmp->checkCollision(pla, lc))
+		if (tmp->checkCollision(pla))
 		{
 			return true;
 		}
