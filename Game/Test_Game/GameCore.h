@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <iostream>
 #include <Windows.h>
-#include <cstdlib>
+#include <mmsystem.h>
 #include <windows.h>
 #include <iomanip>
 #include <vector>
@@ -25,6 +25,7 @@ class GameCore {
 protected:
 	Player* player;
 	GraphicsController* graphic;
+	bool soundOn = true;
 public:
 	GameCore() {
 		graphic = new GraphicsController;
@@ -43,7 +44,7 @@ public:
 	void introScreen() {
 		graphic->createFrame(0, 0, 145, 40);
 
-#pragma region intro
+		//intro
 		GameMenu* intro = new Button("intro");
 		delay(500);
 		/*graphic->setBuffer(graphic->getBuffer(intro->getBufferKey()), 10, 3, BG, blueDark);
@@ -57,11 +58,10 @@ public:
 		delay(25);*/
 		graphic->setBuffer(graphic->getBuffer(intro->getBufferKey()), 21, 10, BG, blueLight);
 		graphic->render();
-#pragma endregion
 
 		delay(500);
 
-#pragma region loading bar, cuz why not
+		//loading bar, cuz why not
 		graphic->createFrame(30, 23, 85, 3);
 		for (int i = 1; i < 82; ++i) {
 			vector<wstring> tmp = { L"█" };
@@ -72,7 +72,6 @@ public:
 		vector<wstring> tmp = { L"PRESS ENTER TO CONTINUE" };
 		graphic->setBuffer(tmp, 58, 27, BG, whiteDark);
 		graphic->render();
-#pragma endregion
 
 		int count = 0;
 		while (!GetAsyncKeyState(VK_RETURN)) {
@@ -84,11 +83,9 @@ public:
 				graphic->render();
 			}
 		}
-		PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME);
 		graphic->clearBuffer();
 	}
 	void titleScreen() {
-		PlaySound(TEXT("intro.wav"), NULL, SND_FILENAME);
 		GameMenu* title = new Button(46, 8, "title");
 		GameMenu* startButton = new Button("start");
 		GameMenu* loadButton = new Button("load");
@@ -101,37 +98,50 @@ public:
 
 		int choice = 0;
 		bool* bKeyGame = new bool[key.size()]{ 0 };
-
+		if (soundOn)
+			PlaySound(TEXT("intro.wav"), NULL, SND_ASYNC);
 		while (1) {
+			
 			//slow down the speed for "sensible" input
 			delay(1000 / (FRAMERATE / 6));
 			graphic->clearStars();
 
-#pragma region input
+			//input
 			for (int i = 0; i < key.size(); i++)
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			if (GetAsyncKeyState(VK_RETURN)) {
-				PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME);
+				if (soundOn)
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
 				if (choice == 0) {
 					loadingScreen();
-					playScreen(1);
+					int level = 1;
+					while(level)
+						level = playScreen(level);
+					if (soundOn)
+						PlaySound(TEXT("intro.wav"), NULL, SND_ASYNC);
 				}
 				else if (choice == 1)
 					loadScreen();
-				else if (choice == 2)
+				else if (choice == 2) {
 					settingsScreen();
+					if (soundOn)
+						PlaySound(TEXT("intro.wav"), NULL, SND_ASYNC);
+				}
 				else
 					exitScreen();
 			}
 			else if (bKeyGame[0] == 1) {
+				if (soundOn)
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
 				choice = (choice + 4 - 1) % 4;
 			}
 			else if (bKeyGame[2] == 1) {
+				if (soundOn)
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
 				choice = (choice + 1) % 4;
 			}
-#pragma endregion
-
-#pragma region enemies and stars
+			
+			//enemies and stars
 			graphic->randomStars();
 
 			enemy1->render(graphic);
@@ -143,7 +153,6 @@ public:
 			enemy2->move(-2, 0);
 			enemy3->move(2, 0);
 			enemy4->move(-2, 0);
-#pragma endregion
 
 			//default color
 			graphic->setBufferWhite(graphic->getBuffer(title->getBufferKey()), 46, 11, BG, whiteDark);
@@ -169,8 +178,10 @@ public:
 			graphic->render();
 		}
 	}
-	void playScreen(int Level)
+	int playScreen(int Level)
 	{
+		if (soundOn)
+			PlaySound(TEXT("GameSong2.wav"), NULL, SND_ASYNC);
 		graphic->clearBuffer();
 		player->setPos(72, 2);
 		player->clearOldPos(graphic);
@@ -197,12 +208,16 @@ public:
 			graphic->clearStars();
 			player->render(graphic);
 
-#pragma region Controls
+			//Controls
 			for (int i = 0; i < key.size(); i++) { 	// Read input
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			}
-			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE))
-				pauseScreen();
+			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE)) {
+				if (!pauseScreen())
+					return Level;
+				if (soundOn)
+					PlaySound(TEXT("GameSong2.wav"), NULL, SND_ASYNC);
+			}
 			else if (bKeyGame[0] == 1 && player->getPos().y > 1) {
 				player->move(0, -1);
 			}
@@ -215,11 +230,10 @@ public:
 			else if (bKeyGame[3] == 1 && player->getPos().x < screenWidth - 1 - graphic->getBuffer(player->getBufferKey())[0].length()) {
 				player->move(1, 0);
 			}
-#pragma endregion
 
 			graphic->randomStars();
 
-#pragma region Score and Level
+			//Score and Level
 			toVwstring(num++, scoreCounter);
 			toVwstring(Level, levelCounter);
 
@@ -230,8 +244,6 @@ public:
 			graphic->setBuffer(levelCounter, 9, 2, BG, 7);
 			graphic->setBuffer(graphic->getBuffer(laneIndex->getBufferKey()), 2, 4, BG, 7);
 			graphic->setBuffer(laneCounter, 9, 4, BG, 7);
-#pragma endregion
-
 
 
 			for (auto l : lanes) l->logic();
@@ -240,7 +252,7 @@ public:
 				graphic->glitch();
 				gameoverScreen();
 				graphic->clearBuffer();
-				break;
+				return 0;
 			}
 
 			player->render(graphic);
@@ -276,7 +288,7 @@ public:
 		GameMenu* off = new Button("off");
 
 
-		int choice = 0; bool soundOn = true;
+		int choice = 0;
 		bool* bKeyGame = new bool[key.size()]{ 0 }; // Check ingame input
 		while (1) {
 			delay(1000 / (FRAMERATE / 8));
@@ -293,10 +305,10 @@ public:
 			for (int i = 0; i < key.size(); i++)
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			if (GetAsyncKeyState(VK_RETURN)) {
-				PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME);
+				if (soundOn)
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
 				if (choice == 0) {
 					soundOn = !soundOn;
-					//sound stuff hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 				}
 				else {
 					graphic->clearBuffer();
@@ -304,9 +316,13 @@ public:
 				}
 			}
 			else if (bKeyGame[0] == 1) {
+				if (soundOn)
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
 				choice = (choice + 2 - 1) % 2;
 			}
 			else if (bKeyGame[2] == 1) {
+				if (soundOn)
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
 				choice = (choice + 1) % 2;
 			}
 
@@ -327,7 +343,7 @@ public:
 			graphic->render();
 		}
 	};
-	void pauseScreen() {
+	bool pauseScreen() {
 		int top = 15;
 		int left = 60;
 		graphic->openFrame(left, top, 25, 10);
@@ -343,7 +359,7 @@ public:
 		GameMenu* off = new Button("off");
 
 
-		int choice = 0; bool soundOn = true;
+		int choice = 0;
 		bool* bKeyGame = new bool[key.size()]{ 0 }; // Check ingame input
 		while (1) {
 			delay(1000 / (FRAMERATE / 8));
@@ -361,27 +377,31 @@ public:
 			for (int i = 0; i < key.size(); i++)
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			if (GetAsyncKeyState(VK_RETURN)) {
-				PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME);
+				if (soundOn)
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
 				if (choice == 3) {
 					soundOn = !soundOn;
-					//sound stuff hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 				}
 				else if (choice == 0){
 					graphic->clearBuffer();
-					return;
+					return 1;
 				}
 				else if (choice == 2) {
 					//save stuff hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-					return;
+					return 1;
 				}
 				else {
-					return; //restart game hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+					return 0;
 				}
 			}
 			else if (bKeyGame[0] == 1) {
+				if (soundOn)
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
 				choice = (choice + 4 - 1) % 4;
 			}
 			else if (bKeyGame[2] == 1) {
+				if (soundOn)
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
 				choice = (choice + 1) % 4;
 			}
 
@@ -420,7 +440,8 @@ public:
 	}
 	void gameoverScreen() {
 		graphic->clearBuffer();
-		PlaySound(TEXT("gameOver.wav"), NULL, SND_FILENAME);
+		if (soundOn)
+			PlaySound(TEXT("gameOver.wav"), NULL, SND_ASYNC);
 		GameMenu* gameoverTitle = new Button("gameoverTitle");
 		GameMenu* inspirationalText = new Button("inspirationalText");
 		GameMenu* backButton = new Button("back");
@@ -442,8 +463,10 @@ public:
 				graphic->render();
 			}
 		}
-		PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME);
+		if (soundOn)
+			PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
 	}
+
 	bool checkCollision(vector<GameLane*> lanes, int &lc)
 	{
 		BOUNDINGBOX pla = player->getBoundingBox();
