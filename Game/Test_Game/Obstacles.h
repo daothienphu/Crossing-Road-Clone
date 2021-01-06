@@ -40,9 +40,9 @@ public:
 		this->x = left? -w + 1 : screenWidth;
 	}
 
-	void render(GraphicsController*& graphic) {
+	void render(GraphicsController*& graphic, int offset) {
 		clearOldPos(graphic);
-		graphic->setBuffer(graphic->getBuffer(bufferKey), this->x, this->y, bgColor, fgColor);
+		graphic->setBuffer(graphic->getBuffer(bufferKey), this->x, this->y + offset, bgColor, fgColor);
 	}
 
 	void clearOldPos(GraphicsController*& graphic) {

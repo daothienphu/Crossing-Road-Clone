@@ -85,12 +85,12 @@ public:
 			}
 	}
 
-	void render(GraphicsController*& graphic) {
+	void render(GraphicsController*& graphic, int offset) {
 		// Render lane itself
 
 		// Render obstacles
 		for (auto o : obs) {
-			o->render(graphic);
+			o->render(graphic, offset);
 		}
 	}
 
