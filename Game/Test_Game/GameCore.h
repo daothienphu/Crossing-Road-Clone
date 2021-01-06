@@ -282,8 +282,8 @@ public:
 					offset--;
 
 				if (player->getPos().y > (nLane - 3) * LANE_HEIGHT) {
-					nLane += 7;
 					levelController->addLanes(lanes, graphic, nLane + 1);
+					nLane += 7;
 				}
 				player->move(0, 1);
 			}

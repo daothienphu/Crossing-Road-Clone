@@ -24,8 +24,6 @@ public:
 		GameLane* lane5 = new GameLane(5, 1, 1, graphic);
 		GameLane* lane6 = new GameLane(6, 1, 1, graphic);
 		GameLane* lane7 = new GameLane(7, 1, 1, graphic);
-		GameLane* lane8 = new GameLane(8, 1, 1, graphic);
-		GameLane* lane9 = new GameLane(9, 1, 1, graphic);
 
 		//nho de lane theo thu tu khong la collision no deo chay dau
 		
@@ -36,9 +34,6 @@ public:
 		lanes.push_back(lane5);
 		lanes.push_back(lane6);
 		lanes.push_back(lane7);
-		lanes.push_back(lane8);
-		lanes.push_back(lane9);
-
 	}
 
 	void addLanes(vector<GameLane*> &lanes, GraphicsController* graphic, int laneIndex)
