@@ -2,22 +2,21 @@
 #include <vector>
 #include <string>
 #include "Items.h"
-#include "Menu.h"
 using namespace std;
 
 class GameMenu : public Items {
 protected:
-	vector<Menu*> compo; //components;
+	int x, y;
 public:
-	GameMenu() : Items("GameMenu") {}
-
-	void add(Menu* menu) {
-		return;
-	}
-
+	GameMenu() : x(0), y(0), Items("GameMenu") {};
+	GameMenu(int x, int y, string key) : x(x), y(y), Items(key) {};
+	
 	coord getPos()
 	{
-		return { 0, 0 };
+		return { x,y };
 	}
-
+	void setPos(coord c){
+		x = c.x;
+		y = c.y;
+	}
 };
