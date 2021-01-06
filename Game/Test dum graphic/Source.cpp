@@ -87,14 +87,14 @@ LPCWSTR song_game_3{ L"play song_game_3.wav" };
 LPCWSTR song_game_4{ L"play song_game_4.wav" };
 LPCWSTR song_game_5{ L"play song_game_5.wav" };
 LPCWSTR click_menu{ L"play click_menu.wav" };
+LPCWSTR enter{ L"play enter.wav" };
 LPCWSTR start_level{ L"play start_level.wav" };
 LPCWSTR pass_lane{ L"play pass_lane.wav" };
 LPCWSTR pass_level{ L"play pass_level.wav" };
 LPCWSTR game_over{ L"play game_over.wav" };
 LPCWSTR silence{ L"play silence.wav" };
-
-#define playSoundLoop(file_name) mciSendString(file_name, NULL, 0, NULL);
 vector<int> duration = {101, 119, 126, 145, 254};
+vector<int> bpm = {};
 // Time
 auto start = chrono::system_clock::now();
 class cPlayer {
@@ -187,6 +187,37 @@ wstring time_to_wstring(int t) {
 // Global variables
 int frame = 0;
 int score = 0;
+// Classes
+class cLight {
+private:
+	bool isRed;
+	int duration; //13 : 3s dau den do, 10s sau den xanh
+	int X, Y;
+public:
+	cLight(int x, int y) {
+		X = x;
+		Y = y;
+	}
+	int getX() { return X; }
+	int getY() { return Y; }
+	void setX(int x) { X = x; }
+	void setY(int y) { Y = y; }
+	void setXY(int x, int y) { X = x, Y = y; }
+	void update(int sec) {
+		duration = (sec + duration) % 13;
+		if (duration <= 2 && duration >= 0)
+			isRed = true;
+		else if (duration >=3 && duration <=12 ) isRed = false;
+	}
+	void update() {
+		if (duration <= 2 && duration >= 0)
+			isRed = true;
+		else if (duration >= 3 && duration <= 13) isRed = false;
+	}
+	bool Red() { return isRed; }
+	void setDuration(int d) { duration = d; }
+
+};
 class cScreen {
 private:
 	// Character array for display
@@ -493,6 +524,7 @@ public:
 			// ENTER - Select
 			if (GetAsyncKeyState(VK_RETURN)) {
 				if (choiceMenu == 0) {
+					mciSendString(enter, NULL, 0, NULL);
 					glitchEffectText(L" START GAME ", xMenu, yMenu, 7, 6, 0, 7);
 					startLoadScreen();
 					startStage(1);
@@ -551,10 +583,19 @@ public:
 		bool* passed = new bool[nLane]; // Check passed lanes
 		for (int i = 0; i < nLane; i++)
 			passed[i] = false;
-		//Initialise player
+		// Initialise random traffic lights
+		cLight** light = new cLight*[nLane];
+		for (int i = 0; i < nLane; i++) {
+			int x = rand() % nScreenWidth;
+			int y = laneY + i * laneSize - 1;
+			light[i] = new cLight(x, y);
+			light[i]->setDuration((rand()+4567856) % 13);
+			light[i]->update();
+		}
+		// Initialise player
 		cPlayer Player;
 		Player.setXY(80, 1);
-		//Initialise random enemies
+		// Initialise random enemies
 		cEnemy** Enemy = new cEnemy*[nLane];
 		for (int i = 0; i < nLane; i++) {
 			int x = rand() % nScreenWidth;
@@ -599,6 +640,10 @@ public:
 			}
 
 			// [3] UPDATE 
+			// Update time
+			auto end = chrono::system_clock::now();
+			chrono::duration<double> elapsed_seconds = end - start;
+			int elapsed = elapsed_seconds.count();
 			// Player position
 			if (bKeyGame[0] == 1){ // W - Move up
 				if (Player.getY() - 1 >= 0) {
@@ -617,7 +662,6 @@ public:
 					Player.moveDown();
 					if (Player.getY() +offset +5 >= nScreenHeight && Player.getY() + 5 <= 18 + nLane * laneSize ) {
 						offset--;
-						//offsetChanged = true;
 					}
 				}
 			}
@@ -627,24 +671,15 @@ public:
 			}
 			// Enemies position
 			for (int i = 0; i < nLane; i++) {
-				Enemy[i]->updatePos();
+				if (light[i]->Red() == false && abs(Enemy[i]->getY() - light[i]->getY()) <= 4)
+					Enemy[i]->updatePos();
+			}
+			// Traffic lights
+			for (int i = 0; i < nLane; i++) {
+				light[i]->update(elapsed);
 			}
 
 			// [4] CHECK GAME LOGIC
-			// Update time
-			auto end = chrono::system_clock::now();
-			chrono::duration<double> elapsed_seconds = end - start;
-			int elapsed = elapsed_seconds.count();
-			// Check lane pass
-			bool newscore = false;
-			for (int i = 0; i < nLane; i++) {
-				if (Player.getY() >= laneY + i * 5 && passed[i] == false) {
-					score += 10 - 1 + level ;
-					newscore = true;
-					passed[i] = true;
-					mciSendString(pass_lane, NULL, 0, NULL);
-				}
-			}
 			// Check collision
 			for (int i = 0; i < nLane; i++) {
 				if (checkCollision(Player, Enemy[i]) == true) {
@@ -653,22 +688,48 @@ public:
 
 				}
 			}
+			// Check lane pass
+			bool newPass = false;
+			int lanePassed = -1;
+			bool newscore = false;
+			for (int i = 0; i < nLane; i++) {
+				if (Player.getY() >= laneY + (i+1) * 5 && passed[i] == false) {
+					score += 10 - 1 + level ;
+					newscore = true;
+					passed[i] = true;
+					mciSendString(pass_lane, NULL, 0, NULL);
+					newPass = true;
+					lanePassed = i;
+				}
+			}
 			// Check level pass
 			if (Player.getY() == 18 + nLane * laneSize) {
 				startGameScreen(level + 1, stage);
 			}
 			// Check stage pass
 			if (elapsed >= duration[stage - 1]){
+				stageClearScreen();
 				startStage(stage + 1);
 			}
+
 
 			// DISPLAY GAME SCREEN
 			// Stars
 			if (frame % 15 == 0) makeNewStarMap(starmap);
 			drawStars(starmap);
 			// Lanes
-			for (int i = 0; i <= nLane; i++)
+			for (int i = 0; i <= nLane; i++) { // Normal lanes
 				drawHorizontalLine3(0, laneY - 1 + i * laneSize + offset, nScreenWidth, bg, lightblue);
+			}
+			if (newPass) 
+				drawHorizontalLine3(0, laneY - 1 + (lanePassed+1) * laneSize + offset, nScreenWidth, bg, white);
+			// Lights
+			for (int i = 0; i < nLane; i++) {
+				int c;
+				if (light[i]->Red()) c = red;
+				else c = green;
+				drawBlock(L"ll", light[i]->getX(), light[i]->getY(), bg, c);
+			}
 			// Player
 			drawBlock(Player.getSketch(), Player.getX(), Player.getY() + offset, bg, 7);
 			for (int i = 0; i < nLane; i++) {
@@ -702,7 +763,11 @@ public:
 		exit(0);
 	}
 	void stageClearScreen() {
-	
+		clearScreen(lightblue, white);
+		drawText(L"STAGE CLEAR. ENTER TO NEXT STAGE.", 10, 5, lightblue, white);
+		drawScreen();
+		while(!GetAsyncKeyState(VK_RETURN)){
+		}
 	}
 
 };
