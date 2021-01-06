@@ -24,10 +24,10 @@ public:
 		this->y += y;
 	}
 
-	void render(GraphicsController*& graphic) {
+	void render(GraphicsController*& graphic, int offset) {
 		//clearOldPos(graphic);
-		graphic->setBuffer(graphic->getBuffer(bufferKey), oldX, oldY, BG, 1);
-		graphic->setBufferWhite(graphic->getBuffer(bufferKey), x, y, BG, 7);
+		graphic->setBuffer(graphic->getBuffer(bufferKey), oldX, oldY + offset, BG, 1);
+		graphic->setBufferWhite(graphic->getBuffer(bufferKey), x, y + offset, BG, 7);
 	}
 
 	void clearOldPos(GraphicsController*& graphic) {

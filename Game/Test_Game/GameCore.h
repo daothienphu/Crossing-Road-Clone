@@ -243,7 +243,7 @@ public:
 
 		//scroll
 		int offset = 0;
-		int nLane = 5 + Level * 2;
+		int nLane = 7;
 
 		while (1)
 		{
@@ -251,7 +251,7 @@ public:
 
 			graphic->clearBuffer();
 			graphic->clearStars();
-			player->render(graphic);
+			player->render(graphic, offset);
 			player->update();
 
 			//Controls
@@ -272,9 +272,19 @@ public:
 			if (bKeyGame[1] == 1 && player->getPos().x > 1) {
 				player->move(-1, 0);
 			}
-			if (bKeyGame[2] == 1 && player->getPos().y < screenHeight - 2 - graphic->getBuffer(player->getBufferKey()).size()) {
+			/*if (bKeyGame[2] == 1 && player->getPos().y < screenHeight - 2 - graphic->getBuffer(player->getBufferKey()).size()) {
 				if (player->getPos().y + offset + 5 >= screenHeight && player->getPos().y + 5 <= 18 + nLane * LANE_HEIGHT)
 					offset--;
+				player->move(0, 1);
+			}*/
+			if (bKeyGame[2] == 1 && player->getPos().y < LANE_HEIGHT*nLane) {
+				if (player->getPos().y + offset >= screenHeight - 30 && player->getPos().y + 5 <= 18 + nLane * LANE_HEIGHT)
+					offset--;
+
+				if (player->getPos().y > (nLane - 3) * LANE_HEIGHT) {
+					nLane += 7;
+					levelController->addLanes(lanes, graphic, nLane + 1);
+				}
 				player->move(0, 1);
 			}
 			if (bKeyGame[3] == 1 && player->getPos().x < screenWidth - 1 - graphic->getBuffer(player->getBufferKey())[0].length()) {
@@ -310,7 +320,7 @@ public:
 				return 0;
 			}
 
-			player->render(graphic);
+			player->render(graphic, offset);
 
 			graphic->createFrame(0, 0, 145, 40);
 
