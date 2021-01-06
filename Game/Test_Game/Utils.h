@@ -10,6 +10,7 @@ using namespace std::chrono;
 #define NUM_ENEMY 4
 #define MAX_ENEMY_WIDTH 10
 #define BG black
+#define YELLOW_LIGHT_SECS 1
 enum { blueDark = 0, blueLight, orange, yellow, green, purple, red, whiteDark, white, black };
 
 #pragma region structs 
