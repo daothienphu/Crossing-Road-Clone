@@ -147,6 +147,7 @@
     <ClInclude Include="BufferStorage.h" />
     <ClInclude Include="GameCore.h" />
     <ClInclude Include="GameLane.h" />
+    <ClInclude Include="GameLevel.h" />
     <ClInclude Include="GameMenu.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GraphicsController.h" />

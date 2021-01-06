@@ -15,6 +15,7 @@
 #include "Items.h"
 #include "Menu.h"
 #include "GameMenu.h"
+#include "GameLevel.h"
 #include "GraphicsController.h"
 
 using namespace std;
@@ -25,6 +26,7 @@ class GameCore {
 protected:
 	Player* player;
 	GraphicsController* graphic;
+	ILevel* levelController = nullptr;
 	bool soundOn = true;
 public:
 	GameCore() {
@@ -185,18 +187,21 @@ public:
 		graphic->clearBuffer();
 		player->setPos(72, 2);
 		player->clearOldPos(graphic);
-		GameLane* lane1 = new GameLane(1, 1, 1, graphic);
-		GameLane* lane2 = new GameLane(2, 2, 1, graphic);
-		GameLane* lane3 = new GameLane(3, 3, 1, graphic);
+		//GameLane* lane1 = new GameLane(1, 1, 1, graphic);
+		//GameLane* lane2 = new GameLane(2, 2, 1, graphic);
+		//GameLane* lane3 = new GameLane(3, 3, 1, graphic);
+		vector<GameLane*> lanes;
 
-		vector<GameLane*> lanes = { lane1, lane2, lane3 };
+		if (Level == 1)
+		{
+			levelController = new Level_1;
+			levelController->getMap(lanes, graphic);
+		}
 
 		GameMenu* score = new Button("score");
 		GameMenu* level = new Button("level");
-		GameMenu* laneIndex = new Button("score");
-		vector<wstring> scoreCounter, levelCounter, laneCounter;
-
-		int lc = 0;
+		//GameMenu* laneIndex = new Button("score");
+		vector<wstring> scoreCounter, levelCounter;
 
 		int num = 0;
 		bool* bKeyGame = new bool[key.size()]{ 0 };
@@ -237,18 +242,15 @@ public:
 			toVwstring(num++, scoreCounter);
 			toVwstring(Level, levelCounter);
 
-			toVwstring(lc, laneCounter);
 			graphic->setBuffer(graphic->getBuffer(score->getBufferKey()), 2, 1, BG, 7);
 			graphic->setBuffer(scoreCounter, 9, 1, BG, 7);
 			graphic->setBuffer(graphic->getBuffer(level->getBufferKey()), 2, 2, BG, 7);
 			graphic->setBuffer(levelCounter, 9, 2, BG, 7);
-			graphic->setBuffer(graphic->getBuffer(laneIndex->getBufferKey()), 2, 4, BG, 7);
-			graphic->setBuffer(laneCounter, 9, 4, BG, 7);
 
 
 			for (auto l : lanes) l->logic();
 			for (auto l : lanes) l->render(graphic);
-			if (this->checkCollision(lanes, lc)) {
+			if (this->checkCollision(lanes)) {
 				graphic->glitch();
 				gameoverScreen();
 				graphic->clearBuffer();
@@ -467,11 +469,10 @@ public:
 			PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
 	}
 
-	bool checkCollision(vector<GameLane*> lanes, int &lc)
+	bool checkCollision(vector<GameLane*> lanes)
 	{
 		BOUNDINGBOX pla = player->getBoundingBox();
 		int lane = pla.y / LANE_HEIGHT;
-		lc = lane;
 		if(lane - 1 < 0 || lane > lanes.size()) return false;
 		GameLane* tmp = lanes[lane - 1];
 		if (tmp->checkCollision(pla))
