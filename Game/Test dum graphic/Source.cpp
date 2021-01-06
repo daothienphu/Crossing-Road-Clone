@@ -42,13 +42,19 @@ const vector<wstring> e4 = { // 9 x 4
 	L" ' ' ' '"
 };
 const vector<wstring> e5 = {
-	L"	.l..l.",
+	L"  .l..l.",
 	L".ll'll'll.",
 	L"l llllll l",
 	L"  .l  l." 
 };
+const vector<wstring> e6 = {
+	L"  .ll.",
+	L".l'll'l.",
+	L"''l''l''",
+	L".'.''.'."
+};
 const vector<vector<wstring>> e = {
-	e1, e2, e3, e4, e5
+	e1, e2, e3, e4, e5, e6
 };
 const vector<wstring> Title = { // 52 x 8
 	L".'''.  l'''.  .'''.  .'''   .'''   'l'  l.  l  .''''",
@@ -65,6 +71,7 @@ const vector<wstring> GameOver = { // 54 x 3
 	L"l  ..  l'''l  l ' l  l''     l   l  '. .'  l''   l'''.",
 	L"'...'  l   l  l   l  l...    '...'   '.'   l...  l   l"
 };
+
 const vector<wstring> Skull = { // 22 x 12
 	L"      ..........",
 	L"   .llllllllllllll.",
@@ -314,7 +321,7 @@ public:
 	void drawBlock(vector<wstring> Sketch, int X, int Y, int colorBackground, int colorChar) {
 		for (int i = 0; i < Sketch.size(); i++) {
 			for (int j = 0; j < Sketch[i].length(); j++) {
-				if (X >= 0 && X < nScreenWidth && Y >= 0 && Y < nScreenHeight) { // Only draw if x, y is within screen
+				if (X + j >= 0 && X + j < nScreenWidth && Y + i >= 0 && Y + i< nScreenHeight) { // Only draw if x, y is within screen
 					if (Sketch[i][j] == '.') {
 						pBuffer[(Y + i) * nScreenWidth + X + j] = L'▄';
 						pColor[(Y + i) * nScreenWidth + X + j] = colorBackground * 16 + colorChar;
@@ -596,7 +603,7 @@ public:
 		for (int i = 0; i < nLane; i++) {
 			int x = rand() % nScreenWidth;
 			int y = laneY + i * laneSize;
-			int en = rand() % 4;
+			int en = rand() % (3 + level);
 			int c;
 			switch (en){
 			case 0:
@@ -610,6 +617,12 @@ public:
 				break;
 			case 3:
 				c = green;
+				break;
+			case 4:
+				c = orange;
+				break;
+			case 5:
+				c = purple;
 				break;
 			default:
 				break;
@@ -718,15 +731,18 @@ public:
 			for (int i = 0; i <= nLane; i++) { // Normal lanes
 				drawHorizontalLine3(0, laneY - 1 + i * laneSize + offset, nScreenWidth, bg, lightblue);
 			}
-			if (newPass)
-				drawHorizontalLine3(0, laneY - 1 + (lanePassed + 1) * laneSize + offset, nScreenWidth, bg, white);
+			
 			// Lights
 			for (int i = 0; i < nLane; i++) {
 				int c;
 				if (light[i]->Red()) c = red;
-				else c = green;
+				else c = green;				drawHorizontalLine3(0, laneY - 1 + i * laneSize + offset, nScreenWidth, bg, c);
+
 				drawBlock(L"ll", light[i]->getX(), light[i]->getY() + offset, bg, c);
+
 			}
+			if (newPass)
+				drawHorizontalLine3(0, laneY - 1 + (lanePassed + 1) * laneSize + offset, nScreenWidth, bg, white);
 			// Player
 			drawBlock(Player.getSketch(), Player.getX(), Player.getY() + offset, bg, 7);
 			for (int i = 0; i < nLane; i++) {
