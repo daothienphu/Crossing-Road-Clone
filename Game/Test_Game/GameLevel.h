@@ -15,9 +15,9 @@ public:
 	virtual void getMap(vector<GameLane*>& lanes, GraphicsController* graphic)
 	{
 		if (!lanes.empty()) lanes.clear();
-		GameLane* lane1 = new GameLane(1, 1, 1, graphic);
-		GameLane* lane2 = new GameLane(2, 2, 1, graphic);
-		GameLane* lane3 = new GameLane(3, 3, 1, graphic);
+		GameLane* lane1 = new GameLane(1, 1, 1, 5, 4, graphic);
+		GameLane* lane2 = new GameLane(2, 2, 1, 3, 3, graphic);
+		GameLane* lane3 = new GameLane(3, 3, 1, 4, 5, graphic);
 		//nho de lane theo thu tu khong la collision no deo chay dau
 
 		lanes.push_back(lane1);
