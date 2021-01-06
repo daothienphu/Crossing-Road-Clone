@@ -174,6 +174,12 @@ public:
 		}
 		render();
 	}
+	void clearBuffer(int bgColor, int chColor) {
+		for (int i = 0; i < screenWidth * screenHeight; ++i) {
+			color[i] = bgColor * 16 + chColor;
+			buffer[i] = L' ';
+		}
+	}
 	void render() {
 		WriteConsoleOutputAttribute(hConsole, color, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
 		WriteConsoleOutputCharacter(hConsole, buffer, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
@@ -204,6 +210,20 @@ public:
 			buffer[a] = L'.';
 			color[a] = black * 16 + white;
 		}
+	}
+	void randomStars(int bgColor, int chColor) {
+		if (randomInterval != 10) {
+			randomInterval++;
+			copyStarBuffer();
+			return;
+		}
+
+		randomInterval -= 10;
+		for (int i = 0; i < 70; ++i) {
+			int a = rand() % (screenWidth * screenHeight);
+			starBuffer[a] = L'.';
+		}
+		copyStarBuffer();
 	}
 	void clearStars() {
 		if (randomInterval == 10)
