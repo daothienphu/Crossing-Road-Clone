@@ -119,11 +119,11 @@ public:
 		int choice = 0;
 		bool* bKeyGame = new bool[key.size()]{ 0 };
 		if (soundOn)
-			PlaySound(TEXT("intro.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			mciSendString(song_intro, NULL, 0, NULL);
 		while (1) {
 			
 			//slow down the speed for "sensible" input
-			delay(1000 / (FRAMERATE / 6));
+			delay(1000 / (FRAMERATE / 8));
 			graphic->clearStars();
 
 			//input
@@ -133,31 +133,37 @@ public:
 				if (soundOn)
 					mciSendString(enter, NULL, 0, NULL);
 				if (choice == 0) {
+					mciSendString(L"pause song_intro.wav", NULL, 0, NULL);
 					loadingScreen();
 					int level = 1;
 					while(level)
 						level = playScreen(level);
 					if (soundOn)
-						PlaySound(TEXT("intro.wav"), NULL, SND_FILENAME | SND_ASYNC);
+						mciSendString(L"resume song_intro.wav", NULL, 0, NULL);
 				}
-				else if (choice == 1)
+				else if (choice == 1) {
+					mciSendString(L"pause song_intro.wav", NULL, 0, NULL);
 					loadScreen();
+				}
 				else if (choice == 2) {
 					settingsScreen();
-					if (soundOn)
-						PlaySound(TEXT("intro.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				}
-				else
+				else {
+					mciSendString(L"pause song_intro", NULL, 0, NULL);
 					exitScreen();
+				}
 			}
 			else if (bKeyGame[0] == 1) {
 				if (soundOn)
-					mciSendString(click_menu, NULL, 0, NULL);
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC); 
+				//mciSendStrings needs to finish the previous instance of the same sound first before playing it again
+				//However, PlaySound will stop the previous PlaySound command and play the current one
+				//so PlaySound should be used here
 				choice = (choice + 4 - 1) % 4;
 			}
 			else if (bKeyGame[2] == 1) {
 				if (soundOn)
-					mciSendString(click_menu, NULL, 0, NULL);
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				choice = (choice + 1) % 4;
 			}
 			
@@ -200,8 +206,11 @@ public:
 	}
 	int playScreen(int Level)
 	{
-		if (soundOn)
-			PlaySound(TEXT("GameSong2.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		mciSendString(song_game_2, NULL, 0, NULL);
+		if (!soundOn)
+			mciSendString(L"pause song_game_2.wav", NULL, 0, NULL);
+		//theses lines are for the case when user turn off the sound -> game over -> start a new one -> turn on sound
+		//or turn off sound -> play game -> turn on sound
 		graphic->clearBuffer();
 		player->setPos(72, 2);
 		player->clearOldPos(graphic);
@@ -238,8 +247,6 @@ public:
 			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE)) {
 				if (!pauseScreen())
 					return Level;
-				if (soundOn)
-					PlaySound(TEXT("GameSong2.wav"), NULL, SND_FILENAME | SND_ASYNC);
 			}
 			else if (bKeyGame[0] == 1 && player->getPos().y > 1) {
 				player->move(0, -1);
@@ -270,6 +277,7 @@ public:
 			for (auto l : lanes) l->render(graphic);
 			if (this->checkCollision(lanes)) {
 				graphic->glitch();
+				mciSendString(L"stop song_game_2.wav", NULL, 0, NULL);
 				gameoverScreen();
 				graphic->clearBuffer();
 				return 0;
@@ -326,9 +334,13 @@ public:
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			if (GetAsyncKeyState(VK_RETURN)) {
 				if (soundOn)
-					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
+					mciSendString(enter, NULL, 0, NULL);
 				if (choice == 0) {
 					soundOn = !soundOn;
+					if (soundOn)
+						mciSendString(L"resume song_intro.wav", NULL, 0, NULL);
+					else
+						mciSendString(L"pause song_intro.wav", NULL, 0, NULL);
 				}
 				else {
 					graphic->clearBuffer();
@@ -398,19 +410,24 @@ public:
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			if (GetAsyncKeyState(VK_RETURN)) {
 				if (soundOn)
-					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
-				if (choice == 3) {
+					mciSendString(enter, NULL, 0, NULL);
+				if (choice == 3) { //sound
 					soundOn = !soundOn;
+					if (soundOn)
+						mciSendString(L"resume song_game_2.wav", NULL, 0, NULL);
+					else
+						mciSendString(L"pause song_game_2.wav", NULL, 0, NULL);
 				}
-				else if (choice == 0){
+				else if (choice == 0){ //resume
 					graphic->clearBuffer();
 					return 1;
 				}
-				else if (choice == 2) {
+				else if (choice == 2) { //save
 					//save stuff hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 					return 1;
 				}
-				else {
+				else { //restart
+					mciSendString(L"stop song_game_2.wav", NULL, 0, NULL);
 					return 0;
 				}
 			}
@@ -484,7 +501,7 @@ public:
 			}
 		}
 		if (soundOn)
-			PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			mciSendString(enter, NULL, 0, NULL);
 	}
 
 	bool checkCollision(vector<GameLane*> lanes)

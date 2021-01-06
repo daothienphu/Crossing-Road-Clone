@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test dum graphic", "Test du
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_Game", "Test_Game\Test_Game.vcxproj", "{D6F31FEF-B9BF-43FD-A7B1-5D27AF5ED2D0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SFML_Test", "SFML_Test\SFML_Test.vcxproj", "{14F24DFD-1950-4A3D-85A5-3B74C65C20EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{D6F31FEF-B9BF-43FD-A7B1-5D27AF5ED2D0}.Release|x64.Build.0 = Release|x64
 		{D6F31FEF-B9BF-43FD-A7B1-5D27AF5ED2D0}.Release|x86.ActiveCfg = Release|Win32
 		{D6F31FEF-B9BF-43FD-A7B1-5D27AF5ED2D0}.Release|x86.Build.0 = Release|Win32
+		{14F24DFD-1950-4A3D-85A5-3B74C65C20EB}.Debug|x64.ActiveCfg = Debug|x64
+		{14F24DFD-1950-4A3D-85A5-3B74C65C20EB}.Debug|x64.Build.0 = Debug|x64
+		{14F24DFD-1950-4A3D-85A5-3B74C65C20EB}.Debug|x86.ActiveCfg = Debug|Win32
+		{14F24DFD-1950-4A3D-85A5-3B74C65C20EB}.Debug|x86.Build.0 = Debug|Win32
+		{14F24DFD-1950-4A3D-85A5-3B74C65C20EB}.Release|x64.ActiveCfg = Release|x64
+		{14F24DFD-1950-4A3D-85A5-3B74C65C20EB}.Release|x64.Build.0 = Release|x64
+		{14F24DFD-1950-4A3D-85A5-3B74C65C20EB}.Release|x86.ActiveCfg = Release|Win32
+		{14F24DFD-1950-4A3D-85A5-3B74C65C20EB}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
