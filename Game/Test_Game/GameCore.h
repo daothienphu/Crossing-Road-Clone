@@ -69,7 +69,7 @@ public:
 		titleScreen();
 	}
 	void introScreen() {
-		graphic->createFrame(0, 0, 145, 40);
+		//graphic->createFrame(0, 0, 145, 40);
 
 		//intro
 		GameMenu* intro = new Button("intro");
@@ -149,7 +149,7 @@ public:
 						mciSendString(L"resume song_intro.wav", NULL, 0, NULL);
 				}
 				else if (choice == 1) {
-					mciSendString(L"pause song_intro.wav", NULL, 0, NULL);
+					//mciSendString(L"pause song_intro.wav", NULL, 0, NULL); // Why pause? Just let it play
 					loadScreen();
 				}
 				else if (choice == 2) {
@@ -165,7 +165,7 @@ public:
 					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 				//mciSendStrings needs to finish the previous instance of the same sound first before playing it again
 				//However, PlaySound will stop the previous PlaySound command and play the current one
-				//so PlaySound should be used here
+				//so PlaySound should be used here - eh heh u got the problem boi, smortoss
 				choice = (choice + 4 - 1) % 4;
 			}
 			else if (bKeyGame[2] == 1) {
@@ -188,6 +188,7 @@ public:
 			enemy4->move(-2, 0);
 
 			//default color
+			// Should set the game screen background to dark blue :<
 			graphic->setBufferWhite(graphic->getBuffer(title->getBufferKey()), 46, 11, BG, whiteDark);
 			graphic->setBuffer(graphic->getBuffer(startButton->getBufferKey()), 68, 20, BG, whiteDark);
 			graphic->setBuffer(graphic->getBuffer(loadButton->getBufferKey()), 68, 21, BG, whiteDark);
@@ -207,7 +208,7 @@ public:
 			default: break;
 			}
 
-			graphic->createFrame(0, 0, 145, 40);
+			//graphic->createFrame(0, 0, 145, 40);
 			graphic->render();
 		}
 	}
@@ -239,6 +240,9 @@ public:
 
 		int num = 0;
 		bool* bKeyGame = new bool[key.size()]{ 0 };
+
+		// Time
+		startTime = chrono::system_clock::now();
 
 		while (1)
 		{
@@ -275,7 +279,7 @@ public:
 			auto endTime = chrono::system_clock::now();
 			chrono::duration<double> elapsed_seconds = endTime - startTime;
 			int elapsed = elapsed_seconds.count();
-			graphic->progressBar(elapsed, songDuration[Level-1], 20, 1);
+			graphic->progressBar(elapsed, songDuration[Level-1], 20, screenHeight - 3);
 
 			//Score and Level
 			toVwstring(num++, scoreCounter);
@@ -290,7 +294,10 @@ public:
 			for (auto l : lanes) l->logic();
 			for (auto l : lanes) l->render(graphic);
 			if (this->checkCollision(lanes)) {
+				mciSendString(L"stop song_game_1.wav", NULL, 0, NULL);
+				mciSendString(L"play crash.wav", NULL, 0, NULL);
 				graphic->glitch();
+				delay(500);
 				mciSendString(L"stop song_game_1.wav", NULL, 0, NULL);
 				gameoverScreen();
 				graphic->clearBuffer();
@@ -299,7 +306,8 @@ public:
 
 			player->render(graphic);
 
-			graphic->createFrame(0, 0, 145, 40);
+			//graphic->createFrame(0, 0, 145, 40); // Don't draw the frame in the game screen because it makes
+			// the screen looks less spacious and bounded
 
 			graphic->render();
 		}
@@ -515,7 +523,7 @@ public:
 			}
 		}
 		if (soundOn)
-			mciSendString(enter, NULL, 0, NULL);
+			mciSendString(L"play enter.wav", NULL, 0, NULL);
 	}
 
 	bool checkCollision(vector<GameLane*> lanes)
