@@ -99,7 +99,7 @@ public:
 		int choice = 0;
 		bool* bKeyGame = new bool[key.size()]{ 0 };
 		if (soundOn)
-			PlaySound(TEXT("intro.wav"), NULL, SND_ASYNC);
+			PlaySound(TEXT("intro.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		while (1) {
 			
 			//slow down the speed for "sensible" input
@@ -111,33 +111,33 @@ public:
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			if (GetAsyncKeyState(VK_RETURN)) {
 				if (soundOn)
-					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				if (choice == 0) {
 					loadingScreen();
 					int level = 1;
 					while(level)
 						level = playScreen(level);
 					if (soundOn)
-						PlaySound(TEXT("intro.wav"), NULL, SND_ASYNC);
+						PlaySound(TEXT("intro.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				}
 				else if (choice == 1)
 					loadScreen();
 				else if (choice == 2) {
 					settingsScreen();
 					if (soundOn)
-						PlaySound(TEXT("intro.wav"), NULL, SND_ASYNC);
+						PlaySound(TEXT("intro.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				}
 				else
 					exitScreen();
 			}
 			else if (bKeyGame[0] == 1) {
 				if (soundOn)
-					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				choice = (choice + 4 - 1) % 4;
 			}
 			else if (bKeyGame[2] == 1) {
 				if (soundOn)
-					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				choice = (choice + 1) % 4;
 			}
 			
@@ -181,7 +181,7 @@ public:
 	int playScreen(int Level)
 	{
 		if (soundOn)
-			PlaySound(TEXT("GameSong2.wav"), NULL, SND_ASYNC);
+			PlaySound(TEXT("GameSong2.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		graphic->clearBuffer();
 		player->setPos(72, 2);
 		player->clearOldPos(graphic);
@@ -216,7 +216,7 @@ public:
 				if (!pauseScreen())
 					return Level;
 				if (soundOn)
-					PlaySound(TEXT("GameSong2.wav"), NULL, SND_ASYNC);
+					PlaySound(TEXT("GameSong2.wav"), NULL, SND_FILENAME | SND_ASYNC);
 			}
 			else if (bKeyGame[0] == 1 && player->getPos().y > 1) {
 				player->move(0, -1);
@@ -306,7 +306,7 @@ public:
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			if (GetAsyncKeyState(VK_RETURN)) {
 				if (soundOn)
-					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				if (choice == 0) {
 					soundOn = !soundOn;
 				}
@@ -317,12 +317,12 @@ public:
 			}
 			else if (bKeyGame[0] == 1) {
 				if (soundOn)
-					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				choice = (choice + 2 - 1) % 2;
 			}
 			else if (bKeyGame[2] == 1) {
 				if (soundOn)
-					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				choice = (choice + 1) % 2;
 			}
 
@@ -378,7 +378,7 @@ public:
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			if (GetAsyncKeyState(VK_RETURN)) {
 				if (soundOn)
-					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				if (choice == 3) {
 					soundOn = !soundOn;
 				}
@@ -396,12 +396,12 @@ public:
 			}
 			else if (bKeyGame[0] == 1) {
 				if (soundOn)
-					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				choice = (choice + 4 - 1) % 4;
 			}
 			else if (bKeyGame[2] == 1) {
 				if (soundOn)
-					PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				choice = (choice + 1) % 4;
 			}
 
@@ -441,7 +441,7 @@ public:
 	void gameoverScreen() {
 		graphic->clearBuffer();
 		if (soundOn)
-			PlaySound(TEXT("gameOver.wav"), NULL, SND_ASYNC);
+			PlaySound(TEXT("gameOver.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		GameMenu* gameoverTitle = new Button("gameoverTitle");
 		GameMenu* inspirationalText = new Button("inspirationalText");
 		GameMenu* backButton = new Button("back");
@@ -464,7 +464,7 @@ public:
 			}
 		}
 		if (soundOn)
-			PlaySound(TEXT("menuClick.wav"), NULL, SND_ASYNC);
+			PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
 	}
 
 	bool checkCollision(vector<GameLane*> lanes, int &lc)
