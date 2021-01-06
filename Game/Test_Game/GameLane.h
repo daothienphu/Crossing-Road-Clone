@@ -12,9 +12,13 @@ public:
 		// level 1: [2, 3] mobs	speed = 3
 		// level 2: [3, 5] mobs	speed = 2
 		// level 3: MAX mobs	speed = 1
-		srand(time(NULL));
 		int n;
 		switch (level) {
+		case 0: {
+			velocity = 0;
+			n = 0;
+			break;
+		}
 		case 1: {
 			velocity = 3;
 			n = random(2, 3);
