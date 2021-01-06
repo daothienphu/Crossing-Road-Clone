@@ -154,7 +154,7 @@ public:
 			if (isInScreen(y + i, x - 2))
 				color[(y + i) * screenWidth + x - 2] = bgColor * 16 + fgColor;
 			if (isInScreen(y + i, x - 1))
-			color[(y + i) * screenWidth + x - 1] = bgColor * 16 + fgColor;
+				color[(y + i) * screenWidth + x - 1] = bgColor * 16 + fgColor;
 			if (isInScreen(y + i, x + content[i].length()))
 				color[(y + i) * screenWidth + x + content[i].length()] = bgColor * 16 + fgColor;
 			if (isInScreen(y + i, x + content[i].length() + 1))

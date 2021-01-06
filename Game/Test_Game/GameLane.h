@@ -5,10 +5,18 @@
 class GameLane : public Items {
 private:
 	vector <Obstacles*> obs;
-	bool isGreen = 1;
-	int velocity, level, lane, dir;
+	int light = 0;
+	// 0: green
+	// 1: yellow
+	// 2: red
+	int velocity, level, lane, dir, curTime = 0, green, red;
 public:
-	GameLane(int lane, int level, int dir, GraphicsController*& graphic) : lane(lane), dir(dir) {
+	GameLane(int lane, int level, int dir, int green, int red, GraphicsController*& graphic) : 
+		lane(lane), 
+		dir(dir),
+		green(green * FRAMERATE),
+		red(red * FRAMERATE)
+	{
 		// level 1: [2, 3] mobs	speed = 3
 		// level 2: [3, 5] mobs	speed = 2
 		// level 3: MAX mobs	speed = 1
@@ -83,10 +91,35 @@ public:
 	}
 
 	void logic() {
-		if (isGreen)
+		curTime++;
+		if (light == 0 || light == 1) {
 			for (auto o : obs) {
 				o->move(dir, 0);
 			}
+
+			if (light == 0) {
+				if (curTime >= green)
+				{
+					curTime -= green;
+					light = 1;
+				}
+			}
+
+			if (light == 1) {
+				if (curTime >= YELLOW_LIGHT_SECS * FRAMERATE)
+				{
+					curTime -= YELLOW_LIGHT_SECS * FRAMERATE;
+					light = 2;
+				}
+			}
+		}
+		else {
+			if (curTime >= red)
+			{
+				curTime -= red;
+				light = 0;
+			}
+		}
 	}
 
 	void render(GraphicsController*& graphic, int offset) {
@@ -96,6 +129,9 @@ public:
 		for (auto o : obs) {
 			o->render(graphic, offset);
 		}
+
+		// Render lights
+		graphic->setBuffer(graphic->getBuffer("player"), 2, lane * LANE_HEIGHT - 2, BG, light == 0 ? 4 : (light == 1 ? 3 : 6));
 	}
 
 	bool checkCollision(BOUNDINGBOX player)
