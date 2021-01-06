@@ -43,12 +43,14 @@ public:
 			break;
 		}
 		}
+		if (level == 0)
+			return;
 		if (n == -1) {
 			// Yeahh boi
 			int cur = 0;
 			while (1) {
 				string chosen = "enemy" + to_string(random(1, NUM_ENEMY));
-				if (cur < screenWidth)
+				if (cur + LEAST_SPACE < screenWidth)
 				{
 					obs.push_back(new Obstacles(cur, lane * LANE_HEIGHT, velocity, BG, random(1, 7), chosen, graphic));
 					cur += graphic->getBuffer(chosen)[0].size() + LEAST_SPACE;
@@ -57,8 +59,7 @@ public:
 					break;
 			}
 		}
-		else
-		{
+		else {
 			int sum = 0;
 			for (int i = 0; i < n; i++)
 			{
@@ -78,19 +79,22 @@ public:
 				cur += obs[i]->getBoundingBox().w + sum;
 			}
 		}
+		light = random(0, 2);
+		if (light == 0)
+			curTime = random(0, green - 1);
+		else if (light == 1)
+			curTime = random(0, YELLOW_LIGHT_SECS * FRAMERATE - 1);
+		else
+			curTime = random(0, red - 1);
 	}
 
 	coord getPos() {
 		return { 0, lane * LANE_HEIGHT };
 	}
 
-	int random(int a, int b) {
-		long long res = (long long)rand() + (long long)rand() * (long long)rand();
-		if (res < 0) res = -res;
-		return a + ((int)res % (b - a + 1));
-	}
-
 	void logic() {
+		if (obs.size() == 0)
+			return;
 		curTime++;
 		if (light == 0 || light == 1) {
 			for (auto o : obs) {
@@ -125,13 +129,15 @@ public:
 	void render(GraphicsController*& graphic, int offset) {
 		// Render lane itself
 
+		if (obs.size() == 0)
+			return;
 		// Render obstacles
 		for (auto o : obs) {
 			o->render(graphic, offset);
 		}
 
 		// Render lights
-		graphic->setBuffer(graphic->getBuffer("player"), 2, lane * LANE_HEIGHT - 2, BG, light == 0 ? 4 : (light == 1 ? 3 : 6));
+		graphic->setBuffer(graphic->getBuffer("player"), 2, lane * LANE_HEIGHT - 2 + offset, BG, light == 0 ? 4 : (light == 1 ? 3 : 6));
 	}
 
 	bool checkCollision(BOUNDINGBOX player)

@@ -103,6 +103,11 @@ void fixSizedConsoleWindow() {
 	//csbiex.ColorTable[9] = RGB(20, 20, 20); // Black
 	//SetConsoleScreenBufferInfoEx(hConsole, &csbiex);
 }
+int random(int a, int b) {
+	long long res = (long long)rand() + (long long)rand() * (long long)rand();
+	if (res < 0) res = -res;
+	return a + ((int)res % (b - a + 1));
+}
 void gotoXY(int x, int y) {
 	COORD coord;
 	coord.X = x;

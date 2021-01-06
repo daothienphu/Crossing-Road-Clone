@@ -238,7 +238,6 @@ public:
 		//GameMenu* laneIndex = new Button("score");
 		vector<wstring> scoreCounter, levelCounter;
 
-		int num = 0;
 		bool* bKeyGame = new bool[key.size()]{ 0 };
 
 		//scroll
@@ -272,18 +271,12 @@ public:
 			if (bKeyGame[1] == 1 && player->getPos().x > 1) {
 				player->move(-1, 0);
 			}
-			/*if (bKeyGame[2] == 1 && player->getPos().y < screenHeight - 2 - graphic->getBuffer(player->getBufferKey()).size()) {
-				if (player->getPos().y + offset + 5 >= screenHeight && player->getPos().y + 5 <= 18 + nLane * LANE_HEIGHT)
-					offset--;
-				player->move(0, 1);
-			}*/
 			if (bKeyGame[2] == 1 && player->getPos().y < LANE_HEIGHT*nLane) {
 				if (player->getPos().y + offset >= screenHeight - 30 && player->getPos().y + 5 <= 18 + nLane * LANE_HEIGHT)
 					offset--;
 
 				if (player->getPos().y > (nLane - 3) * LANE_HEIGHT) {
-					levelController->addLanes(lanes, graphic, nLane + 1);
-					nLane += 7;
+					nLane += levelController->addLanes(lanes, graphic, nLane + 1);
 				}
 				player->move(0, 1);
 			}
@@ -301,8 +294,8 @@ public:
 			graphic->progressBar(elapsed, songDuration[Level-1], 20, 1);
 
 			//Score and Level
-			toVwstring(num++, scoreCounter);
-			toVwstring(Level, levelCounter);
+			toVwstring(player->getBoundingBox().y / LANE_HEIGHT - 1, scoreCounter);
+			toVwstring(1, levelCounter);
 
 			graphic->setBuffer(graphic->getBuffer(score->getBufferKey()), 2, 1, BG, 7);
 			graphic->setBuffer(scoreCounter, 9, 1, BG, 7);
