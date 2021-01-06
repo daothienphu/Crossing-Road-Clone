@@ -228,4 +228,10 @@ public:
 		render();
 		delay(125);
 	}
+	wstring line(wstring pattern, int length) {
+		wstring res;
+		for (int i = 0; i < length / pattern.length(); i++)
+			res += pattern;
+		return res;
+	}
 };
