@@ -190,8 +190,9 @@ int score = 0;
 // Classes
 class cLight {
 private:
+	int cur;
+	int org;
 	bool isRed;
-	int duration; //13 : 3s dau den do, 10s sau den xanh
 	int X, Y;
 public:
 	cLight(int x, int y) {
@@ -204,18 +205,17 @@ public:
 	void setY(int y) { Y = y; }
 	void setXY(int x, int y) { X = x, Y = y; }
 	void update(int sec) {
-		duration = (sec + duration) % 13;
-		if (duration <= 2 && duration >= 0)
+		cur = (org + sec) % 7;
+		if (cur <= 1 && cur >= 0)
 			isRed = true;
-		else if (duration >=3 && duration <=12 ) isRed = false;
-	}
-	void update() {
-		if (duration <= 2 && duration >= 0)
-			isRed = true;
-		else if (duration >= 3 && duration <= 13) isRed = false;
+		else if (cur >= 2 && cur <= 6)
+			isRed = false;
 	}
 	bool Red() { return isRed; }
-	void setDuration(int d) { duration = d; }
+	void setOrg(int o) { org = o; }
+	int getCur() { return cur; }
+	//void setDuration(int d) { duration = d; }
+	//int getDuration() { return duration; }
 
 };
 class cScreen {
@@ -589,8 +589,7 @@ public:
 			int x = rand() % nScreenWidth;
 			int y = laneY + i * laneSize - 1;
 			light[i] = new cLight(x, y);
-			light[i]->setDuration((rand()+4567856) % 13);
-			light[i]->update();
+			light[i]->setOrg(rand() % 7);
 		}
 		// Initialise player
 		cPlayer Player;
@@ -678,6 +677,7 @@ public:
 			for (int i = 0; i < nLane; i++) {
 				light[i]->update(elapsed);
 			}
+			drawText(to_wstring(light[0]->getCur()), 3, nScreenHeight - 4, bg, white);
 
 			// [4] CHECK GAME LOGIC
 			// Check collision
