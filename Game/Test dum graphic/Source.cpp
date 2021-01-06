@@ -731,7 +731,7 @@ public:
 				int c;
 				if (light[i]->Red()) c = red;
 				else c = green;
-				drawBlock(L"ll", light[i]->getX(), light[i]->getY(), bg, c);
+				drawBlock(L"ll", light[i]->getX(), light[i]->getY() + offset, bg, c);
 			}
 			// Player
 			drawBlock(Player.getSketch(), Player.getX(), Player.getY() + offset, bg, 7);
@@ -766,7 +766,7 @@ public:
 		exit(0);
 	}
 	void stageClearScreen() {
-		mciSendString(stage_clear, NULL, 0, NULL);
+		PlaySound(TEXT("stage_clear.wav"), NULL, SND_ASYNC);
 
 		clearScreen(lightblue, white);
 		drawText(L"STAGE CLEAR. ENTER TO NEXT STAGE.", 10, 5, lightblue, white);
