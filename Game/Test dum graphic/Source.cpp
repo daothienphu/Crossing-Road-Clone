@@ -1,4 +1,9 @@
-﻿#include <Windows.h>
+﻿#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+#include <chrono>
+#include <ctime>    
+#include <Windows.h>
 #include <string>
 #include<iostream>
 #include<vector>
@@ -72,13 +77,18 @@ const vector<wstring> Skull = { // 22 x 12
 LPCWSTR song_intro{ L"play song_intro.wav" };
 LPCWSTR song_game_1{ L"play song_game_1.wav" };
 LPCWSTR song_game_2{ L"play song_game_2.wav" };
+LPCWSTR song_game_3{ L"play song_game_3.wav" };
+LPCWSTR song_game_4{ L"play song_game_4.wav" };
+LPCWSTR song_game_5{ L"play song_game_5.wav" };
 LPCWSTR click_menu{ L"play menu_click.wav" };
 LPCWSTR start_level{ L"play start_level.wav" };
 LPCWSTR pass_lane{ L"play pass_lane.wav" };
 LPCWSTR pass_level{ L"play pass_level.wav" };
 LPCWSTR game_over{ L"play game_over.wav" };
-
-
+//mciSendString(menu_click, NULL, 0, NULL);
+#define playSoundLoop(file_name) mciSendString(file_name, NULL, 0, NULL);
+// Time
+auto start = chrono::system_clock::now();
 class cPlayer {
 private:
 	int X = 0, Y = 0;
@@ -265,6 +275,17 @@ public:
 			}
 		}
 	}
+	void drawProgressBar(int time, int total, int x, int y) {
+		wstring bar;
+		bar += L'[';
+		for (int i = 0; i < 100; i++)
+			bar += L' ';
+		bar += L']';
+		drawText(bar, x, y, darkblue, white);
+		for (int i = 1; i <= time * 100 / total && time <= total; i++) {
+			drawBlock(L"l", x + i, y, black, white);
+		}
+	}
 	void drawBlock(wstring Sketch, int X, int Y, int colorBackground, int colorChar) {
 		for (int j = 0; j < Sketch.length(); j++) {
 			if (X >= 0 && X < nScreenWidth && Y >= 0 && Y < nScreenHeight) {
@@ -373,7 +394,7 @@ public:
 		drawText(content, X, Y, colorBackground2, colorCharacter2); drawScreen();
 	}
 	void startMenuScreen() {
-		PlaySound(TEXT("intro.wav"), NULL, SND_ASYNC);
+		PlaySound(TEXT("song_intro.wav"), NULL, SND_ASYNC);
 		// Configure screen
 		configure();
 		HANDLE hConsole1 = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
@@ -442,7 +463,7 @@ public:
 				if (choiceMenu == 0) {
 					glitchEffectText(L" START GAME ", xMenu, yMenu, 7, 6, 0, 7);
 					startLoadScreen();
-					startGameScreen(1);
+					startStage(1);
 				}
 				else if (choiceMenu == 1) {
 					glitchEffectText(L"  LOAD GAME ", xMenu, yMenu + 1, 7, 6, 0, 7);
@@ -474,8 +495,16 @@ public:
 		//mciSendString(menu_click, NULL, 0, NULL);
 		Sleep(800);
 	}
+	void startStage(int stage) {
+
+		start = chrono::system_clock::now();
+		//Sleep(5000);
+		startGameScreen(1);
+	}
 	void startGameScreen(int level) {
-		PlaySound(TEXT("enter.wav"), NULL, SND_ASYNC);
+		Sleep(400);
+		playSoundLoop(start_level);
+		PlaySound(TEXT("song_game_1.wav"), NULL, SND_ASYNC);
 		int nLane = 5 + level * 2;
 		int lane1 = 10; // Y of lane1
 		int laneSize = 5;
@@ -571,12 +600,12 @@ public:
 			// GAME LOGIC
 			// Check lane pass
 			bool newscore = false;
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < nLane; i++) {
 				if (Player.getY() >= lane1 + i * 5 && passed[i] == false) {
 					score += 10;
 					newscore = true;
 					passed[i] = true;
-					PlaySound(TEXT("lane_pass.wav"), NULL, SND_ASYNC);
+					playSoundLoop(pass_lane);
 				}
 			}
 			// Check collision
@@ -606,19 +635,23 @@ public:
 			drawStars(starmap);
 			for (int i = 0; i <= nLane; i++)
 				drawHorizontalLine3(0, lane1 - 1 + i * laneSize + offset, nScreenWidth, bg, lightblue);
-			//drawHorizontalLine3(0, 9, nScreenWidth, bg, lightblue);
-			//drawHorizontalLine3(0, 14, nScreenWidth, bg, lightblue);
-			//drawHorizontalLine3(0, 19, nScreenWidth, bg, lightblue);
-			//drawHorizontalLine3(0, 24, nScreenWidth, bg, lightblue);			
-			//drawHorizontalLine3(0, 29, nScreenWidth, bg, lightblue);
-			//drawHorizontalLine3(0, 34, nScreenWidth, bg, lightblue);
-			//drawHorizontalLine3(0, 39, nScreenWidth, bg, lightblue);
 			drawBlock(Player.getSketch(), Player.getX(), Player.getY() + offset, bg, 7);
 			for (int i = 0; i < nLane; i++) {
 				drawBlock(Enemy[i]->getSketch(), Enemy[i]->getX(), Enemy[i]->getY() + offset, bg, Enemy[i]->getColor());
 			}
 			drawText(L"LEVEL " + to_wstring(level), 4, 3, bg, white);
 			drawText(L"SCORE: " + to_wstring(score), 4, 2, 0, 7);
+			//Time
+			auto end = chrono::system_clock::now();
+			chrono::duration<double> elapsed_seconds = end - start;
+			if (elapsed_seconds.count() >= 60) {
+				PlaySound(TEXT("game_over.wav"), NULL, SND_ASYNC);
+				playSoundLoop(game_over);
+			}
+			int time = elapsed_seconds.count();
+			int total = 101;
+			drawProgressBar(time, total, 30, nScreenHeight - 1);
+			drawText(L"Time elapsed: " + to_wstring(elapsed_seconds.count()), 2, nScreenHeight - 2, bg, ch);
 			drawText(L"Frame: " + to_wstring(frame), 2, nScreenHeight - 1, bg, ch);
 			drawScreen();
 
