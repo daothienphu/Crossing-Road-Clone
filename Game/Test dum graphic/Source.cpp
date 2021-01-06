@@ -243,7 +243,7 @@ public:
 		SetWindowLong(consoleWindow, GWL_STYLE, style);
 	}
 	void configure() {
-		system("MODE 160, 46"); // Set screen size (width, height + 1)
+		system("MODE 160, 45"); // Set screen size (width, height + 1)
 		FixConsoleWindow(); //Fix window size
 		// Make custom color palette - up to 16 colors, may update later
 		HANDLE hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE); // A handle to console screen buffer.
@@ -331,21 +331,21 @@ public:
 			}
 		}
 	}
-	void drawProgressBar(int elapsed, int duration, int x, int y) {
+	void drawProgressBar(int elapsed, int duration, int x, int y, int bg, int ch) {
 		// Draw bar
 		wstring bar;
-		bar += L'[';
+		//bar += L'[';
 		for (int i = 0; i < 100; i++)
 			bar += L' ';
-		bar += L']';
-		drawText(bar, x, y, darkblue, white);
+		//bar += L']';
+		drawText(bar, x, y, black, white);
 		// Draw progress
 		for (int i = 1; i <= elapsed * 100 / duration; i++) {
-			drawBlock(L"l", x + i, y, black, white);
+			drawBlock(L"l", x + i, y, black, darkwhite);
 		}
 		// Draw time
-		drawText(time_to_wstring(elapsed), x - 6, y, black, white);
-		drawText(time_to_wstring(duration), x + 104, y, black, white);
+		drawText(time_to_wstring(elapsed), x - 6, y, bg, ch);
+		drawText(time_to_wstring(duration), x + 103, y, bg, ch);
 	}
 	void drawBlock(wstring Sketch, int X, int Y, int colorBackground, int colorChar) {
 		for (int j = 0; j < Sketch.length(); j++) {
@@ -549,17 +549,12 @@ public:
 		clearScreen(darkblue, white);
 		drawBlock(L"ll", 75, 22, darkblue, white);
 		drawScreen();
-		//mciSendString(menu_click, NULL, 0, NULL);
 		Sleep(800);
-		//clearScreen(darkblue, white);
 		drawBlock(L"ll", 79, 22, darkblue, white);
 		drawScreen();
-		//mciSendString(menu_click, NULL, 0, NULL);
 		Sleep(800);
-		//clearScreen(darkblue, white);
 		drawBlock(L"ll", 83, 22, darkblue, white);
 		drawScreen();
-		//mciSendString(menu_click, NULL, 0, NULL);
 		Sleep(800);
 	}
 	void startStage(int stage) {
@@ -575,7 +570,6 @@ public:
 		startGameScreen(1, stage);
 	}
 	void startGameScreen(int level, int stage) {
-		Sleep(400);
 		// INITALISE GAME SCREEN
 		// Sound
 		mciSendString(start_level, NULL, 0, NULL);		
@@ -596,7 +590,7 @@ public:
 		}
 		// Initialise player
 		cPlayer Player;
-		Player.setXY(80, 1);
+		Player.setXY(80, 5);
 		// Initialise random enemies
 		cEnemy** Enemy = new cEnemy*[nLane];
 		for (int i = 0; i < nLane; i++) {
@@ -628,12 +622,12 @@ public:
 		bool gameOver = false;
 		// Starmap for background
 		int* starmap = new int[nScreenWidth * nScreenHeight];
-		int bg = 0, ch = 7; // Color for background
+		int bg = darkblue, ch = white; // Color for background
+
 		while (gameOver == false) {
 			// [1] CLEAR SCREEN
 			clearScreen(bg, ch);
 			drawBlock(Player.getSketch(), Player.getX(), Player.getY() + offset, darkblue, lightblue); // For shadow effect
-
 
 			// [2] READ INPUT
 			bool* bKeyGame = new bool[key.size()]; // Check ingame input
@@ -680,7 +674,7 @@ public:
 			for (int i = 0; i < nLane; i++) {
 				light[i]->update(elapsed);
 			}
-			drawText(to_wstring(light[0]->getCur()), 3, nScreenHeight - 4, bg, white);
+			//drawText(to_wstring(light[0]->getCur()), 3, nScreenHeight - 4, bg, white);
 
 			// [4] CHECK GAME LOGIC
 			// Check collision
@@ -724,8 +718,8 @@ public:
 			for (int i = 0; i <= nLane; i++) { // Normal lanes
 				drawHorizontalLine3(0, laneY - 1 + i * laneSize + offset, nScreenWidth, bg, lightblue);
 			}
-			if (newPass) 
-				drawHorizontalLine3(0, laneY - 1 + (lanePassed+1) * laneSize + offset, nScreenWidth, bg, white);
+			if (newPass)
+				drawHorizontalLine3(0, laneY - 1 + (lanePassed + 1) * laneSize + offset, nScreenWidth, bg, white);
 			// Lights
 			for (int i = 0; i < nLane; i++) {
 				int c;
@@ -737,12 +731,14 @@ public:
 			drawBlock(Player.getSketch(), Player.getX(), Player.getY() + offset, bg, 7);
 			for (int i = 0; i < nLane; i++) {
 				drawBlock(Enemy[i]->getSketch(), Enemy[i]->getX(), Enemy[i]->getY() + offset, bg, Enemy[i]->getColor());
+				drawBlock(Enemy[i]->getSketch(), Enemy[i]->getX() + 11, Enemy[i]->getY() + offset, bg, Enemy[i]->getColor());
+				drawBlock(Enemy[i]->getSketch(), Enemy[i]->getX() + 22, Enemy[i]->getY() + offset, bg, Enemy[i]->getColor());
 			}
 			// UI
 			drawText(L"STAGE " + to_wstring(stage), 4, 4, bg, white);
 			drawText(L"LEVEL " + to_wstring(level), 4, 3, bg, white);
 			drawText(L"SCORE: " + to_wstring(score), 4, 2, 0, 7);
-			drawProgressBar(elapsed, duration[stage-1], 30, nScreenHeight - 1);
+			drawProgressBar(elapsed, duration[stage-1], 30, 1, darkblue, white);
 			drawText(L"Time elapsed: " + to_wstring(elapsed_seconds.count()), 2, nScreenHeight - 2, bg, ch);
 			// Frame
 			drawText(L"Frame: " + to_wstring(frame), 2, nScreenHeight - 1, bg, ch);
@@ -755,7 +751,6 @@ public:
 	}
 	void gameOverScreen() {
 		gameOverEffect();
-
 		clearScreen(9, 7);
 		drawBlock(GameOver, 53, 12, 9, 6);
 		drawBlock(Skull, 69, 17, 9, 7);
@@ -767,7 +762,6 @@ public:
 	}
 	void stageClearScreen() {
 		PlaySound(TEXT("stage_clear.wav"), NULL, SND_ASYNC);
-
 		clearScreen(lightblue, white);
 		drawText(L"STAGE CLEAR. ENTER TO NEXT STAGE.", 10, 5, lightblue, white);
 		drawScreen();
