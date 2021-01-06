@@ -37,11 +37,11 @@ public:
 			resetPos(x > 0);
 	}
 	virtual void resetPos(bool left = true) {
-		this->x = left? -w + 1 : screenWidth;
+		this->x = left? -MAX_ENEMY_WIDTH + 1 : screenWidth;
 	}
 
 	void render(GraphicsController*& graphic) {
-		clearOldPos(graphic);
+		//clearOldPos(graphic);
 		graphic->setBuffer(graphic->getBuffer(bufferKey), this->x, this->y, bgColor, fgColor);
 	}
 
@@ -57,7 +57,7 @@ public:
 	}
 
 	bool isOutOfBound() {
-		return x + w < 1 || x > screenWidth;
+		return x + MAX_ENEMY_WIDTH < 1 || x > screenWidth;
 	}
 
 	int getTick() {

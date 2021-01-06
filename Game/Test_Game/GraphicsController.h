@@ -4,7 +4,7 @@
 
 class GraphicsController {
 protected:
-	wchar_t* buffer;
+	wchar_t* buffer, *starBuffer;
 	WORD* color;
 
 	HANDLE hConsole;
@@ -17,6 +17,7 @@ public:
 	GraphicsController()
 	{
 		buffer = new wchar_t[screenHeight * screenWidth]{L" "};
+		starBuffer = new wchar_t[screenHeight * screenWidth]{ L' ' };
 		color = new WORD[screenHeight * screenWidth];
 		for (int i = 0; i < screenHeight * screenWidth; ++i) {
 			color[i] = black * 16 + whiteDark; //will add crescendo effect later
@@ -31,6 +32,7 @@ public:
 	}
 	~GraphicsController() {
 		delete[] buffer;
+		delete[] starBuffer;
 		delete[] color;
 	}
 
@@ -179,7 +181,6 @@ public:
 			color[i] = black * 16 + whiteDark;
 			buffer[i] = L' ';
 		}
-		render();
 	}
 	void render() {
 		WriteConsoleOutputAttribute(hConsole, color, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
@@ -202,21 +203,30 @@ public:
 	void randomStars() {
 		if (randomInterval != 10) {
 			randomInterval++;
+			copyStarBuffer();
 			return;
 		}
 
 		randomInterval -= 10;
 		for (int i = 0; i < 70; ++i) {
 			int a = rand() % (screenWidth * screenHeight);
-			buffer[a] = L'.';
-			color[a] = black * 16 + white;
+			starBuffer[a] = L'.';
 		}
+		copyStarBuffer();
 	}
 	void clearStars() {
 		if (randomInterval == 10)
 			for (int i = 0; i < screenWidth * screenHeight; ++i) {
-				buffer[i] = L' ';
+				starBuffer[i] = L' ';
 			}
+	}
+	void copyStarBuffer() {
+		for (int i = 0; i < screenWidth * screenHeight; ++i) {
+			if (starBuffer[i] == L'.') {
+				buffer[i] = L'.';
+				color[i] = black * 16 + white;
+			}
+		}
 	}
 	void glitch() {
 		for (int i = 0; i < screenWidth * screenHeight; ++i) {

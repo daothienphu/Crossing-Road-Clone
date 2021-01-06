@@ -36,7 +36,7 @@ public:
 			int cur = 0;
 			while (1) {
 				string chosen = "enemy" + to_string(random(1, NUM_ENEMY));
-				if (cur + graphic->getBuffer(chosen)[0].size() + LEAST_SPACE < screenWidth)
+				if (cur < screenWidth)
 				{
 					obs.push_back(new Obstacles(cur, lane * LANE_HEIGHT, velocity, BG, random(1, 7), chosen, graphic));
 					cur += graphic->getBuffer(chosen)[0].size() + LEAST_SPACE;

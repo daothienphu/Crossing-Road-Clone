@@ -94,7 +94,7 @@ public:
 			vector<wstring> tmp = { L"█" };
 			graphic->setBuffer(tmp, 31 + i, 24, BG, whiteDark);
 			graphic->render();
-			delay(83 - i);
+			delay(1);
 		}
 		vector<wstring> tmp = { L"PRESS ENTER TO CONTINUE" };
 		graphic->setBuffer(tmp, 58, 27, BG, whiteDark);
@@ -130,6 +130,7 @@ public:
 		while (1) {
 			
 			//slow down the speed for "sensible" input
+			graphic->clearBuffer();
 			delay(1000 / (FRAMERATE / 8));
 			graphic->clearStars();
 
@@ -220,7 +221,7 @@ public:
 		//or turn off sound -> play game -> turn on sound
 		graphic->clearBuffer();
 		player->setPos(72, 2);
-		player->clearOldPos(graphic);
+		//player->clearOldPos(graphic);
 		//GameLane* lane1 = new GameLane(1, 1, 1, graphic);
 		//GameLane* lane2 = new GameLane(2, 2, 1, graphic);
 		//GameLane* lane3 = new GameLane(3, 3, 1, graphic);
@@ -244,6 +245,7 @@ public:
 		{
 			delay(1000 / (FRAMERATE - 20));
 
+			graphic->clearBuffer();
 			graphic->clearStars();
 			player->render(graphic);
 
@@ -255,16 +257,16 @@ public:
 				if (!pauseScreen())
 					return Level;
 			}
-			else if (bKeyGame[0] == 1 && player->getPos().y > 1) {
+			if (bKeyGame[0] == 1 && player->getPos().y > 1) {
 				player->move(0, -1);
 			}
-			else if (bKeyGame[1] == 1 && player->getPos().x > 1) {
+			if (bKeyGame[1] == 1 && player->getPos().x > 1) {
 				player->move(-1, 0);
 			}
-			else if (bKeyGame[2] == 1 && player->getPos().y < screenHeight - 2 - graphic->getBuffer(player->getBufferKey()).size()) {
+			if (bKeyGame[2] == 1 && player->getPos().y < screenHeight - 2 - graphic->getBuffer(player->getBufferKey()).size()) {
 				player->move(0, 1);
 			}
-			else if (bKeyGame[3] == 1 && player->getPos().x < screenWidth - 1 - graphic->getBuffer(player->getBufferKey())[0].length()) {
+			if (bKeyGame[3] == 1 && player->getPos().x < screenWidth - 1 - graphic->getBuffer(player->getBufferKey())[0].length()) {
 				player->move(1, 0);
 			}
 

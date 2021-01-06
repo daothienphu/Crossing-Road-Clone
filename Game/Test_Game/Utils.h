@@ -8,6 +8,7 @@ using namespace std::chrono;
 #define LANE_HEIGHT 7
 #define LEAST_SPACE 10
 #define NUM_ENEMY 4
+#define MAX_ENEMY_WIDTH 10
 #define BG black
 enum { blueDark = 0, blueLight, orange, yellow, green, purple, red, whiteDark, white, black };
 
