@@ -6,10 +6,39 @@
 using namespace std;
 
 //draw the sprite here, coresspondence with the variable name
-extern unordered_map<string, vector<wstring> > BUFFER_MAP = {
+extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
+	//intro & title screen
+	{   "intro",
+		vector<wstring>{
+	    L"░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░",
+		L"░░██████╗░███████╗██████╗░░░░░░░░░░░░░░░██████╗░██████╗░░█████╗░░██╗░░░░░░░██╗███████╗░██████╗░██████╗░░",
+		L"░░██╔══██╗██╔════╝██╔══██╗░░░░░░░░░░░░░░██╔══██╗██╔══██╗██╔══██╗░██║░░██╗░░██║██╔════╝██╔════╝██╔════╝░░",
+		L"░░██║░░██║█████╗░░██║░░██║███████████╗░░██████╔╝██████╔╝██║░░██║░╚██╗████╗██╔╝█████╗░░╚█████╗░╚█████╗░░░",
+		L"░░██║░░██║██╔══╝░░██║░░██║╚══════════╝░░██╔═══╝░██╔══██╗██║░░██║░░████╔═████║░██╔══╝░░░╚═══██╗░╚═══██╗░░",
+		L"░░██████╔╝███████╗██████╔╝░░░░░░░░░░░░░░██║░░░░░██║░░██║╚█████╔╝░░╚██╔╝░╚██╔╝░███████╗██████╔╝██████╔╝░░",
+		L"░░╚═════╝░╚══════╝╚═════╝░░░░░░░░░░░░░░░╚═╝░░░░░╚═╝░░╚═╝░╚════╝░░░░╚═╝░░░╚═╝░░╚══════╝╚═════╝░╚═════╝░░░",
+		L"░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░",
+        L"░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀█ █▀█ █▀█ █▀▄ █░█ █▀▀ ▀█▀ █ █▀█ █▄░█ █▀░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░",
+        L"░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█▀▀ █▀▄ █▄█ █▄▀ █▄█ █▄▄ ░█░ █ █▄█ █░▀█ ▄█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░",
+		L"░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░"
+		} //104 x 11
+	},
 	{
 		"title",
 		vector<wstring>{
+		/*L"┏━━━┓",
+		L"┃┏━┓┃",
+		L"┃┃╋┗╋━┳━━┳━━┳━━┳┳━┓┏━━┓",
+		L"┃┃╋┏┫┏┫┏┓┃━━┫━━╋┫┏┓┫┏┓┃",
+		L"┃┗━┛┃┃┃┗┛┣━━┣━━┃┃┃┃┃┗┛┃",
+		L"┗━━━┻┛┗━━┻━━┻━━┻┻┛┗┻━┓┃",
+		L"╋╋╋╋╋╋╋╋╋╋╋╋╋╋╋╋╋╋╋┏━┛┃",
+		L"┏━━━┓╋╋╋╋╋╋╋┏┓╋╋╋╋╋┗━━┛",
+		L"┃┏━┓┃╋╋╋╋╋╋╋┃┃",
+		L"┃┗━┛┣━━┳━━┳━┛┣━━┓",
+		L"┃┏┓┏┫┏┓┃┏┓┃┏┓┃━━┫",
+		L"┃┃┃┗┫┗┛┃┏┓┃┗┛┣━━┃",
+		L"┗┛┗━┻━━┻┛┗┻━━┻━━┛"*/
 		L".'''.  l'''.  .'''.  .'''   .'''   'l'  l.  l  .''''",
 		L"l      l'''.  l   l   '''.   '''.   l   l '.l  l ''l",
 		L"'...'  l   l  '...'  '...'  '...'  .l.  l   l  '...l",
@@ -17,7 +46,7 @@ extern unordered_map<string, vector<wstring> > BUFFER_MAP = {
 		L"             l'''.  .'''.  .'''.  l'''.",
 		L"             l'''.  l   l  l...l  l   l",
 		L"             l   l  '...'  l   l  l...'",
-		}
+}
 	},
 	{
 		"start",
@@ -51,11 +80,12 @@ extern unordered_map<string, vector<wstring> > BUFFER_MAP = {
 		L"╚═╝"
 		}
 	},
+
+	//player & enemies
 	{
 		"player",
 		vector<wstring>{
-		L"..",
-		L"''"
+		L"ll"
 		}
 	},
 	{
@@ -94,6 +124,8 @@ extern unordered_map<string, vector<wstring> > BUFFER_MAP = {
 		L" ' ' ' ' "
 		}
 	},
+
+	//score & level
 	{
 		"score",
 		vector<wstring>{
@@ -106,11 +138,13 @@ extern unordered_map<string, vector<wstring> > BUFFER_MAP = {
 		L"LEVEL"
 		}
 	},
+
+	//setting screen
 	{
 		"settingsTitle",
 		vector<wstring>{
-		L"This is setting screen."
-		}
+		L"▌│█║▌║▌║ SETTINGS ║▌║▌║█│▌"
+		} 
 	},
 	{
 		"sound",
@@ -133,31 +167,71 @@ extern unordered_map<string, vector<wstring> > BUFFER_MAP = {
 	{
 		"back",
 		vector<wstring>{
-		L"BACK"
+		L"   BACK   "
+		}
+	},
+
+	//pause screen
+	{
+		"pauseTitle",
+		vector<wstring>{
+		L"▌│█║▌║▌║ PAUSE ║▌║▌║█│▌" //9 each side incl spaces
 		}
 	},
 	{
-		"pauseScreen",
+		"resumeButton",
 		vector<wstring>{
-		L"This is pause screen."
+		L"  RESUME  "
 		}
 	},
 	{
-		"resume",
+		"restartButton",
 		vector<wstring>{
-		L"RESUME"
+		L"  RESTART "
 		}
 	},
 	{
-		"restart",
+		"saveButton",
 		vector<wstring>{
-		L"RESTART"
+		L"   SAVE   "
 		}
 	},
+
+	//exit & game over screen
 	{
 		"exitTitle",
 		vector<wstring>{
-		L"HOW DARE YOU EXIT OUR MARVELOUS GAME YOU UNCULTURED SWINE" //Some bull-headed kid wrote this (not me)
+		L"HOW DARE YOU EXIT OUR MARVELOUS GAME YOU UNCULTURED SWINE" //Some bull-headed kid wrote this (not me) //stfu
+		}
+	},
+	{
+		"gameoverTitle",
+		vector<wstring>{
+		L"─────────▄──────────────▄────",
+		L"────────▌▒█───────────▄▀▒▌───",
+		L"────────▌▒▒▀▄───────▄▀▒▒▒▐───",
+		L"───────▐▄▀▒▒▀▀▀▀▄▄▄▀▒▒▒▒▒▐───",
+		L"─────▄▄▀▒▒▒▒▒▒▒▒▒▒▒█▒▒▄█▒▐───",
+		L"───▄▀▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▀██▀▒▌───",
+		L"──▐▒▒▒▄▄▄▒▒▒▒▒▒▒▒▒▒▒▒▒▀▄▒▒▌──",
+		L"──▌▒▒▐▄█▀▒▒▒▒▄▀█▄▒▒▒▒▒▒▒█▒▐──",
+		L"─▐▒▒▒▒▒▒▒▒▒▒▒▌██▀▒▒▒▒▒▒▒▒▀▄▌─",
+		L"─▌▒▀▄██▄▒▒▒▒▒▒▒▒▒▒▒░░░░▒▒▒▒▌─",
+		L"─▌▀▐▄█▄█▌▄▒▀▒▒▒▒▒▒░░░░░░▒▒▒▐─",
+		L"▐▒▀▐▀▐▀▒▒▄▄▒▄▒▒▒▒▒░░░░░░▒▒▒▒▌",
+		L"▐▒▒▒▀▀▄▄▒▒▒▄▒▒▒▒▒▒░░░░░░▒▒▒▐─",
+		L"─▌▒▒▒▒▒▒▀▀▀▒▒▒▒▒▒▒▒░░░░▒▒▒▒▌─",
+		L"─▐▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▐──",
+		L"──▀▄▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▄▒▒▒▒▌──",
+		L"────▀▄▒▒▒▒▒▒▒▒▒▒▄▄▄▀▒▒▒▒▄▀───",
+		L"───▐▀▒▀▄▄▄▄▄▄▀▀▀▒▒▒▒▒▄▄▀─────",
+		L"──▐▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▀▀────────"
+		} //29x19
+	},
+	{
+		"inspirationalText",
+		vector<wstring> {
+		L"  Haha u lost, loser!!!! XD  "
 		}
 	},
 	/*{
@@ -166,6 +240,19 @@ extern unordered_map<string, vector<wstring> > BUFFER_MAP = {
 		L"Something here",
 		}
 	},*/
+	{
+		"easterEgg1",
+		vector<wstring> {
+		L"           The game takes no time to load, but we made u wait cuz we hate u.",
+		L"The name of the loading bar component in our code is literally \"Loading bar, cuz why not\""
+		}
+	},
+	{
+		"easterEgg2",
+		vector<wstring> {
+		L"There\'s only one button dumbass."
+		}
+	},
 };
 
 // Any buffer that requires padding to block
@@ -187,5 +274,3 @@ extern vector <string> CLEAR_BUFFER = {
 	"enemy3",
 	"enemy4",
 };
-
-//then go to GraphicController and map it to the unordered_map using the syntax: bufferStorage["name"] = name;

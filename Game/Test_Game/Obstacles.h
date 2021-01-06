@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "GameObject.h"
+#include "Utils.h"
 using namespace std;
 
 class Obstacles : public GameObject {
@@ -18,7 +19,7 @@ public:
 		fgColor(_fgColor)
 	{}
 
-	virtual void move(int x, int y, GraphicsController*& graphic)
+	void move(int x, int y)
 	{
 		tick++;
 
@@ -27,22 +28,46 @@ public:
 			return; //Nah, not enough
 		
 		tick %= speed;
-		render(graphic);
 		this->oldX = this->x;
 		this->oldY = this->y;
 		this->x += x;
 		this->y += y;
+
+		if (isOutOfBound())
+			resetPos(x > 0);
 	}
-	virtual void resetPos(int lane, GraphicsController*& graphic, bool left = true) {
-		this->x = left? 0 : 137;
-		this->y = lane * 5;
-		render(graphic);
+	virtual void resetPos(bool left = true) {
+		this->x = left? -w + 1 : screenWidth;
 	}
 
 	void render(GraphicsController*& graphic) {
 		clearOldPos(graphic);
-		GameObject::render(graphic, bgColor, fgColor);
+		graphic->setBuffer(graphic->getBuffer(bufferKey), this->x, this->y, bgColor, fgColor);
 	}
+
+	void clearOldPos(GraphicsController*& graphic) {
+		GameObject::clearOldPos(graphic, bgColor, fgColor);
+	}
+
+	void setPos(int x, int y) {
+		this->x = x;
+		this->oldX = x;
+		this->y = y;
+		this->oldY = y;
+	}
+
+	bool isOutOfBound() {
+		return x + w < 1 || x > screenWidth;
+	}
+
+	int getTick() {
+		return tick;
+	}
+};
+
+class Enemy1 : public Obstacles {
+public:
+
 };
 
 //class Maybe : public Obstacles {
