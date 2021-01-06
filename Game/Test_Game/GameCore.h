@@ -69,7 +69,7 @@ public:
 		titleScreen();
 	}
 	void introScreen() {
-		//graphic->createFrame(0, 0, 145, 40);
+		graphic->createFrame(0, 0, 145, 40);
 
 		//intro
 		GameMenu* intro = new Button("intro");
@@ -94,7 +94,7 @@ public:
 			vector<wstring> tmp = { L"█" };
 			graphic->setBuffer(tmp, 31 + i, 24, BG, whiteDark);
 			graphic->render();
-			delay(83 - i);
+			delay(1);
 		}
 		vector<wstring> tmp = { L"PRESS ENTER TO CONTINUE" };
 		graphic->setBuffer(tmp, 58, 27, BG, whiteDark);
@@ -130,6 +130,7 @@ public:
 		while (1) {
 			
 			//slow down the speed for "sensible" input
+			graphic->clearBuffer();
 			delay(1000 / (FRAMERATE / 8));
 			graphic->clearStars();
 
@@ -149,7 +150,7 @@ public:
 						mciSendString(L"resume song_intro.wav", NULL, 0, NULL);
 				}
 				else if (choice == 1) {
-					//mciSendString(L"pause song_intro.wav", NULL, 0, NULL); // Why pause? Just let it play
+					mciSendString(L"pause song_intro.wav", NULL, 0, NULL);
 					loadScreen();
 				}
 				else if (choice == 2) {
@@ -165,7 +166,7 @@ public:
 					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 				//mciSendStrings needs to finish the previous instance of the same sound first before playing it again
 				//However, PlaySound will stop the previous PlaySound command and play the current one
-				//so PlaySound should be used here - eh heh u got the problem boi, smortoss
+				//so PlaySound should be used here
 				choice = (choice + 4 - 1) % 4;
 			}
 			else if (bKeyGame[2] == 1) {
@@ -177,10 +178,10 @@ public:
 			//enemies and stars
 			graphic->randomStars();
 
-			enemy1->render(graphic);
-			enemy2->render(graphic);
-			enemy3->render(graphic);
-			enemy4->render(graphic);
+			enemy1->render(graphic, 0);
+			enemy2->render(graphic, 0);
+			enemy3->render(graphic, 0);
+			enemy4->render(graphic, 0);
 
 			enemy1->move(2, 0);
 			enemy2->move(-2, 0);
@@ -188,7 +189,6 @@ public:
 			enemy4->move(-2, 0);
 
 			//default color
-			// Should set the game screen background to dark blue :<
 			graphic->setBufferWhite(graphic->getBuffer(title->getBufferKey()), 46, 11, BG, whiteDark);
 			graphic->setBuffer(graphic->getBuffer(startButton->getBufferKey()), 68, 20, BG, whiteDark);
 			graphic->setBuffer(graphic->getBuffer(loadButton->getBufferKey()), 68, 21, BG, whiteDark);
@@ -208,7 +208,7 @@ public:
 			default: break;
 			}
 
-			//graphic->createFrame(0, 0, 145, 40);
+			graphic->createFrame(0, 0, 145, 40);
 			graphic->render();
 		}
 	}
@@ -221,7 +221,7 @@ public:
 		//or turn off sound -> play game -> turn on sound
 		graphic->clearBuffer();
 		player->setPos(72, 2);
-		player->clearOldPos(graphic);
+		//player->clearOldPos(graphic);
 		//GameLane* lane1 = new GameLane(1, 1, 1, graphic);
 		//GameLane* lane2 = new GameLane(2, 2, 1, graphic);
 		//GameLane* lane3 = new GameLane(3, 3, 1, graphic);
@@ -241,15 +241,18 @@ public:
 		int num = 0;
 		bool* bKeyGame = new bool[key.size()]{ 0 };
 
-		// Time
-		startTime = chrono::system_clock::now();
+		//scroll
+		int offset = 0;
+		int nLane = 5 + Level * 2;
 
 		while (1)
 		{
 			delay(1000 / (FRAMERATE - 20));
 
+			graphic->clearBuffer();
 			graphic->clearStars();
 			player->render(graphic);
+			player->update();
 
 			//Controls
 			for (int i = 0; i < key.size(); i++) { 	// Read input
@@ -258,17 +261,23 @@ public:
 			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE)) {
 				if (!pauseScreen())
 					return Level;
+				if (soundOn)
+					PlaySound(TEXT("GameSong2.wav"), NULL, SND_FILENAME | SND_ASYNC);
 			}
-			else if (bKeyGame[0] == 1 && player->getPos().y > 1) {
+			if (bKeyGame[0] == 1 && player->getPos().y > 1) {
+				if (player->getPos().y + offset <= 5 && player->getPos().y > 5)
+					offset++;
 				player->move(0, -1);
 			}
-			else if (bKeyGame[1] == 1 && player->getPos().x > 1) {
+			if (bKeyGame[1] == 1 && player->getPos().x > 1) {
 				player->move(-1, 0);
 			}
-			else if (bKeyGame[2] == 1 && player->getPos().y < screenHeight - 2 - graphic->getBuffer(player->getBufferKey()).size()) {
+			if (bKeyGame[2] == 1 && player->getPos().y < screenHeight - 2 - graphic->getBuffer(player->getBufferKey()).size()) {
+				if (player->getPos().y + offset + 5 >= screenHeight && player->getPos().y + 5 <= 18 + nLane * LANE_HEIGHT)
+					offset--;
 				player->move(0, 1);
 			}
-			else if (bKeyGame[3] == 1 && player->getPos().x < screenWidth - 1 - graphic->getBuffer(player->getBufferKey())[0].length()) {
+			if (bKeyGame[3] == 1 && player->getPos().x < screenWidth - 1 - graphic->getBuffer(player->getBufferKey())[0].length()) {
 				player->move(1, 0);
 			}
 
@@ -279,7 +288,7 @@ public:
 			auto endTime = chrono::system_clock::now();
 			chrono::duration<double> elapsed_seconds = endTime - startTime;
 			int elapsed = elapsed_seconds.count();
-			graphic->progressBar(elapsed, songDuration[Level-1], 20, screenHeight - 3);
+			graphic->progressBar(elapsed, songDuration[Level-1], 20, 1);
 
 			//Score and Level
 			toVwstring(num++, scoreCounter);
@@ -292,12 +301,9 @@ public:
 
 
 			for (auto l : lanes) l->logic();
-			for (auto l : lanes) l->render(graphic);
+			for (auto l : lanes) l->render(graphic, offset);
 			if (this->checkCollision(lanes)) {
-				mciSendString(L"stop song_game_1.wav", NULL, 0, NULL);
-				mciSendString(L"play crash.wav", NULL, 0, NULL);
 				graphic->glitch();
-				delay(500);
 				mciSendString(L"stop song_game_1.wav", NULL, 0, NULL);
 				gameoverScreen();
 				graphic->clearBuffer();
@@ -306,8 +312,7 @@ public:
 
 			player->render(graphic);
 
-			//graphic->createFrame(0, 0, 145, 40); // Don't draw the frame in the game screen because it makes
-			// the screen looks less spacious and bounded
+			graphic->createFrame(0, 0, 145, 40);
 
 			graphic->render();
 		}
@@ -523,7 +528,7 @@ public:
 			}
 		}
 		if (soundOn)
-			mciSendString(L"play enter.wav", NULL, 0, NULL);
+			mciSendString(enter, NULL, 0, NULL);
 	}
 
 	bool checkCollision(vector<GameLane*> lanes)
