@@ -178,10 +178,10 @@ public:
 			//enemies and stars
 			graphic->randomStars();
 
-			enemy1->render(graphic);
-			enemy2->render(graphic);
-			enemy3->render(graphic);
-			enemy4->render(graphic);
+			enemy1->render(graphic, 0);
+			enemy2->render(graphic, 0);
+			enemy3->render(graphic, 0);
+			enemy4->render(graphic, 0);
 
 			enemy1->move(2, 0);
 			enemy2->move(-2, 0);
@@ -241,6 +241,10 @@ public:
 		int num = 0;
 		bool* bKeyGame = new bool[key.size()]{ 0 };
 
+		//scroll
+		int offset = 0;
+		int nLane = 5 + Level * 2;
+
 		while (1)
 		{
 			delay(1000 / (FRAMERATE - 20));
@@ -256,14 +260,20 @@ public:
 			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE)) {
 				if (!pauseScreen())
 					return Level;
+				if (soundOn)
+					PlaySound(TEXT("GameSong2.wav"), NULL, SND_FILENAME | SND_ASYNC);
 			}
 			if (bKeyGame[0] == 1 && player->getPos().y > 1) {
+				if (player->getPos().y + offset <= 5 && player->getPos().y > 5)
+					offset++;
 				player->move(0, -1);
 			}
 			if (bKeyGame[1] == 1 && player->getPos().x > 1) {
 				player->move(-1, 0);
 			}
 			if (bKeyGame[2] == 1 && player->getPos().y < screenHeight - 2 - graphic->getBuffer(player->getBufferKey()).size()) {
+				if (player->getPos().y + offset + 5 >= screenHeight && player->getPos().y + 5 <= 18 + nLane * LANE_HEIGHT)
+					offset--;
 				player->move(0, 1);
 			}
 			if (bKeyGame[3] == 1 && player->getPos().x < screenWidth - 1 - graphic->getBuffer(player->getBufferKey())[0].length()) {
@@ -290,7 +300,7 @@ public:
 
 
 			for (auto l : lanes) l->logic();
-			for (auto l : lanes) l->render(graphic);
+			for (auto l : lanes) l->render(graphic, offset);
 			if (this->checkCollision(lanes)) {
 				graphic->glitch();
 				mciSendString(L"stop song_game_1.wav", NULL, 0, NULL);
