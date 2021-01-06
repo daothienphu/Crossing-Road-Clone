@@ -1,8 +1,8 @@
 ﻿#ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
 #endif
-#include <chrono>
-#include <ctime>    
+#include <chrono> // Time
+#include <ctime>  // Time
 #include <Windows.h>
 #include <string>
 #include<iostream>
@@ -41,8 +41,14 @@ const vector<wstring> e4 = { // 9 x 4
 	L"l'l'l'l'l",
 	L" ' ' ' '"
 };
+const vector<wstring> e5 = {
+	L"	.l..l.",
+	L".ll'll'll.",
+	L"l llllll l",
+	L"  .l  l." 
+};
 const vector<vector<wstring>> e = {
-	e1, e2, e3, e4
+	e1, e2, e3, e4, e5
 };
 const vector<wstring> Title = { // 52 x 8
 	L".'''.  l'''.  .'''.  .'''   .'''   'l'  l.  l  .''''",
@@ -85,8 +91,8 @@ LPCWSTR start_level{ L"play start_level.wav" };
 LPCWSTR pass_lane{ L"play pass_lane.wav" };
 LPCWSTR pass_level{ L"play pass_level.wav" };
 LPCWSTR game_over{ L"play game_over.wav" };
-//mciSendString(menu_click, NULL, 0, NULL);
 #define playSoundLoop(file_name) mciSendString(file_name, NULL, 0, NULL);
+vector<int> duration = {101, 119, 126, 145, 254};
 // Time
 auto start = chrono::system_clock::now();
 class cPlayer {
@@ -159,12 +165,26 @@ public:
 	}
 	int getColor() { return color; }
 };
+// Other utility functions
 bool checkCollision(cPlayer player, cEnemy* enemy) {
 	if (player.getX() >= enemy->getX() && player.getX() <= enemy->getX() + enemy->width() - 1 &&
 		player.getY() >= enemy->getY() && player.getY() <= enemy->getY() + enemy->height() - 1)
 		return true;
 	return false;
 }
+wstring time_to_wstring(int t) {
+	int m = t / 60;
+	int s = t % 60;
+	wstring res = L"0";
+	res += L'0' + m;
+	res += ':';
+	res += L'0' + s / 10;
+	res += L'0' + s % 10;
+	return res;
+}
+// Global variables
+int frame = 0;
+int score = 0;
 class cScreen {
 private:
 	// Character array for display
@@ -275,16 +295,21 @@ public:
 			}
 		}
 	}
-	void drawProgressBar(int time, int total, int x, int y) {
+	void drawProgressBar(int elapsed, int duration, int x, int y) {
+		// Draw bar
 		wstring bar;
 		bar += L'[';
 		for (int i = 0; i < 100; i++)
 			bar += L' ';
 		bar += L']';
 		drawText(bar, x, y, darkblue, white);
-		for (int i = 1; i <= time * 100 / total && time <= total; i++) {
+		// Draw progress
+		for (int i = 1; i <= elapsed * 100 / duration; i++) {
 			drawBlock(L"l", x + i, y, black, white);
 		}
+		// Draw time
+		drawText(time_to_wstring(elapsed), x - 6, y, black, white);
+		drawText(time_to_wstring(duration), x + 104, y, black, white);
 	}
 	void drawBlock(wstring Sketch, int X, int Y, int colorBackground, int colorChar) {
 		for (int j = 0; j < Sketch.length(); j++) {
@@ -307,7 +332,13 @@ public:
 	void drawFrame(int x, int y, int width, int height, int colorBackground, int colorChar) {
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
-				if (i == 0 || i == height - 1 || j == 0 || j == width - 1) {
+				if (y + i >= 0 && y + i <= height - 1 && x + j >= 0 && j + x <= width - 1) {
+					//// Conrners
+					//pBuffer[y * nScreenWidth + x] = L'╔';
+					//pBuffer[y * nScreenWidth + x + width - 1] = L'╗';
+					//pBuffer[(y + height - 1) * nScreenWidth + x ] = L'╚';
+					//pBuffer[(y + height - 1) * nScreenWidth + x + width - 1] = L'╝';
+					//if (i == 0 || i == height - 1 || j == 0 || j == width - 1) {
 					// Corners
 					if (i == 0 && j == 0)
 						pBuffer[(i + y) * nScreenWidth + x + j] = L'╔';
@@ -323,6 +354,7 @@ public:
 					if ((j == 0 && (i >= 1 && i < height - 1)) || (j == width - 1 && (i >= 1 && i < height - 1)))
 						pBuffer[(i + y) * nScreenWidth + x + j] = L'║';
 					pColor[(i + y) * nScreenWidth + x + j] = colorBackground * 16 + colorChar;
+
 				}
 			}
 		}
@@ -394,14 +426,13 @@ public:
 		drawText(content, X, Y, colorBackground2, colorCharacter2); drawScreen();
 	}
 	void startMenuScreen() {
+		// Intro song
 		PlaySound(TEXT("song_intro.wav"), NULL, SND_ASYNC);
 		// Configure screen
 		configure();
 		HANDLE hConsole1 = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 		SetConsoleActiveScreenBuffer(hConsole1);
 		hConsole = hConsole1;
-		// Counting frame elapsed
-		int frame = 0;
 		// Make a starmap for background effect
 		int* starmap = new int[nScreenWidth * nScreenHeight];
 		// For menu option
@@ -421,14 +452,13 @@ public:
 			// W - Move up
 			if (bKey[0] == 1 ) {
 				choiceMenu = (choiceMenu - 1) % 4;
-				//mciSendString(menu_click, NULL, 0, NULL);
+				mciSendString(click_menu, NULL, 0, NULL);
 
 			}
 			// S - Move down
 			if (bKey[2] == 1) {
 				choiceMenu = (choiceMenu + 1) % 4;
-				//mciSendString(menu_click, NULL, 0, NULL);
-
+				mciSendString(click_menu, NULL, 0, NULL);
 			}
 			// Display current menu
 			int bg = black, ch = white;
@@ -496,18 +526,29 @@ public:
 		Sleep(800);
 	}
 	void startStage(int stage) {
-
 		start = chrono::system_clock::now();
-		//Sleep(5000);
-		startGameScreen(1);
+		switch (stage) {
+		case 1:		PlaySound(TEXT("song_game_1.wav"), NULL, SND_ASYNC); break;
+		case 2:		PlaySound(TEXT("song_game_2.wav"), NULL, SND_ASYNC); break;
+		case 3:		PlaySound(TEXT("song_game_3.wav"), NULL, SND_ASYNC); break;
+		case 4:		PlaySound(TEXT("song_game_4.wav"), NULL, SND_ASYNC); break;
+		case 5:		PlaySound(TEXT("song_game_5.wav"), NULL, SND_ASYNC); break;
+		default: break;
+		}
+		startGameScreen(1, stage);
 	}
-	void startGameScreen(int level) {
+	void startGameScreen(int level, int stage) {
 		Sleep(400);
-		playSoundLoop(start_level);
-		PlaySound(TEXT("song_game_1.wav"), NULL, SND_ASYNC);
-		int nLane = 5 + level * 2;
-		int lane1 = 10; // Y of lane1
+		// INITALISE GAME SCREEN
+		// Sound
+		mciSendString(start_level, NULL, 0, NULL);		
+		// Lane
+		int nLane = 5 + level * 2; // Number of lanes
+		int laneY = 10; // Y of lane1
 		int laneSize = 5;
+		bool* passed = new bool[nLane]; // Check passed lanes
+		for (int i = 0; i < nLane; i++)
+			passed[i] = false;
 		//Initialise player
 		cPlayer Player;
 		Player.setXY(80, 1);
@@ -515,7 +556,7 @@ public:
 		cEnemy** Enemy = new cEnemy*[nLane];
 		for (int i = 0; i < nLane; i++) {
 			int x = rand() % nScreenWidth;
-			int y = lane1 + i * laneSize;
+			int y = laneY + i * laneSize;
 			int en = rand() % 4;
 			int c;
 			switch (en){
@@ -537,34 +578,25 @@ public:
 			int dir = (rand() % 2) * 2 - 1;
 			Enemy[i] = new cEnemy(x, y, e[en], dir, c);
 		}
-		// Frame count
-		int frame = 0;
 		// For scrolling display
 		int offset = 0;
 		bool gameOver = false;
-		//Score
-		bool* passed = new bool[nLane];
-		for (int i = 0;i < nLane ; i++)
-			passed[i] = false;
-		
-
-		//INITIALISE STAR MAP
+		// Starmap for background
 		int* starmap = new int[nScreenWidth * nScreenHeight];
-		int score = 0;
-		//int level = 1;
+		int bg = 0, ch = 7; // Color for background
 		while (gameOver == false) {
-			// CLEAR SCREEN
-			int bg = 0, ch = 7;
+			// [1] CLEAR SCREEN
 			clearScreen(bg, ch);
 			drawBlock(Player.getSketch(), Player.getX(), Player.getY() + offset, darkblue, lightblue); // For shadow effect
 
-			// READ INPUT
+
+			// [2] READ INPUT
 			bool* bKeyGame = new bool[key.size()]; // Check ingame input
 			for (int i = 0; i < key.size(); i++) { 	// Read input
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			}
 
-			// UPDATE 
+			// [3] UPDATE 
 			// Player position
 			if (bKeyGame[0] == 1){ // W - Move up
 				if (Player.getY() - 1 >= 0) {
@@ -579,7 +611,6 @@ public:
 					Player.moveLeft();
 			}
 			if (bKeyGame[2] == 1){ 	// S - Move down
-				//if (Player.getY() + 1 <= )
 				if (Player.getY() + 1 <= 18 + nLane * laneSize) {
 					Player.moveDown();
 					if (Player.getY() +offset +5 >= nScreenHeight && Player.getY() + 5 <= 18 + nLane * laneSize ) {
@@ -597,11 +628,15 @@ public:
 				Enemy[i]->updatePos();
 			}
 
-			// GAME LOGIC
+			// [4] CHECK GAME LOGIC
+			// Update time
+			auto end = chrono::system_clock::now();
+			chrono::duration<double> elapsed_seconds = end - start;
+			int elapsed = elapsed_seconds.count();
 			// Check lane pass
 			bool newscore = false;
 			for (int i = 0; i < nLane; i++) {
-				if (Player.getY() >= lane1 + i * 5 && passed[i] == false) {
+				if (Player.getY() >= laneY + i * 5 && passed[i] == false) {
 					score += 10;
 					newscore = true;
 					passed[i] = true;
@@ -611,54 +646,59 @@ public:
 			// Check collision
 			for (int i = 0; i < nLane; i++) {
 				if (checkCollision(Player, Enemy[i]) == true) {
-					PlaySound(TEXT("game_over.wav"), NULL, SND_ASYNC);
-					gameOverEffect();
-					clearScreen(9, 7);
-					drawBlock(GameOver, 53, 12, 9, 6);
-					drawBlock(Skull, 69, 17, 9, 7);
-					drawText(L"YOUR SCORE: " + to_wstring(score), 73, 31, 9, 7);
-					drawScreen();
-					Sleep(10000);
-					exit(0);
-					//startMenuScreen();
+					gameOver = true;
 				}
 			}
 			// Check level pass
 			if (Player.getY() == 18 + nLane * laneSize) {
-				startGameScreen(level + 1);
+				startGameScreen(level + 1, stage);
+			}
+			// Check stage pass
+			if (elapsed >= duration[stage - 1]){
+				startStage(stage + 1);
 			}
 
 			// DISPLAY GAME SCREEN
-			//drawMap();
-			//drawFrame(0, 0, nScreenWidth, nScreenHeight, 0, 7);
+			// Stars
 			if (frame % 15 == 0) makeNewStarMap(starmap);
 			drawStars(starmap);
+			// Lanes
 			for (int i = 0; i <= nLane; i++)
-				drawHorizontalLine3(0, lane1 - 1 + i * laneSize + offset, nScreenWidth, bg, lightblue);
+				drawHorizontalLine3(0, laneY - 1 + i * laneSize + offset, nScreenWidth, bg, lightblue);
+			// Player
 			drawBlock(Player.getSketch(), Player.getX(), Player.getY() + offset, bg, 7);
 			for (int i = 0; i < nLane; i++) {
 				drawBlock(Enemy[i]->getSketch(), Enemy[i]->getX(), Enemy[i]->getY() + offset, bg, Enemy[i]->getColor());
 			}
+			// UI
+			drawText(L"STAGE " + to_wstring(stage), 4, 4, bg, white);
 			drawText(L"LEVEL " + to_wstring(level), 4, 3, bg, white);
 			drawText(L"SCORE: " + to_wstring(score), 4, 2, 0, 7);
-			//Time
-			auto end = chrono::system_clock::now();
-			chrono::duration<double> elapsed_seconds = end - start;
-			if (elapsed_seconds.count() >= 60) {
-				PlaySound(TEXT("game_over.wav"), NULL, SND_ASYNC);
-				playSoundLoop(game_over);
-			}
-			int time = elapsed_seconds.count();
-			int total = 101;
-			drawProgressBar(time, total, 30, nScreenHeight - 1);
+			drawProgressBar(elapsed, duration[stage-1], 30, nScreenHeight - 1);
 			drawText(L"Time elapsed: " + to_wstring(elapsed_seconds.count()), 2, nScreenHeight - 2, bg, ch);
+			// Frame
 			drawText(L"Frame: " + to_wstring(frame), 2, nScreenHeight - 1, bg, ch);
+			// Render screen
 			drawScreen();
 
-
 			frame++;
-
 		}
+		gameOverScreen();
+	}
+	void gameOverScreen() {
+		gameOverEffect();
+
+		clearScreen(9, 7);
+		drawBlock(GameOver, 53, 12, 9, 6);
+		drawBlock(Skull, 69, 17, 9, 7);
+		drawText(L"YOUR SCORE: " + to_wstring(score), 73, 31, 9, 7);
+		PlaySound(TEXT("game_over.wav"), NULL, SND_ASYNC);
+		drawScreen();
+		Sleep(10000);
+		exit(0);
+	}
+	void stageClearScreen() {
+	
 	}
 
 };
