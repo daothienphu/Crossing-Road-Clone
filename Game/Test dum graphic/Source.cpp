@@ -93,6 +93,9 @@ LPCWSTR pass_lane{ L"play pass_lane.wav" };
 LPCWSTR pass_level{ L"play pass_level.wav" };
 LPCWSTR game_over{ L"play game_over.wav" };
 LPCWSTR silence{ L"play silence.wav" };
+LPCWSTR green_light{ L"play green_light.wav" };
+LPCWSTR red_light{ L"play red_light.wav" };
+LPCWSTR stage_clear{ L"play stage_clear.wav" };
 vector<int> duration = {101, 119, 126, 145, 254};
 vector<int> bpm = {};
 // Time
@@ -763,6 +766,8 @@ public:
 		exit(0);
 	}
 	void stageClearScreen() {
+		mciSendString(stage_clear, NULL, 0, NULL);
+
 		clearScreen(lightblue, white);
 		drawText(L"STAGE CLEAR. ENTER TO NEXT STAGE.", 10, 5, lightblue, white);
 		drawScreen();
