@@ -13,16 +13,20 @@ public:
 	Player(int x, int y, GraphicsController*& graphic) : 
 		GameObject(x, y, graphic->getBuffer("player")[0].size(), graphic->getBuffer("player").size(), "player") {}
 
-	void move(int x, int y)
-	{
+	void update() {
 		this->oldX = this->x;
 		this->oldY = this->y;
+	}
+
+	void move(int x, int y)
+	{
 		this->x += 2 * x;
 		this->y += y;
 	}
 
 	void render(GraphicsController*& graphic) {
-		clearOldPos(graphic);
+		//clearOldPos(graphic);
+		graphic->setBuffer(graphic->getBuffer(bufferKey), oldX, oldY, BG, 1);
 		graphic->setBufferWhite(graphic->getBuffer(bufferKey), x, y, BG, 7);
 	}
 

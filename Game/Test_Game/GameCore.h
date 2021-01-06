@@ -252,6 +252,7 @@ public:
 			graphic->clearBuffer();
 			graphic->clearStars();
 			player->render(graphic);
+			player->update();
 
 			//Controls
 			for (int i = 0; i < key.size(); i++) { 	// Read input
