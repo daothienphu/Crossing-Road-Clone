@@ -18,6 +18,7 @@ public:
 		GameLane* lane1 = new GameLane(1, 1, 1, graphic);
 		GameLane* lane2 = new GameLane(2, 2, 1, graphic);
 		GameLane* lane3 = new GameLane(3, 3, 1, graphic);
+		//nho de lane theo thu tu khong la collision no deo chay dau
 
 		lanes.push_back(lane1);
 		lanes.push_back(lane2);
