@@ -46,6 +46,33 @@ public:
 
 	void playScreen(int level)
 	{
+<<<<<<< Updated upstream
+=======
+		if (soundOn)
+			PlaySound(TEXT("GameSong1.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		graphic->clearBuffer();
+		player->setPos(72, 2);
+		player->clearOldPos(graphic);
+		//GameLane* lane1 = new GameLane(1, 1, 1, graphic);
+		//GameLane* lane2 = new GameLane(2, 2, 1, graphic);
+		//GameLane* lane3 = new GameLane(3, 3, 1, graphic);
+		vector<GameLane*> lanes;
+
+		if (Level == 1)
+		{
+			levelController = new Level_1;
+			levelController->getMap(lanes, graphic);
+		}
+
+		GameMenu* score = new Button("score");
+		GameMenu* level = new Button("level");
+		//GameMenu* laneIndex = new Button("score");
+		vector<wstring> scoreCounter, levelCounter;
+
+		int num = 0;
+		bool* bKeyGame = new bool[key.size()]{ 0 };
+
+>>>>>>> Stashed changes
 		while (1)
 		{
 			graphic->setBuffer(graphic->getBuffer(player->getBufferKey()), this->player->getPos().x, this->player->getPos().y, 0, 7);
@@ -55,8 +82,18 @@ public:
 			for (int i = 0; i < key.size(); i++) { 	// Read input
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			}
+<<<<<<< Updated upstream
 			// W - Move up
 			if (bKeyGame[0] == 1) {
+=======
+			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE)) {
+				if (!pauseScreen())
+					return Level;
+				if (soundOn)
+					PlaySound(TEXT("GameSong1.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			}
+			else if (bKeyGame[0] == 1 && player->getPos().y > 1) {
+>>>>>>> Stashed changes
 				player->move(0, -1);
 				//Player.moveUp();
 			}

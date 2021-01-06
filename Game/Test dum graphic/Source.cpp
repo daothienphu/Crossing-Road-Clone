@@ -86,11 +86,13 @@ LPCWSTR song_game_2{ L"play song_game_2.wav" };
 LPCWSTR song_game_3{ L"play song_game_3.wav" };
 LPCWSTR song_game_4{ L"play song_game_4.wav" };
 LPCWSTR song_game_5{ L"play song_game_5.wav" };
-LPCWSTR click_menu{ L"play menu_click.wav" };
+LPCWSTR click_menu{ L"play click_menu.wav" };
 LPCWSTR start_level{ L"play start_level.wav" };
 LPCWSTR pass_lane{ L"play pass_lane.wav" };
 LPCWSTR pass_level{ L"play pass_level.wav" };
 LPCWSTR game_over{ L"play game_over.wav" };
+LPCWSTR silence{ L"play silence.wav" };
+
 #define playSoundLoop(file_name) mciSendString(file_name, NULL, 0, NULL);
 vector<int> duration = {101, 119, 126, 145, 254};
 // Time
@@ -462,13 +464,13 @@ public:
 			}
 			// Display current menu
 			int bg = black, ch = white;
-			drawBlock(Title, 54, 15, bg, ch);
-			int xMenu = 74, yMenu = 27;
+			drawBlock(Title, 54, 11, bg, ch);
+			int xMenu = 74, yMenu = 21;
 			drawText(L" START GAME ", xMenu, yMenu, bg, ch);
 			drawText(L"  LOAD GAME ", xMenu, yMenu + 1, bg, ch);
 			drawText(L"  SETTINGS  ", xMenu, yMenu + 2, bg, ch);
 			drawText(L"    EXIT    ", xMenu, yMenu + 3, bg, ch);
-			drawText(L"Press W to move up, S to move down", xMenu - 10, yMenu + 5, 0, 7);
+			drawText(L"W - move up, S - move down", xMenu - 7, yMenu + 5, bg, ch);
 			if (choiceMenu == 0) {
 				drawText(L" START GAME ", xMenu, yMenu, ch, bg);
 			}
@@ -481,12 +483,12 @@ public:
 			else if (choiceMenu == 3 || choiceMenu ==-1) {
 				drawText(L"    EXIT    ", xMenu, yMenu + 3, ch, bg);
 			}
-			drawText(L"choice: " + to_wstring(choiceMenu), xMenu, yMenu + 6, 0, 7);
+			//drawText(L"choice: " + to_wstring(choiceMenu), xMenu, yMenu + 6, 0, 7);
 			drawText(L"Frame: " + to_wstring(frame), 2, nScreenHeight - 1, bg, ch);
-			animationWiggleUpDown(e1, frame, 10, 20, black, red);
-			animationWiggleUpDown(e2, frame, 22, 20, black, lightblue);
-			animationWiggleUpDown(e3, frame, 30, 20, black, yellow);
-			animationWiggleUpDown(e4, frame, 40, 20, black, green);
+			animationWiggleUpDown(e1, frame, 61, 30, black, red);
+			animationWiggleUpDown(e2, frame, 73, 30, black, lightblue);
+			animationWiggleUpDown(e3, frame, 81, 30, black, yellow);
+			animationWiggleUpDown(e4, frame, 91, 30, black, green);
 			drawScreen();
 			// ENTER - Select
 			if (GetAsyncKeyState(VK_RETURN)) {
@@ -637,16 +639,18 @@ public:
 			bool newscore = false;
 			for (int i = 0; i < nLane; i++) {
 				if (Player.getY() >= laneY + i * 5 && passed[i] == false) {
-					score += 10;
+					score += 10 - 1 + level ;
 					newscore = true;
 					passed[i] = true;
-					playSoundLoop(pass_lane);
+					mciSendString(pass_lane, NULL, 0, NULL);
 				}
 			}
 			// Check collision
 			for (int i = 0; i < nLane; i++) {
 				if (checkCollision(Player, Enemy[i]) == true) {
 					gameOver = true;
+					PlaySound(TEXT("crash.wav"), NULL, SND_ASYNC);
+
 				}
 			}
 			// Check level pass
