@@ -2,11 +2,13 @@
 #include <iostream>
 #include <Windows.h>
 #include <mmsystem.h>
+#include <cstdlib>
 #include <windows.h>
 #include <iomanip>
 #include <vector>
 #include <thread>
 #include <chrono>
+#include <ctime>  // Time
 #include "Utils.h"
 #include "GameObject.h"
 #include "Player.h"
@@ -39,6 +41,11 @@ LPCWSTR silence{ L"play silence.wav" };
 LPCWSTR green_light{ L"play green_light.wav" };
 LPCWSTR red_light{ L"play red_light.wav" };
 LPCWSTR stage_clear{ L"play stage_clear.wav" };
+
+vector<int> songDuration = { 101, 119, 126, 145, 254 };
+
+// For display time
+auto startTime = chrono::system_clock::now();
 
 class GameCore {
 protected:
@@ -206,9 +213,9 @@ public:
 	}
 	int playScreen(int Level)
 	{
-		mciSendString(song_game_2, NULL, 0, NULL);
+		mciSendString(song_game_1, NULL, 0, NULL);
 		if (!soundOn)
-			mciSendString(L"pause song_game_2.wav", NULL, 0, NULL);
+			mciSendString(L"pause song_game_1.wav", NULL, 0, NULL);
 		//theses lines are for the case when user turn off the sound -> game over -> start a new one -> turn on sound
 		//or turn off sound -> play game -> turn on sound
 		graphic->clearBuffer();
@@ -261,7 +268,14 @@ public:
 				player->move(1, 0);
 			}
 
+			// Stars
 			graphic->randomStars();
+
+			// Time
+			auto endTime = chrono::system_clock::now();
+			chrono::duration<double> elapsed_seconds = endTime - startTime;
+			int elapsed = elapsed_seconds.count();
+			graphic->progressBar(elapsed, songDuration[Level-1], 20, 1);
 
 			//Score and Level
 			toVwstring(num++, scoreCounter);
@@ -277,7 +291,7 @@ public:
 			for (auto l : lanes) l->render(graphic);
 			if (this->checkCollision(lanes)) {
 				graphic->glitch();
-				mciSendString(L"stop song_game_2.wav", NULL, 0, NULL);
+				mciSendString(L"stop song_game_1.wav", NULL, 0, NULL);
 				gameoverScreen();
 				graphic->clearBuffer();
 				return 0;

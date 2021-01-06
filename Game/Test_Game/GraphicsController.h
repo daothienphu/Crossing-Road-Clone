@@ -159,6 +159,13 @@ public:
 				color[(y + i) * screenWidth + x + content[i].length() + 1] = bgColor * 16 + fgColor;
 		}
 	}
+	void setBuffer(wstring content, int x, int y, int bgColor, int fgColor) {
+		for (int i = 0; i < content.length(); ++i) {
+			buffer[y * screenWidth + x + i] = content[i];
+			color[y * screenWidth + x + i] = bgColor * 16 + fgColor;
+		}
+	}
+
 	void setBufferWhite(vector<wstring>& content, int x, int y, int bgColor, int fgColor) {
 		for (int i = 0; i < content.size(); ++i) {
 			for (int j = 0; j < content[i].length(); ++j) {
@@ -233,5 +240,29 @@ public:
 		for (int i = 0; i < length / pattern.length(); i++)
 			res += pattern;
 		return res;
+	}
+	wstring time_to_wstring(int t) { // From 125 to 02:05
+		int m = t / 60;
+		int s = t % 60;
+		wstring res = L"0";
+		res += L'0' + m;
+		res += ':';
+		res += L'0' + s / 10;
+		res += L'0' + s % 10;
+		return res;
+	}
+	void progressBar(int elapsed, int duration, int x, int y) {
+		// Draw bar
+		wstring bar;
+		for (int i = 0; i < 100; i++)
+			bar += L' ';
+		setBuffer(bar, x, y, black, white);
+		// Draw progress
+		for (int i = 0; i < elapsed * 100 / duration; i++) {
+			setBuffer(L"█", x + i, y, blueDark, white);
+		}
+		// Draw time
+		setBuffer(time_to_wstring(elapsed), x - 6, y, black, white);
+		setBuffer(time_to_wstring(duration), x + 104, y, black, white);
 	}
 };
