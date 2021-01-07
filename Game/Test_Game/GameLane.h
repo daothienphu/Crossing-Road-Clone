@@ -130,7 +130,7 @@ public:
 			while (1) {
 				int e = random(1, 4 + Level - 1);
 				string chosen = "enemy" + to_string(e);
-				int c;
+				int c = 1;
 				switch (e) {
 				case 1:	c = blueLight; break;
 				case 2: c = yellow; break;
@@ -157,7 +157,7 @@ public:
 			{
 				int e = random(1, 4 + Level - 1);
 				string chosen = "enemy" + to_string(e);
-				int c;
+				int c = 1;
 				switch (e) {
 				case 1:	c = blueLight; break;
 				case 2: c = yellow; break;
@@ -246,9 +246,8 @@ public:
 		}
 
 		// Render lights
-		graphic->setBuffer(graphic->getBuffer("player"), 2, lane * LANE_HEIGHT - 2 + offset, BG, light == 0 ? 4 : (light == 1 ? 3 : 6));
-		//graphic->setBuffer(graphic->line(L"- ", screenWidth), 0, lane * LANE_HEIGHT - 2 + offset, BG, light == 0 ? 4 : (light == 1 ? 3 : 6)); // Light line
-		//graphic->setBuffer(graphic->getBuffer("player"), 2, lane * LANE_HEIGHT - 2 + offset, BG, light == 0 ? 4 : (light == 1 ? 3 : 6));
+		graphic->setBufferObject(graphic->getBuffer("lightLine"), 0, lane * LANE_HEIGHT - 2 + offset, BG, light == 0 ? 4 : (light == 1 ? 3 : 6)); // Light line
+		graphic->setBufferObject(graphic->getBuffer("player"), 2, lane * LANE_HEIGHT - 2 + offset, BG, light == 0 ? 4 : (light == 1 ? 3 : 6));
 	}
 	// For level mode
 	void render(GraphicsController*& graphic, int offset, int bg) {
@@ -261,8 +260,8 @@ public:
 		}
 		// Render lights
 		int ch = light == 0 ? 4 : (light == 1 ? 3 : 6);
-		graphic->setBuffer(graphic->line(L"- ", screenWidth), 0, lane * LANE_HEIGHT - 2 + offset, bg, ch); // Light line
-		graphic->setBuffer(graphic->getBuffer("player"), 2, lane * LANE_HEIGHT - 2 + offset, bg, ch);
+		graphic->setBufferObject(graphic->getBuffer("lightLine"), 0, lane * LANE_HEIGHT - 2 + offset, bg, ch); // Light line
+		graphic->setBufferObject(graphic->getBuffer("player"), 2, lane * LANE_HEIGHT - 2 + offset, bg, ch);
 	}
 
 	bool checkCollision(BOUNDINGBOX player)

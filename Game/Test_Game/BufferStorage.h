@@ -160,6 +160,7 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 		L"l. '' .l"
 		}
 	},
+
 	// select mode screen
 	{
 		"chooseTitle",
@@ -184,13 +185,13 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 	{
 		"score",
 		vector<wstring>{
-		L"SCORE"
+		L"SCORE "
 		}
 	},
 	{
 		"level",
 		vector<wstring>{
-		L"LEVEL"
+		L"LEVEL "
 		}
 	},
 
@@ -319,8 +320,13 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 		vector<wstring>{
 		L"▌│█║▌║▌║ LOAD GAME ║▌║▌║█│▌"
 		}
+	},
+	{	
+		"lightLine",
+		vector<wstring>{
+		L"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+}
 	}
-
 };
 
 // Any buffer that requires padding to block
@@ -345,5 +351,8 @@ extern vector <string> CLEAR_BUFFER = {
 	"enemy2",
 	"enemy3",
 	"enemy4",
-
+	"enemy5",
+	"enemy6",
+	"enemy7",
+	"enemy8"
 };

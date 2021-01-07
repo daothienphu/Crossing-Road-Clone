@@ -28,16 +28,16 @@ public:
 	virtual void move(int x, int y) = 0;
 
 	void render(GraphicsController*& graphic, int bgColor, int fgColor) {
-		graphic->setBuffer(graphic->getBuffer(bufferKey), x, y, bgColor, fgColor);
+		graphic->setBufferObject(graphic->getBuffer(bufferKey), x, y, bgColor, fgColor);
 	}
 
 	void clearOldPos(GraphicsController*& graphic, int bgColor, int fgColor) {
-		graphic->setBuffer(graphic->getBuffer(bufferKey + "_clear"), oldX, oldY, bgColor, fgColor);
+		graphic->setBufferObject(graphic->getBuffer(bufferKey + "_clear"), oldX, oldY, bgColor, fgColor);
 	}
 
 	// WARNING: ONLY BE CALLED IN CONSTRUCTOR OF GAMELANE
 	// YOU HAVE BEEN WARNED
-	//dont care, imma fuck this up
+	// dont care, imma fuck this up
 	virtual void resetPos(int lane, GraphicsController*& graphic, bool left = true) {
 		this->x = 0;
 		this->y = 0;

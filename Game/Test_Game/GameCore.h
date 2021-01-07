@@ -20,7 +20,6 @@
 #include "GameMenu.h"
 #include "GameLevel.h"
 #include "GraphicsController.h"
-
 using namespace std;
 
 const vector<char> key = { 'W', 'A', 'S', 'D', 'P', 'R' };
@@ -145,11 +144,43 @@ public:
 		if (soundOn)
 			mciSendString(song_intro, NULL, 0, NULL);
 		while (1) {
-			
 			//slow down the speed for "sensible" input
-			graphic->clearBuffer();
 			delay(1000 / (FRAMERATE / 8));
+			graphic->clearBuffer();
 			graphic->clearStars();
+			
+			//enemies and stars
+			graphic->randomStars();
+
+			enemy1->render(graphic, 0);
+			enemy2->render(graphic, 0);
+			enemy3->render(graphic, 0);
+			enemy4->render(graphic, 0);
+
+			enemy1->move(2, 0);
+			enemy2->move(-2, 0);
+			enemy3->move(2, 0);
+			enemy4->move(-2, 0);
+
+			//default color
+			graphic->setBufferWhite(graphic->getBuffer(title->getBufferKey()), 46, 11, BG, whiteDark);
+			graphic->setBuffer(graphic->getBuffer(startButton->getBufferKey()), 68, 20, BG, whiteDark);
+			graphic->setBuffer(graphic->getBuffer(loadButton->getBufferKey()), 68, 21, BG, whiteDark);
+			graphic->setBuffer(graphic->getBuffer(settingButton->getBufferKey()), 68, 22, BG, whiteDark);
+			graphic->setBuffer(graphic->getBuffer(exitButton->getBufferKey()), 68, 23, BG, whiteDark);
+
+			//change color depends on choice
+			switch (choice) {
+			case 0:
+				graphic->setBuffer(graphic->getBuffer(startButton->getBufferKey()), 68, 20, whiteDark, BG); break;
+			case 1:
+				graphic->setBuffer(graphic->getBuffer(loadButton->getBufferKey()), 68, 21, whiteDark, BG); break;
+			case 2:
+				graphic->setBuffer(graphic->getBuffer(settingButton->getBufferKey()), 68, 22, whiteDark, BG); break;
+			case 3:
+				graphic->setBuffer(graphic->getBuffer(exitButton->getBufferKey()), 68, 23, whiteDark, BG); break;
+			default: break;
+			}
 
 			//input
 			for (int i = 0; i < key.size(); i++)
@@ -185,7 +216,7 @@ public:
 			}
 			else if (bKeyGame[0] == 1) {
 				if (soundOn)
-					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC); 
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				//mciSendStrings needs to finish the previous instance of the same sound first before playing it again
 				//However, PlaySound will stop the previous PlaySound command and play the current one
 				//so PlaySound should be used here
@@ -196,50 +227,15 @@ public:
 					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				choice = (choice + 1) % 4;
 			}
-			
-			//enemies and stars
-			graphic->randomStars();
-
-			enemy1->render(graphic, 0);
-			enemy2->render(graphic, 0);
-			enemy3->render(graphic, 0);
-			enemy4->render(graphic, 0);
-
-			enemy1->move(2, 0);
-			enemy2->move(-2, 0);
-			enemy3->move(2, 0);
-			enemy4->move(-2, 0);
-
-			//default color
-			graphic->setBufferWhite(graphic->getBuffer(title->getBufferKey()), 46, 11, BG, whiteDark);
-			graphic->setBuffer(graphic->getBuffer(startButton->getBufferKey()), 68, 20, BG, whiteDark);
-			graphic->setBuffer(graphic->getBuffer(loadButton->getBufferKey()), 68, 21, BG, whiteDark);
-			graphic->setBuffer(graphic->getBuffer(settingButton->getBufferKey()), 68, 22, BG, whiteDark);
-			graphic->setBuffer(graphic->getBuffer(exitButton->getBufferKey()), 68, 23, BG, whiteDark);
-
-			//change color depends on choice
-			switch (choice) {
-			case 0:
-				graphic->setBuffer(graphic->getBuffer(startButton->getBufferKey()), 68, 20, whiteDark, BG); break;
-			case 1:
-				graphic->setBuffer(graphic->getBuffer(loadButton->getBufferKey()), 68, 21, whiteDark, BG); break;
-			case 2:
-				graphic->setBuffer(graphic->getBuffer(settingButton->getBufferKey()), 68, 22, whiteDark, BG); break;
-			case 3:
-				graphic->setBuffer(graphic->getBuffer(exitButton->getBufferKey()), 68, 23, whiteDark, BG); break;
-			default: break;
-			}
 
 			//graphic->createFrame(0, 0, 145, 40);
 			graphic->render();
 		}
 	}
 	int selectModeScreen() {
-
-
 		int top = 15;
 		int left = 58;
-		graphic->openFrame(left, top, 32, 9);
+		graphic->openFrame(left, top, 31, 9);
 		GameMenu* chooseTitle = new Button("chooseTitle");
 		graphic->setBufferWhite(graphic->getBuffer(chooseTitle ->getBufferKey()), left + 1, top + 2, 0, 7);
 
@@ -314,28 +310,28 @@ public:
 			break;
 		}
 		case 2: {
-			mciSendString(L"pause song_game_1.wav", NULL, 0, NULL);
+			mciSendString(L"stop song_game_1.wav", NULL, 0, NULL);
 			mciSendString(song_game_2, NULL, 0, NULL);
 			if (!soundOn)
 				mciSendString(L"pause song_game_2.wav", NULL, 0, NULL);
 			break;
 		}
 		case 3: {
-			mciSendString(L"pause song_game_2.wav", NULL, 0, NULL);
+			mciSendString(L"stop song_game_2.wav", NULL, 0, NULL);
 			mciSendString(song_game_3, NULL, 0, NULL);
 			if (!soundOn)
 				mciSendString(L"pause song_game_3.wav", NULL, 0, NULL);
 			break;
 		}
 		case 4: {
-			mciSendString(L"pause song_game_3.wav", NULL, 0, NULL);
+			mciSendString(L"stop song_game_3.wav", NULL, 0, NULL);
 			mciSendString(song_game_4, NULL, 0, NULL);
 			if (!soundOn)
 				mciSendString(L"pause song_game_4.wav", NULL, 0, NULL);
 			break;
 		}
 		case 5: {
-			mciSendString(L"pause song_game_4.wav", NULL, 0, NULL);
+			mciSendString(L"stop song_game_4.wav", NULL, 0, NULL);
 			mciSendString(song_game_5, NULL, 0, NULL);
 			if (!soundOn)
 				mciSendString(L"pause song_game_5.wav", NULL, 0, NULL);
@@ -351,7 +347,6 @@ public:
 		// Player
 		player->setPos(72, 2);
 
-
 		// Lanes
 		bool order = true;
 		vector<GameLane*> lanes;
@@ -362,7 +357,7 @@ public:
 		GameMenu* score = new Button("score");
 		GameMenu* level = new Button("level");
 		vector<wstring> scoreCounter, levelCounter;
-
+		graphic->render();
 		// Input
 		bool* bKeyGame = new bool[key.size()]{ 0 };
 
@@ -372,12 +367,42 @@ public:
 
 		while (1)
 		{
+			//Initialize
 			delay(1000 / (FRAMERATE - 20));
-
 			graphic->clearBuffer(bg, ch);
 			graphic->clearStars(bg, ch);
 			player->render(graphic, offset, bg, ch);
 			player->update();
+
+			// Stars
+			graphic->randomStars(bg, ch);
+
+			// Time
+			/*auto endTime = chrono::system_clock::now();
+			chrono::duration<double> elapsed_seconds = endTime - startTime;
+			int elapsed = elapsed_seconds.count();
+			graphic->progressBar(elapsed, songDuration[Level-1], 20, 1);*/
+
+			//Lanes shananigans
+			for (auto l : lanes) l->logic();
+			for (auto l : lanes) l->render(graphic, offset, bg);
+			if (this->checkCollision(lanes)) {
+				mciSendString(L"stop song_game_1.wav", NULL, 0, NULL);
+				mciSendString(L"stop song_game_2.wav", NULL, 0, NULL);
+				mciSendString(L"stop song_game_3.wav", NULL, 0, NULL);
+				mciSendString(L"stop song_game_4.wav", NULL, 0, NULL);
+				mciSendString(L"stop song_game_5.wav", NULL, 0, NULL);
+				mciSendString(L"play crash.wav", NULL, 0, NULL);
+				graphic->glitch();
+
+				delay(400);
+				gameoverScreen();
+				graphic->clearBuffer();
+				return 0;
+			}
+
+			//player render
+			player->render(graphic, offset, bg, ch);
 
 			//Controls
 			for (int i = 0; i < key.size(); i++) { 	// Read input
@@ -386,7 +411,7 @@ public:
 			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE)) {
 				if (soundOn)
 					mciSendString(enter, NULL, 0, NULL);
-				if (!pauseScreen(player->getBoundingBox().y / LANE_HEIGHT + baseScore))
+				if (!pauseScreen(player->getBoundingBox().y / LANE_HEIGHT + baseScore), 0, level)
 					return Level;
 				if (soundOn)
 					switch (Level) {
@@ -402,7 +427,6 @@ public:
 						mciSendString(L"resume song_game_5", NULL, 0, NULL); break;
 					default: break;
 					}
-					
 			}
 			if (bKeyGame[0] == 1 && player->getPos().y > 1) {
 				if (player->getPos().y + offset <= 5 && player->getPos().y > 5)
@@ -425,43 +449,13 @@ public:
 				player->move(1, 0);
 			}
 
-			// Stars
-			graphic->randomStars(bg, ch);
-
-			// Time
-			/*auto endTime = chrono::system_clock::now();
-			chrono::duration<double> elapsed_seconds = endTime - startTime;
-			int elapsed = elapsed_seconds.count();
-			graphic->progressBar(elapsed, songDuration[Level-1], 20, 1);*/
-
 			//Score and Level
-			toVwstring(player->getBoundingBox().y / LANE_HEIGHT - 1, scoreCounter);
+			toVwstring(player->getBoundingBox().y / LANE_HEIGHT, scoreCounter);
 			toVwstring(Level, levelCounter);
-
-			graphic->setBuffer(graphic->getBuffer(score->getBufferKey()), 2, 1, bg, ch);
-			graphic->setBuffer(scoreCounter, 9, 1, bg, ch);
-			graphic->setBuffer(graphic->getBuffer(level->getBufferKey()), 2, 2, bg, ch);
-			graphic->setBuffer(levelCounter, 9, 2, bg, ch);
-
-
-			for (auto l : lanes) l->logic();
-			for (auto l : lanes) l->render(graphic, offset, bg);
-			if (this->checkCollision(lanes)) {
-				mciSendString(L"stop song_game_1.wav", NULL, 0, NULL);
-				mciSendString(L"stop song_game_2.wav", NULL, 0, NULL);
-				mciSendString(L"stop song_game_3.wav", NULL, 0, NULL);
-				mciSendString(L"stop song_game_4.wav", NULL, 0, NULL);
-				mciSendString(L"stop song_game_5.wav", NULL, 0, NULL);
-				mciSendString(L"play crash.wav", NULL, 0, NULL);
-				graphic->glitch();
-
-				delay(400);
-				gameoverScreen();
-				graphic->clearBuffer();
-				return 0;
-			}
-
-			player->render(graphic, offset, bg, ch);
+			graphic->setBufferWhite(graphic->getBuffer(score->getBufferKey()), 2, 1, bg, ch);
+			graphic->setBufferWhite(scoreCounter, 9, 1, bg, ch);
+			graphic->setBufferWhite(graphic->getBuffer(level->getBufferKey()), 2, 2, bg, ch);
+			graphic->setBufferWhite(levelCounter, 9, 2, bg, ch);
 
 			graphic->render();
 		}
@@ -476,23 +470,15 @@ public:
 		//or turn off sound -> play game -> turn on sound
 		graphic->clearBuffer();
 		player->setPos(72, 2);
-		//player->clearOldPos(graphic);
-		//GameLane* lane1 = new GameLane(1, 1, 1, graphic);
-		//GameLane* lane2 = new GameLane(2, 2, 1, graphic);
-		//GameLane* lane3 = new GameLane(3, 3, 1, graphic);
 		vector<GameLane*> lanes;
-
 		if (Level == 1)
 		{
 			levelController = new Level_1;
 			levelController->getMap(lanes, graphic);
 		}
-
 		GameMenu* score = new Button("score");
 		GameMenu* level = new Button("level");
-		//GameMenu* laneIndex = new Button("score");
 		vector<wstring> scoreCounter;
-
 		bool* bKeyGame = new bool[key.size()]{ 0 };
 
 		//scroll
@@ -501,55 +487,17 @@ public:
 
 		while (1)
 		{
+			//Initialize
 			delay(1000 / (FRAMERATE ));
-
 			graphic->clearBuffer();
 			graphic->clearStars();
 			player->render(graphic, offset);
 			player->update();
 
-			//Controls
-			for (int i = 0; i < key.size(); i++) { 	// Read input
-				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
-			}
-			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE)) {
-				if (soundOn)
-					mciSendString(enter, NULL, 0, NULL);
-				if (!pauseScreen(player->getBoundingBox().y / LANE_HEIGHT + baseScore))
-					return Level;
-				if (soundOn)
-					mciSendString(L"resume song_game_1.wav", NULL, 0, NULL);
-			}
-			if (bKeyGame[0] == 1 && player->getPos().y > 1) {
-				if (player->getPos().y + offset <= 5 && player->getPos().y > 5)
-					offset++;
-				player->move(0, -1);
-			}
-			if (bKeyGame[1] == 1 && player->getPos().x > 1) {
-				player->move(-1, 0);
-			}
-			if (bKeyGame[2] == 1 && player->getPos().y < LANE_HEIGHT*nLane) {
-				if (player->getPos().y + offset >= screenHeight - 30 && player->getPos().y + 5 <= 18 + nLane * LANE_HEIGHT)
-					offset--;
-				if (player->getPos().y > (nLane - 3) * LANE_HEIGHT) {
-					nLane += levelController->addLanes(lanes, graphic, nLane + 1);
-				}
-				player->move(0, 1);
-			}
-			if (bKeyGame[3] == 1 && player->getPos().x < screenWidth - 1 - graphic->getBuffer(player->getBufferKey())[0].length()) {
-				player->move(1, 0);
-			}
-
 			// Stars
 			graphic->randomStars();
 
-			//Score
-			toVwstring(player->getBoundingBox().y / LANE_HEIGHT + baseScore, scoreCounter);
-
-			graphic->setBuffer(graphic->getBuffer(score->getBufferKey()), 2, 1, BG, 7);
-			graphic->setBuffer(scoreCounter, 9, 1, BG, 7);
-
-
+			//lanes shananigans
 			for (auto l : lanes) l->logic();
 			for (auto l : lanes) l->render(graphic, offset);
 			if (this->checkCollision(lanes)) {
@@ -563,9 +511,48 @@ public:
 				return 0;
 			}
 
+			//player render
 			player->render(graphic, offset);
 
-			//graphic->createFrame(0, 0, 145, 40);
+			//Controls
+			for (int i = 0; i < key.size(); i++) { 	// Read input
+				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
+			}
+			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE)) {
+				if (soundOn)
+					mciSendString(enter, NULL, 0, NULL);
+				if (!pauseScreen(player->getBoundingBox().y / LANE_HEIGHT + baseScore, 1))
+					return Level;
+				if (soundOn)
+					mciSendString(L"resume song_game_1.wav", NULL, 0, NULL);
+			}
+			if (bKeyGame[0] == 1 && player->getPos().y > 1) {
+				if (player->getPos().y + offset <= 5 && player->getPos().y > 5)
+					offset++;
+				player->move(0, -1);
+			}
+			if (bKeyGame[1] == 1 && player->getPos().x > 1) {
+				player->move(-1, 0);
+			}
+			if (bKeyGame[2] == 1 && player->getPos().y < LANE_HEIGHT * nLane) {
+				if (player->getPos().y + offset >= screenHeight - 30 && player->getPos().y + 5 <= 18 + nLane * LANE_HEIGHT)
+					offset--;
+				if (player->getPos().y > (nLane - 3) * LANE_HEIGHT) {
+					nLane += levelController->addLanes(lanes, graphic, nLane + 1);
+				}
+				player->move(0, 1);
+			}
+			if (bKeyGame[3] == 1 && player->getPos().x < screenWidth - 1 - graphic->getBuffer(player->getBufferKey())[0].length()) {
+				player->move(1, 0);
+			}
+
+			//Score
+			toVwstring(player->getBoundingBox().y / LANE_HEIGHT + baseScore, scoreCounter);
+			graphic->setBufferWhite(graphic->getBuffer(score->getBufferKey()), 2, 1, BG, 7);
+			graphic->setBufferWhite(scoreCounter, 9, 1, BG, 7);
+
+			//frame around screen
+			graphic->createFrame(0, 0, 145, 40);
 
 			graphic->render();
 		}
@@ -582,37 +569,31 @@ public:
 			delay(83 - i);
 		}
 	}
-	void saveScreen(int score, int mode = 0) {
+	void saveScreen(int score, int mode = 0, int level = 0) {
 		int top = 8;
 		int left = 58;
 		vector<wstring> blank = { L"███████████████████████" };
-		wstring tmp = mode ? L"Infinity. Score: " : L"Level. Score: ";
-		int saveLength = tmp.length();
-		vector<wstring> save{ tmp };
+		vector<wstring> save{ L"" };
 		vector<wstring> gameScore;
-		
-		graphic->createFrame(left, top - 1, 29, 24, false, false);
+		graphic->openFrame(left, top - 1, 29, 24);
 		GameMenu* saveTitle = new Button("saveTitle");
 		graphic->setBufferWhite(graphic->getBuffer(saveTitle->getBufferKey()), left + 1, top + 1, 0, 7);
-
 		GameMenu* slots	 = new Button("slots");
-
 		graphic->createFrame(left + 2, top + 4, blank[0].length() + 2, 3);
 		graphic->createFrame(left + 2, top + 7, blank[0].length() + 2, 3);
 		graphic->createFrame(left + 2, top + 10, blank[0].length() + 2, 3);
 		graphic->createFrame(left + 2, top + 13, blank[0].length() + 2, 3);
 		graphic->createFrame(left + 2, top + 16, blank[0].length() + 2, 3);
-
 		GameMenu* backButton = new Button("back");
-
 		int choice = 0;
-		bool* bKeyGame = new bool[key.size()]{ 0 }; // Check ingame input
+		bool* bKeyGame = new bool[key.size()]{ 0 }; 
+
+
 		while (1) {
 			delay(1000 / (FRAMERATE / 8));
 
 			//default color
 			graphic->setBuffer(graphic->getBuffer(slots->getBufferKey()), left + 7, top + 2, 0, 7);
-
 			for (int i = 0; i < 5; ++i) {
 				if (saved[i]) {
 					string tmp = "SaveFile";
@@ -621,6 +602,17 @@ public:
 					ifstream saveFile{ tmp };
 					int tmpScore;
 					saveFile >> tmpScore;
+
+					string mode;
+					saveFile >> mode;
+					if (mode[0] == 'i') {
+						save[0] = L"Infinity";
+					}
+					else save[0] = L"Level";
+
+					save[0] += L". Score: ";
+
+					int saveLength = save[0].length();
 
 					wstring tmpppp = toWstring(tmpScore);
 					save[0] = save[0] + tmpppp;
@@ -636,7 +628,6 @@ public:
 				else 
 					graphic->setBufferWhite(blank, left + 3, top + 5 + 3 * i, whiteDark, BG);
 			}
-
 			graphic->setBuffer(graphic->getBuffer(backButton->getBufferKey()), left + 9, top + 20, 0, 7);
 
 			//input
@@ -656,8 +647,8 @@ public:
 					ofstream saveFile{ tmp };
 					saveFile << score;
 					saveFile << (mode ? " inf " : " lvl ");
-					/*if (mode)
-						saveFile << level;*/
+					if (mode)
+						saveFile << level;
 					saveFile.close();
 					return;
 				}
@@ -686,6 +677,17 @@ public:
 						int tmpScore;
 						saveFile >> tmpScore;
 
+						string mode;
+						saveFile >> mode;
+						if (mode[0] == 'i') {
+							save[0] = L"Infinity";
+						}
+						else save[0] = L"Level";
+
+						save[0] += L". Score: ";
+
+						int saveLength = save[0].length();
+
 						wstring tmpppp = toWstring(tmpScore);
 						save[0] = save[0] + tmpppp;
 						int n = blank[0].length() - save[0].length();
@@ -712,29 +714,26 @@ public:
 		vector<wstring> blank = { L"███████████████████████" };
 		vector<wstring> save{ L"" };
 		vector<wstring> gameScore;
-
-		graphic->createFrame(left, top - 1, 29, 24, false, false);
+		graphic->openFrame(left, top - 1, 29, 24);
 		GameMenu* saveTitle = new Button("loadTitle");
 		graphic->setBufferWhite(graphic->getBuffer(saveTitle->getBufferKey()), left + 1, top + 1, 0, 7);
-
 		GameMenu* slots = new Button("slots");
-
 		graphic->createFrame(left + 2, top + 4, blank[0].length() + 2, 3);
 		graphic->createFrame(left + 2, top + 7, blank[0].length() + 2, 3);
 		graphic->createFrame(left + 2, top + 10, blank[0].length() + 2, 3);
 		graphic->createFrame(left + 2, top + 13, blank[0].length() + 2, 3);
 		graphic->createFrame(left + 2, top + 16, blank[0].length() + 2, 3);
-
 		GameMenu* backButton = new Button("back");
-
 		int choice = 0;
-		bool* bKeyGame = new bool[key.size()]{ 0 }; // Check ingame input
+		bool* bKeyGame = new bool[key.size()]{ 0 };
+
+
+
 		while (1) {
 			delay(1000 / (FRAMERATE / 8));
 
 			//default color
 			graphic->setBuffer(graphic->getBuffer(slots->getBufferKey()), left + 7, top + 2, 0, 7);
-
 			for (int i = 0; i < 5; ++i) {
 				if (saved[i]) {
 					string tmp = "SaveFile";
@@ -770,7 +769,6 @@ public:
 				else
 					graphic->setBufferWhite(blank, left + 3, top + 5 + 3 * i, whiteDark, BG);
 			}
-
 			graphic->setBuffer(graphic->getBuffer(backButton->getBufferKey()), left + 9, top + 20, 0, 7);
 
 			//input
@@ -807,7 +805,7 @@ public:
 						mciSendString(L"pause song_intro.wav", NULL, 0, NULL);
 						loadingScreen();
 						while (level) {
-							level = playScreen1(level);/////////////////////////////////////////////////////////
+							level = playScreen1(level, score);
 						}
 						if (soundOn)
 							mciSendString(L"resume song_intro.wav", NULL, 0, NULL);
@@ -872,7 +870,6 @@ public:
 
 			graphic->render();
 		}
-
 	};
 	void settingsScreen() {
 		int top = 19;
@@ -946,24 +943,23 @@ public:
 			graphic->render();
 		}
 	};
-	bool pauseScreen(int score = 0) {
+	bool pauseScreen(int score = 0, int mode = 0, int level = 0) {
 		int top = 15;
 		int left = 60;
 		graphic->openFrame(left, top, 25, 10);
 		GameMenu* pauseTitle = new Button("pauseTitle");
 		graphic->setBufferWhite(graphic->getBuffer(pauseTitle->getBufferKey()), left + 1, top + 2, 0, 7);
-
-
 		GameMenu* resumeButton = new Button("resumeButton");
 		GameMenu* restartButton = new Button("restartButton");
 		GameMenu* saveButton = new Button("saveButton");
 		GameMenu* soundButton = new Button("sound");
 		GameMenu* on = new Button("on");
 		GameMenu* off = new Button("off");
-
-
 		int choice = 0;
-		bool* bKeyGame = new bool[key.size()]{ 0 }; // Check ingame input
+		bool* bKeyGame = new bool[key.size()]{ 0 }; 
+
+
+
 		while (1) {
 			delay(1000 / (FRAMERATE / 8));
 			//default color
@@ -994,7 +990,7 @@ public:
 					return 1;
 				}
 				else if (choice == 2) { //save
-					saveScreen(score, 1);
+					saveScreen(score, mode, level);
 					return 1;
 				}
 				else { //restart

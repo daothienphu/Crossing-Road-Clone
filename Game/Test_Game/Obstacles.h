@@ -42,15 +42,15 @@ public:
 
 	void render(GraphicsController*& graphic, int offset) {
 		//clearOldPos(graphic);
-		graphic->setBuffer(graphic->getBuffer(bufferKey), this->x, this->y + offset, bgColor, fgColor);
+		graphic->setBufferObject(graphic->getBuffer(bufferKey), this->x, this->y + offset, bgColor, fgColor);
 	}
 	void render(GraphicsController*& graphic, int offset, int bg) {
 		//clearOldPos(graphic);
-		graphic->setBuffer(graphic->getBuffer(bufferKey), this->x, this->y + offset, bg, fgColor);
+		graphic->setBufferObject(graphic->getBuffer(bufferKey), this->x, this->y + offset, bg, fgColor);
 	}
 	void render(GraphicsController*& graphic, int offset, int bg, int ch) {
 		//clearOldPos(graphic);
-		graphic->setBuffer(graphic->getBuffer(bufferKey), this->x, this->y + offset, bg, ch);
+		graphic->setBufferObject(graphic->getBuffer(bufferKey), this->x, this->y + offset, bg, ch);
 	}
 	void clearOldPos(GraphicsController*& graphic) {
 		GameObject::clearOldPos(graphic, bgColor, fgColor);
@@ -71,37 +71,6 @@ public:
 		return tick;
 	}
 };
-
-class Enemy1 : public Obstacles {
-public:
-
-};
-
-//class Maybe : public Obstacles {
-//	vector<wstring> buf;
-//public:
-//	Maybe() : Obstacles(0, 0, 0, 0, "maybe") {}
-//	Maybe(int x, int y, int w, int h) : Obstacles(x, y, w, h, "maybe") {
-//	}
-//};
-//
-//class SomeKindsOf : public Obstacles {
-//	vector<wstring> buf;
-//public:
-//	SomeKindsOf() : Obstacles(0, 0, 0, 0, "SomeKindsOf") {}
-//	SomeKindsOf(int x, int y, int w, int h) : Obstacles(x, y, w, h, "SomeKindsOf") {
-//		//this->bufferData = this->buf;
-//	}
-//};
-//
-//class Monster :public Obstacles {
-//	vector<wstring> buf;
-//public:
-//	Monster() : Obstacles(0, 0, 0, 0, "Monster") {}
-//	Monster(int x, int y, int w, int h) : Obstacles(x, y, w, h, "Monster") {
-//		//this->bufferData = this->buf;
-//	}
-//};
 
 //fell free to declare more class using the above template
 //feel*

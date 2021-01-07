@@ -162,6 +162,38 @@ public:
 				color[(y + i) * screenWidth + x + content[i].length() + 1] = bgColor * 16 + fgColor;
 		}
 	}
+	void setBufferObject(vector<wstring>& content, int x, int y, int bgColor, int fgColor) {
+		for (int i = 0; i < content.size(); ++i) {
+			for (int j = 0; j < content[i].length(); ++j) {
+				if (!isInScreen(y + i, x + j))
+					continue;
+				buffer[(y + i) * screenWidth + x + j] = content[i].at(j);
+				color[(y + i) * screenWidth + x + j] = bgColor * 16 + fgColor;
+			}
+			if (isInScreen(y + i, x - 2))
+				color[(y + i) * screenWidth + x - 2] = bgColor * 16 + fgColor;
+			if (isInScreen(y + i, x - 1))
+				color[(y + i) * screenWidth + x - 1] = bgColor * 16 + fgColor;
+			if (isInScreen(y + i, x + content[i].length()))
+				color[(y + i) * screenWidth + x + content[i].length()] = bgColor * 16 + fgColor;
+			if (isInScreen(y + i, x + content[i].length() + 1))
+				color[(y + i) * screenWidth + x + content[i].length() + 1] = bgColor * 16 + fgColor;
+		}
+		for (int j = 0; j < content[0].length(); ++j) {
+			if (isInScreen(y - 1, x + j))
+				color[(y - 1) * screenWidth + x + j] = bgColor * 16 + fgColor;
+			if (isInScreen(y + content.size(), x + j))
+				color[(y + content.size()) * screenWidth + x + j] = bgColor * 16 + fgColor;
+		}
+		if (isInScreen(y - 1, x - 1))
+			color[(y - 1) * screenWidth + x - 1] = bgColor * 16 + fgColor;
+		if (isInScreen(y - 1, x + content[0].length()))
+			color[(y - 1) * screenWidth + x + content[0].length()] = bgColor * 16 + fgColor;
+		if (isInScreen(y + content.size(), x - 1))
+			color[(y + content.size()) * screenWidth + x - 1] = bgColor * 16 + fgColor;
+		if (isInScreen(y + content.size(), x + content[0].length()))
+			color[(y + content.size()) * screenWidth + x + content[0].length()] = bgColor * 16 + fgColor;
+	}
 	void setBuffer(wstring content, int x, int y, int bgColor, int fgColor) {
 		for (int i = 0; i < content.length(); ++i) {
 			buffer[y * screenWidth + x + i] = content[i];
