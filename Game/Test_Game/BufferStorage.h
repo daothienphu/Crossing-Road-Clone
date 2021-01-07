@@ -159,7 +159,7 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 		}
 	},
 
-	//setting screen
+	//settings screen
 	{
 		"settingsTitle",
 		vector<wstring>{
@@ -254,12 +254,6 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 		L"  Haha u lost, loser!!!! XD  "
 		}
 	},
-	/*{
-		"name",
-		vector <wstring> {
-		L"Something here",
-		}
-	},*/
 	{
 		"easterEgg1",
 		vector<wstring> {
@@ -273,6 +267,25 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 		L"There\'s only one button dumbass."
 		}
 	},
+	{	
+		"slots",
+		vector<wstring>{
+		L"Available slots"
+		} 
+	},
+	{
+		"saveTitle",
+		vector<wstring>{
+		L"▌│█║▌║▌║ SAVE GAME ║▌║▌║█│▌"
+		}
+	},
+	{
+		"loadTitle",
+		vector<wstring>{
+		L"▌│█║▌║▌║ LOAD GAME ║▌║▌║█│▌"
+		}
+	}
+
 };
 
 // Any buffer that requires padding to block

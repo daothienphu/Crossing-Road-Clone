@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <iostream>
+#include <fstream>
 #include <Windows.h>
 #include <mmsystem.h>
 #include <cstdlib>
@@ -51,21 +52,37 @@ class GameCore {
 protected:
 	Player* player;
 	GraphicsController* graphic;
-	ILevel* levelController = nullptr;
-	bool soundOn = true;
+	ILevel* levelController;
+	bool soundOn;
+	vector<bool> saved;
 public:
 	GameCore() {
 		graphic = new GraphicsController;
 		player = new Player(70, 37, graphic);
+		levelController = nullptr;
+		soundOn = true;
+		for (int i = 0; i < 5; ++i)
+			saved.emplace_back(0);
+		for (int i = 0; i < 5; ++i) {
+			string tmp = "SaveFile";
+			tmp += char(i + '1');
+			tmp += ".txt";
+			ifstream saveFile;
+			saveFile.open(tmp);
+			if (saveFile)
+				saved[i] = 1;
+			saveFile.close();
+		}
 		srand(time(0));
 	}
 	~GameCore() {
 		delete graphic;
 		delete player;
+		delete levelController;
 	}
 
 	void start() {
-		introScreen();
+		//introScreen();
 		titleScreen();
 	}
 	void introScreen() {
@@ -154,7 +171,6 @@ public:
 						mciSendString(L"resume song_intro.wav", NULL, 0, NULL);
 				}
 				else if (choice == 1) {
-					mciSendString(L"pause song_intro.wav", NULL, 0, NULL);
 					loadScreen();
 				}
 				else if (choice == 2) {
@@ -287,6 +303,7 @@ public:
 	void stageClearScreen() {}
 	int playLevelScreen(int Level)
 	{
+		int gameScore = 0;
 		if (Level == 6) return -1;
 		switch (Level) {
 		case 1:
@@ -357,8 +374,8 @@ public:
 			for (int i = 0; i < key.size(); i++) { 	// Read input
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			}
-			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE)) { // Enter
-				if (!pauseScreen())
+			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE)) {
+				if (!pauseScreen(gameScore))
 					return Level;
 				if (soundOn)
 					PlaySound(TEXT("GameSong2.wav"), NULL, SND_FILENAME | SND_ASYNC);
@@ -439,7 +456,7 @@ public:
 		}
 
 	}
-	int playScreen(int Level)
+	int playScreen(int Level, int baseScore = 0)
 	{
 		mciSendString(song_game_1, NULL, 0, NULL);
 		if (!soundOn)
@@ -463,7 +480,9 @@ public:
 		GameMenu* score = new Button("score");
 		GameMenu* level = new Button("level");
 		//GameMenu* laneIndex = new Button("score");
-		vector<wstring> scoreCounter, levelCounter;
+		vector<wstring> scoreCounter;
+		baseScore++;
+		int gameScore = baseScore;
 
 		bool* bKeyGame = new bool[key.size()]{ 0 };
 
@@ -485,10 +504,12 @@ public:
 				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
 			}
 			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE)) {
-				if (!pauseScreen())
+				if (soundOn)
+					mciSendString(enter, NULL, 0, NULL);
+				if (!pauseScreen(gameScore))
 					return Level;
 				if (soundOn)
-					PlaySound(TEXT("GameSong2.wav"), NULL, SND_FILENAME | SND_ASYNC);
+					mciSendString(L"resume song_game_1.wav", NULL, 0, NULL);
 			}
 			if (bKeyGame[0] == 1 && player->getPos().y > 1) {
 				if (player->getPos().y + offset <= 5 && player->getPos().y > 5)
@@ -515,19 +536,17 @@ public:
 			graphic->randomStars();
 
 			// Time
-			auto endTime = chrono::system_clock::now();
+			/*auto endTime = chrono::system_clock::now();
 			chrono::duration<double> elapsed_seconds = endTime - startTime;
-			int elapsed = elapsed_seconds.count();
+			int elapsed = elapsed_seconds.count();*/
 			//graphic->progressBar(elapsed, songDuration[Level-1], 20, 1);
 
 			//Score and Level
+			gameScore = player->getBoundingBox().y / LANE_HEIGHT - 1 + baseScore;
 			toVwstring(player->getBoundingBox().y / LANE_HEIGHT - 1, scoreCounter);
-			toVwstring(1, levelCounter);
 
 			graphic->setBuffer(graphic->getBuffer(score->getBufferKey()), 2, 1, BG, 7);
 			graphic->setBuffer(scoreCounter, 9, 1, BG, 7);
-			graphic->setBuffer(graphic->getBuffer(level->getBufferKey()), 2, 2, BG, 7);
-			graphic->setBuffer(levelCounter, 9, 2, BG, 7);
 
 
 			for (auto l : lanes) l->logic();
@@ -562,8 +581,298 @@ public:
 			delay(83 - i);
 		}
 	}
-	void saveScreen() {};
-	void loadScreen() {};
+	void saveScreen(int score, int mode = 0) {
+		int top = 8;
+		int left = 58;
+		vector<wstring> blank = { L"███████████████████████" };
+		wstring tmp = mode ? L"Infinity. Score: " : L"Level. Score: ";
+		int saveLength = tmp.length();
+		vector<wstring> save{ tmp };
+		vector<wstring> gameScore;
+		
+		graphic->createFrame(left, top - 1, 29, 24, false, false);
+		GameMenu* saveTitle = new Button("saveTitle");
+		graphic->setBufferWhite(graphic->getBuffer(saveTitle->getBufferKey()), left + 1, top + 1, 0, 7);
+
+		GameMenu* slots	 = new Button("slots");
+
+		graphic->createFrame(left + 2, top + 4, blank[0].length() + 2, 3);
+		graphic->createFrame(left + 2, top + 7, blank[0].length() + 2, 3);
+		graphic->createFrame(left + 2, top + 10, blank[0].length() + 2, 3);
+		graphic->createFrame(left + 2, top + 13, blank[0].length() + 2, 3);
+		graphic->createFrame(left + 2, top + 16, blank[0].length() + 2, 3);
+
+		GameMenu* backButton = new Button("back");
+
+		int choice = 0;
+		bool* bKeyGame = new bool[key.size()]{ 0 }; // Check ingame input
+		while (1) {
+			delay(1000 / (FRAMERATE / 8));
+
+			//default color
+			graphic->setBuffer(graphic->getBuffer(slots->getBufferKey()), left + 7, top + 2, 0, 7);
+
+			for (int i = 0; i < 5; ++i) {
+				if (saved[i]) {
+					string tmp = "SaveFile";
+					tmp += char(i + '1');
+					tmp += ".txt";
+					ifstream saveFile{ tmp };
+					int tmpScore;
+					saveFile >> tmpScore;
+
+					wstring tmpppp = toWstring(tmpScore);
+					save[0] = save[0] + tmpppp;
+					int n = blank[0].length() - save[0].length();
+					for (int j = 0; j < n ; ++j) {
+						save[0] += L' ';
+					}
+					graphic->setBufferWhite(save, left + 3, top + 5 + 3 * i, BG, whiteDark);
+					
+					save[0].erase(saveLength, save[0].length() - tmpppp.length());
+					saveFile.close();
+				}
+				else 
+					graphic->setBufferWhite(blank, left + 3, top + 5 + 3 * i, whiteDark, BG);
+			}
+
+			graphic->setBuffer(graphic->getBuffer(backButton->getBufferKey()), left + 9, top + 20, 0, 7);
+
+			//input
+			for (int i = 0; i < key.size(); i++)
+				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
+			if (GetAsyncKeyState(VK_RETURN)) {
+				if (soundOn)
+					mciSendString(enter, NULL, 0, NULL);
+				if (choice == 5)
+					return;
+				else {
+					choice = (choice + 6) % 6;
+					saved[choice] = 1;
+					string tmp = "SaveFile";
+					tmp += char(choice + '1');
+					tmp += ".txt";
+					ofstream saveFile{ tmp };
+					saveFile << score;
+					saveFile << (mode ? " inf " : " lvl ");
+					/*if (mode)
+						saveFile << level;*/
+					saveFile.close();
+					return;
+				}
+			}
+			else if (bKeyGame[0] == 1) {
+				if (soundOn)
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
+				choice = (choice + 6 - 1) % 6;
+			}
+			else if (bKeyGame[2] == 1) {
+				if (soundOn)
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
+				choice = (choice + 1) % 6;
+			}
+
+			//change color depends on choice
+			switch (choice) {
+			case 5:
+				graphic->setBuffer(graphic->getBuffer(backButton->getBufferKey()), left + 9, top + 20, 7, 0); break;
+			default: 
+					if (saved[choice]) {
+						string tmp = "SaveFile";
+						tmp += char(choice + '1');
+						tmp += ".txt";
+						ifstream saveFile{ tmp };
+						int tmpScore;
+						saveFile >> tmpScore;
+
+						wstring tmpppp = toWstring(tmpScore);
+						save[0] = save[0] + tmpppp;
+						int n = blank[0].length() - save[0].length();
+						for (int j = 0; j < n; ++j) {
+							save[0] += L' ';
+						}
+						graphic->setBufferWhite(save, left + 3, top + 5 + 3 * choice, whiteDark, BG);
+
+						save[0].erase(saveLength, save[0].length() - tmpppp.length());
+						saveFile.close();
+					}
+					else
+						graphic->setBufferWhite(blank, left + 3, top + 5 + 3 * choice, BG, whiteDark);
+				break;
+			}
+
+			graphic->render();
+		}
+
+	};
+	void loadScreen() {
+		int top = 8;
+		int left = 58;
+		vector<wstring> blank = { L"███████████████████████" };
+		vector<wstring> save{ L"" };
+		vector<wstring> gameScore;
+
+		graphic->createFrame(left, top - 1, 29, 24, false, false);
+		GameMenu* saveTitle = new Button("loadTitle");
+		graphic->setBufferWhite(graphic->getBuffer(saveTitle->getBufferKey()), left + 1, top + 1, 0, 7);
+
+		GameMenu* slots = new Button("slots");
+
+		graphic->createFrame(left + 2, top + 4, blank[0].length() + 2, 3);
+		graphic->createFrame(left + 2, top + 7, blank[0].length() + 2, 3);
+		graphic->createFrame(left + 2, top + 10, blank[0].length() + 2, 3);
+		graphic->createFrame(left + 2, top + 13, blank[0].length() + 2, 3);
+		graphic->createFrame(left + 2, top + 16, blank[0].length() + 2, 3);
+
+		GameMenu* backButton = new Button("back");
+
+		int choice = 0;
+		bool* bKeyGame = new bool[key.size()]{ 0 }; // Check ingame input
+		while (1) {
+			delay(1000 / (FRAMERATE / 8));
+
+			//default color
+			graphic->setBuffer(graphic->getBuffer(slots->getBufferKey()), left + 7, top + 2, 0, 7);
+
+			for (int i = 0; i < 5; ++i) {
+				if (saved[i]) {
+					string tmp = "SaveFile";
+					tmp += char(i + '1');
+					tmp += ".txt";
+					ifstream saveFile{ tmp };
+
+					int tmpScore;
+					saveFile >> tmpScore;
+
+					string mode;
+					saveFile >> mode;
+					if (mode[0] == 'i') {
+						save[0] = L"Infinity";
+					}
+					else save[0] = L"Level";
+
+					save[0] += L". Score: ";
+					
+					int saveLength = save[0].length();
+
+					wstring tmpppp = toWstring(tmpScore);
+					save[0] = save[0] + tmpppp;
+					int n = blank[0].length() - save[0].length();
+					for (int j = 0; j < n; ++j) {
+						save[0] += L' ';
+					}
+					graphic->setBufferWhite(save, left + 3, top + 5 + 3 * i, BG, whiteDark);
+
+					save[0].erase(saveLength, save[0].length() - tmpppp.length());
+					saveFile.close();
+				}
+				else
+					graphic->setBufferWhite(blank, left + 3, top + 5 + 3 * i, whiteDark, BG);
+			}
+
+			graphic->setBuffer(graphic->getBuffer(backButton->getBufferKey()), left + 9, top + 20, 0, 7);
+
+			//input
+			for (int i = 0; i < key.size(); i++)
+				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
+			if (GetAsyncKeyState(VK_RETURN)) {
+				if (soundOn)
+					mciSendString(enter, NULL, 0, NULL);
+				if (choice == 5)
+					return;
+				else {
+					string tmp = "SaveFile";
+					tmp += char(choice + '1');
+					tmp += ".txt";
+					ifstream saveFile{ tmp };
+					int score;
+					saveFile >> score;
+					string mode;
+					saveFile >> mode;
+					
+					if (mode[0] == 'i') {
+						mciSendString(L"pause song_intro.wav", NULL, 0, NULL);
+						loadingScreen();
+						int level = 1;
+						while (level) {
+							level = playScreen(level, score);
+						}
+						if (soundOn)
+							mciSendString(L"resume song_intro.wav", NULL, 0, NULL);
+					}
+					else {
+						int level;
+						saveFile >> level;
+						mciSendString(L"pause song_intro.wav", NULL, 0, NULL);
+						loadingScreen();
+						while (level) {
+							level = playLevelScreen(level);/////////////////////////////////////////////////////////
+						}
+						if (soundOn)
+							mciSendString(L"resume song_intro.wav", NULL, 0, NULL);
+						
+					}
+
+					saveFile.close();
+					return;
+				}
+			}
+			else if (bKeyGame[0] == 1) {
+				if (soundOn)
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
+				choice = (choice + 6 - 1) % 6;
+			}
+			else if (bKeyGame[2] == 1) {
+				if (soundOn)
+					PlaySound(TEXT("menuClick.wav"), NULL, SND_FILENAME | SND_ASYNC);
+				choice = (choice + 1) % 6;
+			}
+
+			//change color depends on choice
+			switch (choice) {
+			case 5:
+				graphic->setBuffer(graphic->getBuffer(backButton->getBufferKey()), left + 9, top + 20, 7, 0); break;
+			default:
+				if (saved[choice]) {
+					string tmp = "SaveFile";
+					tmp += char(choice + '1');
+					tmp += ".txt";
+					ifstream saveFile{ tmp };
+
+					int tmpScore;
+					saveFile >> tmpScore;
+
+					string mode;
+					saveFile >> mode;
+					if (mode[0] == 'i') {
+						save[0] = L"Infinity";
+					}
+					else save[0] = L"Level";
+
+					save[0] += L". Score: ";
+
+					int saveLength = save[0].length();
+
+					wstring tmpppp = toWstring(tmpScore);
+					save[0] = save[0] + tmpppp;
+					int n = blank[0].length() - save[0].length();
+					for (int j = 0; j < n; ++j) {
+						save[0] += L' ';
+					}
+					graphic->setBufferWhite(save, left + 3, top + 5 + 3 * choice, whiteDark, BG);
+
+					save[0].erase(saveLength, save[0].length() - tmpppp.length());
+					saveFile.close();
+				}
+				else
+					graphic->setBufferWhite(blank, left + 3, top + 5 + 3 * choice, BG, whiteDark);
+				break;
+			}
+
+			graphic->render();
+		}
+
+	};
 	void settingsScreen() {
 		int top = 19;
 		int left = 58;
@@ -636,7 +945,7 @@ public:
 			graphic->render();
 		}
 	};
-	bool pauseScreen() {
+	bool pauseScreen(int score) {
 		int top = 15;
 		int left = 60;
 		graphic->openFrame(left, top, 25, 10);
@@ -675,20 +984,20 @@ public:
 				if (choice == 3) { //sound
 					soundOn = !soundOn;
 					if (soundOn)
-						mciSendString(L"resume song_game_2.wav", NULL, 0, NULL);
+						mciSendString(L"resume song_game_1.wav", NULL, 0, NULL);
 					else
-						mciSendString(L"pause song_game_2.wav", NULL, 0, NULL);
+						mciSendString(L"pause song_game_1.wav", NULL, 0, NULL);
 				}
 				else if (choice == 0){ //resume
 					graphic->clearBuffer();
 					return 1;
 				}
 				else if (choice == 2) { //save
-					//save stuff hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+					saveScreen(score, 1);
 					return 1;
 				}
 				else { //restart
-					mciSendString(L"stop song_game_2.wav", NULL, 0, NULL);
+					mciSendString(L"stop song_game_1.wav", NULL, 0, NULL);
 					return 0;
 				}
 			}
