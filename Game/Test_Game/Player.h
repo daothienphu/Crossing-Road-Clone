@@ -28,6 +28,11 @@ public:
 		//clearOldPos(graphic);
 		graphic->setBuffer(graphic->getBuffer(bufferKey), oldX, oldY + offset, BG, 1);
 		graphic->setBufferWhite(graphic->getBuffer(bufferKey), x, y + offset, BG, 7);
+	}	
+	void render(GraphicsController*& graphic, int offset, int bg, int ch) {
+		//clearOldPos(graphic);
+		graphic->setBuffer(graphic->getBuffer(bufferKey), oldX, oldY + offset, bg, blueLight);
+		graphic->setBufferWhite(graphic->getBuffer(bufferKey), x, y + offset, bg, ch);
 	}
 
 	void clearOldPos(GraphicsController*& graphic) {

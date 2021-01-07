@@ -6,6 +6,8 @@ class GameLane : public Items {
 private:
 	vector <Obstacles*> obs;
 	int light = 0;
+	bool passed;
+	bool newPass;
 	// 0: green
 	// 1: yellow
 	// 2: red
@@ -88,7 +90,7 @@ public:
 			curTime = random(0, red - 1);
 	}
 	// For level mode
-	GameLane(int lane, int level, int dir, int green, int red, bool order, int bg, GraphicsController*& graphic) :
+	GameLane(int lane, int level, int dir, int green, int red, GraphicsController*& graphic, int bg, bool order, int Level) :
 		lane(lane),
 		dir(dir),
 		green(green* FRAMERATE),
@@ -122,23 +124,23 @@ public:
 		}
 		if (level == 0)
 			return;
-		// Generate random enemies
 		if (n == -1) {
 			// Yeahh boi
 			int cur = 0;
 			while (1) {
-				int eNum = random(1, 4 + level - 1); //Enemy number
-				string chosen = "enemy" + to_string(eNum);
+				int e = random(1, 4 + Level - 1);
+				string chosen = "enemy" + to_string(e);
 				int c;
-				switch (eNum) {
-				case 1: c = 6; break; //red
+				switch (e) {
+				case 1:	c = blueLight; break;
 				case 2: c = yellow; break;
-				case 3: c = blueLight; break;
-				case 4: c = 4; break; //green
+				case 3: c = 4; break; 
+				case 4: c = 6; break; 
 				case 5: c = purple; break;
-				case 6: c = orange; break;
-				case 7: c = brown; break;
-				case 8: c = pink; break;
+				case 6: c = orange; break; 
+				case 7: c = brown; break; 
+				case 8: c = pink; break; 
+				default: break;
 				}
 				if (cur + LEAST_SPACE < screenWidth)
 				{
@@ -153,21 +155,21 @@ public:
 			int sum = 0;
 			for (int i = 0; i < n; i++)
 			{
-				int eNum = random(1, 4 + level - 1); //Enemy number
-				string chosen = "enemy" + to_string(eNum);
+				int e = random(1, 4 + Level - 1);
+				string chosen = "enemy" + to_string(e);
 				int c;
-				switch (eNum) {
-				case 1: c = 6; break; //red
+				switch (e) {
+				case 1:	c = blueLight; break;
 				case 2: c = yellow; break;
-				case 3: c = blueLight; break;
-				case 4: c = 4; break; //green
+				case 3: c = 4; break;
+				case 4: c = 6; break;
 				case 5: c = purple; break;
 				case 6: c = orange; break;
 				case 7: c = brown; break;
 				case 8: c = pink; break;
+				default: break;
 				}
-				Obstacles* bleble = new Obstacles(0, lane * LANE_HEIGHT, velocity, bg, c, chosen, graphic);
-				obs.push_back(bleble);
+				obs.push_back(new Obstacles(0, lane * LANE_HEIGHT, velocity, bg, c, chosen, graphic));
 				sum += graphic->getBuffer(chosen)[0].size();
 			}
 
@@ -191,6 +193,10 @@ public:
 			curTime = random(0, red - 1);
 	}
 
+	void setPassed(bool s) { passed = s; }
+	void setNewPassed(bool s) { newPass = s; }
+	bool Passed() { return passed; }
+	bool NewPass() { return newPass; }
 	coord getPos() {
 		return { 0, lane * LANE_HEIGHT };
 	}
@@ -251,9 +257,10 @@ public:
 		for (auto o : obs) {
 			o->render(graphic, offset, bg);
 		}
-
 		// Render lights
-		graphic->setBuffer(graphic->getBuffer("player"), 2, lane * LANE_HEIGHT - 2 + offset, bg, light == 0 ? 4 : (light == 1 ? 3 : 6));
+		int ch = light == 0 ? 4 : (light == 1 ? 3 : 6);
+		graphic->setBuffer(graphic->line(L"- ", screenWidth), 0, lane * LANE_HEIGHT - 2 + offset, bg, ch); // Light line
+		graphic->setBuffer(graphic->getBuffer("player"), 2, lane * LANE_HEIGHT - 2 + offset, bg, ch);
 	}
 
 	bool checkCollision(BOUNDINGBOX player)

@@ -89,7 +89,7 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 		}
 	},
 	{
-		"enemy1", // red
+		"enemy1", // blue
 		vector<wstring>{
 		L". '.  .' .",
 		L"l.l'll'l.'",
@@ -107,7 +107,7 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 		}
 	},
 	{
-		"enemy3", // blue
+		"enemy3", // green
 		vector<wstring>{
 		L"  '..'  ",
 		L"l.'ll'.l",
@@ -116,9 +116,9 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 		}
 	},
 	{
-		"enemy4", // green
+		"enemy4", // red
 		vector<wstring>{
-		L" .'...'. ",
+		L" .l...l. ",
 		L"ll..l..ll",
 		L"l'l'l'l'l",
 		L" ' ' ' ' "
@@ -127,7 +127,7 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 	{
 		"enemy5", // purple
 		vector<wstring>{
-		L"	.l..l.",
+		L"  .l..l.",
 		L".ll'll'll.",
 		L"l llllll l",
 		L"  .l  l."
