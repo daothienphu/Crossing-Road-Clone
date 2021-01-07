@@ -124,6 +124,26 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 		L" ' ' ' ' "
 		}
 	},
+	
+	// select mode screen
+	{
+		"chooseTitle",
+		vector<wstring>{
+		L"▌│█║▌║▌║ CHOOSE MODE ║▌║▌║█│▌"
+		}
+	},
+	{
+		"levelMode",
+		vector<wstring>{
+		L"  LEVEL  MODE  "
+		}
+	},
+	{
+		"infinityMode",
+		vector<wstring>{
+		L" INFINITY MODE "
+		}
+	},
 
 	//score & level
 	{

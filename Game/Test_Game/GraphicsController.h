@@ -182,6 +182,12 @@ public:
 			buffer[i] = L' ';
 		}
 	}
+	void clearBuffer(int bg, int ch) {
+		for (int i = 0; i < screenWidth * screenHeight; ++i) {
+			color[i] = bg * 16 + ch;
+			buffer[i] = L' ';
+		}
+	}
 	void render() {
 		WriteConsoleOutputAttribute(hConsole, color, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
 		WriteConsoleOutputCharacter(hConsole, buffer, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
@@ -269,7 +275,8 @@ public:
 		setBuffer(bar, x, y, black, white);
 		// Draw progress
 		for (int i = 0; i < elapsed * 100 / duration; i++) {
-			setBuffer(L"█", x + i, y, blueDark, white);
+			if (i < 100)
+				setBuffer(L"█", x + i, y, blueDark, white);
 		}
 		// Draw time
 		setBuffer(time_to_wstring(elapsed), x - 6, y, black, white);
