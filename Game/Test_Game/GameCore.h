@@ -148,7 +148,7 @@ public:
 					while (level) {
 						if (play == 1)
 							level = playLevelScreen(level);
-						else playScreen(level);
+						else level = playScreen(level);
 					}
 					if (soundOn)
 						mciSendString(L"resume song_intro.wav", NULL, 0, NULL);
@@ -284,8 +284,10 @@ public:
 			graphic->render();
 		}
 	}
+	void stageClearScreen() {}
 	int playLevelScreen(int Level)
 	{
+		if (Level == 6) return -1;
 		switch (Level) {
 		case 1:
 			mciSendString(song_game_1, NULL, 0, NULL);
@@ -385,11 +387,7 @@ public:
 			// Stars
 			graphic->randomStars();
 
-			// Time
-			auto endTime = chrono::system_clock::now();
-			chrono::duration<double> elapsed_seconds = endTime - startTime;
-			int elapsed = elapsed_seconds.count();
-			graphic->progressBar(elapsed, songDuration[Level - 1], 20, 1);
+
 
 			//Score and Level
 			toVwstring(player->getBoundingBox().y / LANE_HEIGHT - 1, scoreCounter);
@@ -431,7 +429,11 @@ public:
 
 			player->render(graphic, offset);
 
-			graphic->createFrame(0, 0, 145, 40);
+			// Time bar
+			auto endTime = chrono::system_clock::now();
+			chrono::duration<double> elapsed_seconds = endTime - startTime;
+			int elapsed = elapsed_seconds.count();
+			graphic->progressBar(elapsed, songDuration[Level - 1], 20, screenHeight - 3);
 
 			graphic->render();
 		}
