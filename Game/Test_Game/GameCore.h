@@ -148,7 +148,7 @@ public:
 						int level = 1;
 						while (level) {
 							if (play == 1)
-								level = playLevelScreen(level);
+								level = playLevelScreen(level); //aaaaaaaaaaaaaaaaaaaaaaaaa
 							else level = playScreen(level);
 						}
 						if (soundOn)
@@ -294,31 +294,40 @@ public:
 
 		// Music option
 		switch (Level) {
-		case 1:
+		case 1: {
 			mciSendString(song_game_1, NULL, 0, NULL);
 			if (!soundOn)
 				mciSendString(L"pause song_game_1.wav", NULL, 0, NULL);
 			break;
-		case 2:
+		}
+		case 2: {
+			mciSendString(L"pause song_game_1.wav", NULL, 0, NULL);
 			mciSendString(song_game_2, NULL, 0, NULL);
 			if (!soundOn)
 				mciSendString(L"pause song_game_2.wav", NULL, 0, NULL);
 			break;
-		case 3:
+		}
+		case 3: {
+			mciSendString(L"pause song_game_2.wav", NULL, 0, NULL);
 			mciSendString(song_game_3, NULL, 0, NULL);
 			if (!soundOn)
 				mciSendString(L"pause song_game_3.wav", NULL, 0, NULL);
 			break;
-		case 4:
+		}
+		case 4: {
+			mciSendString(L"pause song_game_3.wav", NULL, 0, NULL);
 			mciSendString(song_game_4, NULL, 0, NULL);
 			if (!soundOn)
 				mciSendString(L"pause song_game_4.wav", NULL, 0, NULL);
 			break;
-		case 5:
+		}
+		case 5: {
+			mciSendString(L"pause song_game_4.wav", NULL, 0, NULL);
 			mciSendString(song_game_5, NULL, 0, NULL);
 			if (!soundOn)
 				mciSendString(L"pause song_game_5.wav", NULL, 0, NULL);
 			break;
+		}
 		default: break;
 		}
 
@@ -327,17 +336,12 @@ public:
 		graphic->clearBuffer(bg, ch);
 		player->setPos(71, 2);
 
+		// random monster colors = false;
 		vector<GameLane*> lanes;
-
-		// random monster colors
 		bool order = true;
-		if (Level == 1)
-		{
-			levelController = new Level_1;
-			levelController->getMap(lanes, graphic, order, bg, Level);
-		}
-		
-
+		levelController = new Level_0;
+		levelController->getMap(lanes, graphic, order, bg, Level);
+	
 		GameMenu* score = new Button("score");
 		GameMenu* level = new Button("level");
 		vector<wstring> scoreCounter, levelCounter;
@@ -354,11 +358,9 @@ public:
 		int offset = 0;
 		int nLane = 7;
 
-
-
 		while (1)
 		{
-			delay(1000 / (FRAMERATE - 20));
+			delay(1000 / (FRAMERATE));
 
 			graphic->clearBuffer(bg, ch);
 			graphic->clearStars(bg, white);
@@ -372,8 +374,43 @@ public:
 			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE)) { // Enter
 				if (!pauseScreen())
 					return Level;
-				if (soundOn)
-					PlaySound(TEXT("GameSong2.wav"), NULL, SND_FILENAME | SND_ASYNC);
+				switch (Level) {
+				case 1: {
+					mciSendString(song_game_1, NULL, 0, NULL);
+					if (!soundOn)
+						mciSendString(L"pause song_game_1.wav", NULL, 0, NULL);
+					break;
+				}
+				case 2: {
+					mciSendString(L"pause song_game_1.wav", NULL, 0, NULL);
+					mciSendString(song_game_2, NULL, 0, NULL);
+					if (!soundOn)
+						mciSendString(L"pause song_game_2.wav", NULL, 0, NULL);
+					break;
+				}
+				case 3: {
+					mciSendString(L"pause song_game_2.wav", NULL, 0, NULL);
+					mciSendString(song_game_3, NULL, 0, NULL);
+					if (!soundOn)
+						mciSendString(L"pause song_game_3.wav", NULL, 0, NULL);
+					break;
+				}
+				case 4: {
+					mciSendString(L"pause song_game_3.wav", NULL, 0, NULL);
+					mciSendString(song_game_4, NULL, 0, NULL);
+					if (!soundOn)
+						mciSendString(L"pause song_game_4.wav", NULL, 0, NULL);
+					break;
+				}
+				case 5: {
+					mciSendString(L"pause song_game_4.wav", NULL, 0, NULL);
+					mciSendString(song_game_5, NULL, 0, NULL);
+					if (!soundOn)
+						mciSendString(L"pause song_game_5.wav", NULL, 0, NULL);
+					break;
+				}
+				default: break;
+				}
 			}
 			if (bKeyGame[0] == 1 && player->getPos().y > 1) { // W - Move up
 				if (player->getPos().y + offset <= 5 && player->getPos().y > 5)
@@ -383,12 +420,12 @@ public:
 			if (bKeyGame[1] == 1 && player->getPos().x > 1) { // A - Move left
 				player->move(-1, 0);
 			}
-			if (bKeyGame[2] == 1 && player->getPos().y < LANE_HEIGHT * nLane) { // S - Move down
+			if (bKeyGame[2] == 1 && player->getPos().y < LANE_HEIGHT * nLane) {
 				if (player->getPos().y + offset >= screenHeight - 30 && player->getPos().y + 5 <= 18 + nLane * LANE_HEIGHT)
 					offset--;
 
 				if (player->getPos().y > (nLane - 3) * LANE_HEIGHT) {
-					nLane += levelController->addLanes(lanes, graphic, nLane + 1, order, bg);
+					nLane += levelController->addLanes(lanes, graphic, nLane, order, bg, Level);
 				}
 				player->move(0, 1);
 			}
@@ -454,7 +491,7 @@ public:
 
 
 			// Check score
-			if (Score >= 20 + Level * 5 && elapsed > songDuration[Level - 1]) {
+			if (Score >= 20 + Level * 5 ) {
 				playLevelScreen(Level + 1);
 				
 			}
@@ -526,6 +563,119 @@ public:
 				player->move(-1, 0);
 			}
 			if (bKeyGame[2] == 1 && player->getPos().y < LANE_HEIGHT*nLane) {
+				if (player->getPos().y + offset >= screenHeight - 30 && player->getPos().y + 5 <= 18 + nLane * LANE_HEIGHT)
+					offset--;
+
+				if (player->getPos().y > (nLane - 3) * LANE_HEIGHT) {
+					nLane += levelController->addLanes(lanes, graphic, nLane + 1);
+				}
+				player->move(0, 1);
+			}
+			if (bKeyGame[3] == 1 && player->getPos().x < screenWidth - 1 - graphic->getBuffer(player->getBufferKey())[0].length()) {
+				player->move(1, 0);
+			}
+
+			// Stars
+			graphic->randomStars();
+
+			// Time
+			auto endTime = chrono::system_clock::now();
+			chrono::duration<double> elapsed_seconds = endTime - startTime;
+			int elapsed = elapsed_seconds.count();
+			//graphic->progressBar(elapsed, songDuration[Level-1], 20, 1);
+
+			//Score and Level
+			toVwstring(player->getBoundingBox().y / LANE_HEIGHT - 1, scoreCounter);
+			toVwstring(1, levelCounter);
+
+			graphic->setBuffer(graphic->getBuffer(score->getBufferKey()), 2, 1, BG, 7);
+			graphic->setBuffer(scoreCounter, 9, 1, BG, 7);
+			graphic->setBuffer(graphic->getBuffer(level->getBufferKey()), 2, 2, BG, 7);
+			graphic->setBuffer(levelCounter, 9, 2, BG, 7);
+
+
+			for (auto l : lanes) l->logic();
+			for (auto l : lanes) l->render(graphic, offset);
+			if (this->checkCollision(lanes)) {
+				mciSendString(L"stop song_game_1.wav", NULL, 0, NULL);
+				mciSendString(L"play crash.wav", NULL, 0, NULL);
+				graphic->glitch();
+
+				delay(400);
+				gameoverScreen();
+				graphic->clearBuffer();
+				return 0;
+			}
+
+			player->render(graphic, offset);
+
+			//graphic->createFrame(0, 0, 145, 40);
+
+			graphic->render();
+		}
+
+	}
+	int playScreen1(int Level)
+	{
+		mciSendString(song_game_1, NULL, 0, NULL);
+		if (!soundOn)
+			mciSendString(L"pause song_game_1.wav", NULL, 0, NULL);
+		//theses lines are for the case when user turn off the sound -> game over -> start a new one -> turn on sound
+		//or turn off sound -> play game -> turn on sound
+		graphic->clearBuffer();
+		player->setPos(72, 2);
+		//player->clearOldPos(graphic);
+		//GameLane* lane1 = new GameLane(1, 1, 1, graphic);
+		//GameLane* lane2 = new GameLane(2, 2, 1, graphic);
+		//GameLane* lane3 = new GameLane(3, 3, 1, graphic);
+		
+		//scroll
+		vector<GameLane*> lanes;
+		int offset = 0;
+		int nLane = 7;
+		if (Level == 1)
+		{
+			levelController = new Level_1;
+			levelController->getMap(lanes, graphic);
+		}
+
+		GameMenu* score = new Button("score");
+		GameMenu* level = new Button("level");
+		//GameMenu* laneIndex = new Button("score");
+		vector<wstring> scoreCounter, levelCounter;
+
+		bool* bKeyGame = new bool[key.size()]{ 0 };
+
+
+
+		while (1)
+		{
+			delay(1000 / (FRAMERATE - 20));
+
+			graphic->clearBuffer();
+			graphic->clearStars();
+			player->render(graphic, offset);
+			player->update();
+
+			//Controls
+			for (int i = 0; i < key.size(); i++) { 	// Read input
+				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
+			}
+			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE)) {
+				if (!pauseScreen())
+					return Level;
+				if (soundOn)
+					PlaySound(TEXT("GameSong2.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			}
+			if (bKeyGame[0] == 1 && player->getPos().y > 1) {
+				if (player->getPos().y + offset <= 5 && player->getPos().y > 5)
+					offset++;
+				player->move(0, -1);
+			}
+			if (bKeyGame[1] == 1 && player->getPos().x > 1) {
+				player->move(-1, 0);
+			}
+			if (bKeyGame[2] == 1 && player->getPos().y < LANE_HEIGHT * nLane) {
 				if (player->getPos().y + offset >= screenHeight - 30 && player->getPos().y + 5 <= 18 + nLane * LANE_HEIGHT)
 					offset--;
 

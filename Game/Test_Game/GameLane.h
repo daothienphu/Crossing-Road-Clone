@@ -127,11 +127,11 @@ public:
 			// Yeahh boi
 			int cur = 0;
 			while (1) {
-				int eNum = random(1, 8); //Enemy number
+				int eNum = random(1, 4 + level - 1); //Enemy number
 				string chosen = "enemy" + to_string(eNum);
 				int c;
 				switch (eNum) {
-				case 1: c = 3; break; //red
+				case 1: c = 6; break; //red
 				case 2: c = yellow; break;
 				case 3: c = blueLight; break;
 				case 4: c = 4; break; //green
@@ -153,11 +153,11 @@ public:
 			int sum = 0;
 			for (int i = 0; i < n; i++)
 			{
-				int eNum = random(1, 8); //Enemy number
+				int eNum = random(1, 4 + level - 1); //Enemy number
 				string chosen = "enemy" + to_string(eNum);
 				int c;
 				switch (eNum) {
-				case 1: c = 3; break; //red
+				case 1: c = 6; break; //red
 				case 2: c = yellow; break;
 				case 3: c = blueLight; break;
 				case 4: c = 4; break; //green

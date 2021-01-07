@@ -7,7 +7,7 @@ using namespace std::chrono;
 #define screenHeight 41
 #define LANE_HEIGHT 7
 #define LEAST_SPACE 10
-#define NUM_ENEMY 4
+#define NUM_ENEMY 8
 #define MAX_ENEMY_WIDTH 10
 #define BG black
 #define YELLOW_LIGHT_SECS 1
