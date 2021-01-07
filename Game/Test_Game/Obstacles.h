@@ -44,7 +44,14 @@ public:
 		//clearOldPos(graphic);
 		graphic->setBuffer(graphic->getBuffer(bufferKey), this->x, this->y + offset, bgColor, fgColor);
 	}
-
+	void render(GraphicsController*& graphic, int offset, int bg) {
+		//clearOldPos(graphic);
+		graphic->setBuffer(graphic->getBuffer(bufferKey), this->x, this->y + offset, bg, fgColor);
+	}
+	void render(GraphicsController*& graphic, int offset, int bg, int ch) {
+		//clearOldPos(graphic);
+		graphic->setBuffer(graphic->getBuffer(bufferKey), this->x, this->y + offset, bg, ch);
+	}
 	void clearOldPos(GraphicsController*& graphic) {
 		GameObject::clearOldPos(graphic, bgColor, fgColor);
 	}

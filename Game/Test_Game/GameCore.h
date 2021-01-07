@@ -142,16 +142,18 @@ public:
 					mciSendString(enter, NULL, 0, NULL);
 				if (choice == 0) {
 					int play = selectModeScreen();
-					mciSendString(L"pause song_intro.wav", NULL, 0, NULL);
-					loadingScreen();
-					int level = 1;
-					while (level) {
-						if (play == 1)
-							level = playLevelScreen(level);
-						else level = playScreen(level);
+					if (play) {
+						mciSendString(L"pause song_intro.wav", NULL, 0, NULL);
+						loadingScreen();
+						int level = 1;
+						while (level) {
+							if (play == 1)
+								level = playLevelScreen(level);
+							else level = playScreen(level);
+						}
+						if (soundOn)
+							mciSendString(L"resume song_intro.wav", NULL, 0, NULL);
 					}
-					if (soundOn)
-						mciSendString(L"resume song_intro.wav", NULL, 0, NULL);
 				}
 				else if (choice == 1) {
 					mciSendString(L"pause song_intro.wav", NULL, 0, NULL);
@@ -221,7 +223,7 @@ public:
 
 		int top = 15;
 		int left = 58;
-		graphic->openFrame(left, top, 30, 9);
+		graphic->openFrame(left, top, 31, 9);
 		GameMenu* settingsTitle = new Button("settingsTitle");
 		GameMenu* chooseTitle = new Button("chooseTitle");
 		graphic->setBufferWhite(graphic->getBuffer(chooseTitle ->getBufferKey()), left + 1, top + 2, 0, 7);
@@ -253,7 +255,7 @@ public:
 					return 2;
 				}
 				else {
-					return -1;
+					return 0;
 				}
 			}
 			else if (bKeyGame[0] == 1) { // W - Move up
@@ -287,7 +289,10 @@ public:
 	void stageClearScreen() {}
 	int playLevelScreen(int Level)
 	{
-		if (Level == 6) return -1;
+		// Stage clear
+		if (Level == 6) return 0;
+
+		// Music option
 		switch (Level) {
 		case 1:
 			mciSendString(song_game_1, NULL, 0, NULL);
@@ -317,16 +322,21 @@ public:
 		default: break;
 		}
 
-		graphic->clearBuffer(blueDark, white);
-		player->setPos(72, 4);
+		// Background color
+		int bg = blueDark, ch = white;
+		graphic->clearBuffer(bg, ch);
+		player->setPos(71, 2);
 
 		vector<GameLane*> lanes;
 
+		// random monster colors
+		bool order = true;
 		if (Level == 1)
 		{
 			levelController = new Level_1;
-			levelController->getMap(lanes, graphic);
+			levelController->getMap(lanes, graphic, order, bg, Level);
 		}
+		
 
 		GameMenu* score = new Button("score");
 		GameMenu* level = new Button("level");
@@ -337,19 +347,21 @@ public:
 		// Time
 		startTime = chrono::system_clock::now();
 
+		// Score
+		int Score = 0;
+
 		//scroll
 		int offset = 0;
 		int nLane = 7;
 
-		// Background color
-		int bg = blueDark, ch = white;
+
 
 		while (1)
 		{
 			delay(1000 / (FRAMERATE - 20));
 
 			graphic->clearBuffer(bg, ch);
-			graphic->clearStars();
+			graphic->clearStars(bg, white);
 			player->render(graphic, offset);
 			player->update();
 
@@ -376,7 +388,7 @@ public:
 					offset--;
 
 				if (player->getPos().y > (nLane - 3) * LANE_HEIGHT) {
-					nLane += levelController->addLanes(lanes, graphic, nLane + 1);
+					nLane += levelController->addLanes(lanes, graphic, nLane + 1, order, bg);
 				}
 				player->move(0, 1);
 			}
@@ -385,25 +397,26 @@ public:
 			}
 
 			// Stars
-			graphic->randomStars();
-
+			graphic->randomStars(bg, ch);
 
 
 			//Score and Level
-			toVwstring(player->getBoundingBox().y / LANE_HEIGHT - 1, scoreCounter);
+			Score = player->getBoundingBox().y / LANE_HEIGHT - 1;
+			toVwstring(Score, scoreCounter);
 			toVwstring(Level, levelCounter);
 
-			graphic->setBuffer(graphic->getBuffer(score->getBufferKey()), 2, 1, BG, 7);
-			graphic->setBuffer(scoreCounter, 9, 1, BG, 7);
-			graphic->setBuffer(graphic->getBuffer(level->getBufferKey()), 2, 2, BG, 7);
-			graphic->setBuffer(levelCounter, 9, 2, BG, 7);
+			graphic->setBuffer(graphic->getBuffer(score->getBufferKey()), 2, 1, bg, ch);
+			graphic->setBuffer(scoreCounter, 9, 1, bg, ch);
+			graphic->setBuffer(graphic->getBuffer(level->getBufferKey()), 2, 2, bg, ch);
+			graphic->setBuffer(levelCounter, 9, 2, bg, ch);
 
-			//
-
+			
+			// Lane check
 			for (auto l : lanes) l->logic();
-			for (auto l : lanes) l->render(graphic, offset);
+			for (auto l : lanes) l->render(graphic, offset, bg);
+
+			// Check collision
 			if (this->checkCollision(lanes)) {
-				graphic->glitch();
 				switch (Level) {
 				case 1:
 					mciSendString(L"stop song_game_1.wav", NULL, 0, NULL);
@@ -422,6 +435,9 @@ public:
 					break;
 				default: break;
 				}
+				mciSendString(L"play crash.wav", NULL, 0, NULL);
+				graphic->glitch();
+				delay(400);
 				gameoverScreen();
 				graphic->clearBuffer();
 				return 0;
@@ -429,12 +445,23 @@ public:
 
 			player->render(graphic, offset);
 
+
 			// Time bar
 			auto endTime = chrono::system_clock::now();
 			chrono::duration<double> elapsed_seconds = endTime - startTime;
 			int elapsed = elapsed_seconds.count();
 			graphic->progressBar(elapsed, songDuration[Level - 1], 20, screenHeight - 3);
 
+
+			// Check score
+			if (Score >= 20 + Level * 5 && elapsed > songDuration[Level - 1]) {
+				playLevelScreen(Level + 1);
+				
+			}
+			else if (Score < 20 + Level * 5 && elapsed > songDuration[Level - 1]) {
+				gameoverScreen();
+				return 0;
+			}
 			graphic->render();
 		}
 

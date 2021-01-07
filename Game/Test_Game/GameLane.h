@@ -87,6 +87,109 @@ public:
 		else
 			curTime = random(0, red - 1);
 	}
+	// For level mode
+	GameLane(int lane, int level, int dir, int green, int red, bool order, int bg, GraphicsController*& graphic) :
+		lane(lane),
+		dir(dir),
+		green(green* FRAMERATE),
+		red(red* FRAMERATE)
+	{
+		// level 1: [2, 3] mobs	speed = 3
+		// level 2: [3, 5] mobs	speed = 2
+		// level 3: MAX mobs	speed = 1
+		int n;
+		switch (level) {
+		case 0: {
+			velocity = 0;
+			n = 0;
+			break;
+		}
+		case 1: {
+			velocity = 3;
+			n = random(2, 3);
+			break;
+		}
+		case 2: {
+			velocity = 2;
+			n = random(3, 5);
+			break;
+		}
+		case 3: {
+			velocity = 1;
+			n = -1;
+			break;
+		}
+		}
+		if (level == 0)
+			return;
+		// Generate random enemies
+		if (n == -1) {
+			// Yeahh boi
+			int cur = 0;
+			while (1) {
+				int eNum = random(1, 8); //Enemy number
+				string chosen = "enemy" + to_string(eNum);
+				int c;
+				switch (eNum) {
+				case 1: c = 3; break; //red
+				case 2: c = yellow; break;
+				case 3: c = blueLight; break;
+				case 4: c = 4; break; //green
+				case 5: c = purple; break;
+				case 6: c = orange; break;
+				case 7: c = brown; break;
+				case 8: c = pink; break;
+				}
+				if (cur + LEAST_SPACE < screenWidth)
+				{
+					obs.push_back(new Obstacles(cur, lane * LANE_HEIGHT, velocity, bg, c, chosen, graphic));
+					cur += graphic->getBuffer(chosen)[0].size() + LEAST_SPACE;
+				}
+				else
+					break;
+			}
+		}
+		else {
+			int sum = 0;
+			for (int i = 0; i < n; i++)
+			{
+				int eNum = random(1, 8); //Enemy number
+				string chosen = "enemy" + to_string(eNum);
+				int c;
+				switch (eNum) {
+				case 1: c = 3; break; //red
+				case 2: c = yellow; break;
+				case 3: c = blueLight; break;
+				case 4: c = 4; break; //green
+				case 5: c = purple; break;
+				case 6: c = orange; break;
+				case 7: c = brown; break;
+				case 8: c = pink; break;
+				}
+				Obstacles* bleble = new Obstacles(0, lane * LANE_HEIGHT, velocity, bg, c, chosen, graphic);
+				obs.push_back(bleble);
+				sum += graphic->getBuffer(chosen)[0].size();
+			}
+
+			// Justify space
+
+			sum = screenWidth - sum;
+			sum /= obs.size();
+			int cur = 0;
+			for (int i = 0; i < n; i++)
+			{
+				obs[i]->setPos(cur, lane * LANE_HEIGHT);
+				cur += obs[i]->getBoundingBox().w + sum;
+			}
+		}
+		light = random(0, 2);
+		if (light == 0)
+			curTime = random(0, green - 1);
+		else if (light == 1)
+			curTime = random(0, YELLOW_LIGHT_SECS * FRAMERATE - 1);
+		else
+			curTime = random(0, red - 1);
+	}
 
 	coord getPos() {
 		return { 0, lane * LANE_HEIGHT };
@@ -138,6 +241,19 @@ public:
 
 		// Render lights
 		graphic->setBuffer(graphic->getBuffer("player"), 2, lane * LANE_HEIGHT - 2 + offset, BG, light == 0 ? 4 : (light == 1 ? 3 : 6));
+	}
+	// For level mode
+	void render(GraphicsController*& graphic, int offset, int bg) {
+		// Render lane itself
+		if (obs.size() == 0)
+			return;
+		// Render obstacles
+		for (auto o : obs) {
+			o->render(graphic, offset, bg);
+		}
+
+		// Render lights
+		graphic->setBuffer(graphic->getBuffer("player"), 2, lane * LANE_HEIGHT - 2 + offset, bg, light == 0 ? 4 : (light == 1 ? 3 : 6));
 	}
 
 	bool checkCollision(BOUNDINGBOX player)
