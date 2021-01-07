@@ -212,6 +212,141 @@ public:
 			graphic->render();
 		}
 	}
+	int playLevelScreen(int Level)
+	{
+		switch (Level) {
+		case 1:
+			mciSendString(song_game_1, NULL, 0, NULL);
+			if (!soundOn)
+				mciSendString(L"pause song_game_1.wav", NULL, 0, NULL);
+			break;
+		case 2:
+			mciSendString(song_game_2, NULL, 0, NULL);
+			if (!soundOn)
+				mciSendString(L"pause song_game_2.wav", NULL, 0, NULL);
+			break;
+		case 3:
+			mciSendString(song_game_3, NULL, 0, NULL);
+			if (!soundOn)
+				mciSendString(L"pause song_game_3.wav", NULL, 0, NULL);
+			break;
+		case 4:
+			mciSendString(song_game_4, NULL, 0, NULL);
+			if (!soundOn)
+				mciSendString(L"pause song_game_4.wav", NULL, 0, NULL);
+			break;
+		case 5:
+			mciSendString(song_game_5, NULL, 0, NULL);
+			if (!soundOn)
+				mciSendString(L"pause song_game_5.wav", NULL, 0, NULL);
+			break;
+		default: break;
+		}
+
+		graphic->clearBuffer(blueDark, white);
+		player->setPos(72, 4);
+
+		vector<GameLane*> lanes;
+
+		if (Level == 1)
+		{
+			levelController = new Level_1;
+			levelController->getMap(lanes, graphic);
+		}
+
+		GameMenu* score = new Button("score");
+		GameMenu* level = new Button("level");
+		vector<wstring> scoreCounter, levelCounter;
+
+		bool* bKeyGame = new bool[key.size()]{ 0 };
+
+		// Time
+		startTime = chrono::system_clock::now();
+
+		//scroll
+		int offset = 0;
+		int nLane = 7;
+
+		// Background color
+		int bg = blueDark, ch = white;
+
+		while (1)
+		{
+			delay(1000 / (FRAMERATE - 20));
+
+			graphic->clearBuffer(bg, ch);
+			graphic->clearStars();
+			player->render(graphic, offset);
+			player->update();
+
+			//Controls
+			for (int i = 0; i < key.size(); i++) { 	// Read input
+				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
+			}
+			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE)) { // Enter
+				if (!pauseScreen())
+					return Level;
+				if (soundOn)
+					PlaySound(TEXT("GameSong2.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			}
+			if (bKeyGame[0] == 1 && player->getPos().y > 1) { // W - Move up
+				if (player->getPos().y + offset <= 5 && player->getPos().y > 5)
+					offset++;
+				player->move(0, -1);
+			}
+			if (bKeyGame[1] == 1 && player->getPos().x > 1) { // A - Move left
+				player->move(-1, 0);
+			}
+			if (bKeyGame[2] == 1 && player->getPos().y < LANE_HEIGHT * nLane) { // S - Move down
+				if (player->getPos().y + offset >= screenHeight - 30 && player->getPos().y + 5 <= 18 + nLane * LANE_HEIGHT)
+					offset--;
+
+				if (player->getPos().y > (nLane - 3) * LANE_HEIGHT) {
+					nLane += levelController->addLanes(lanes, graphic, nLane + 1);
+				}
+				player->move(0, 1);
+			}
+			if (bKeyGame[3] == 1 && player->getPos().x < screenWidth - 1 - graphic->getBuffer(player->getBufferKey())[0].length()) { // D - Move right
+				player->move(1, 0);
+			}
+
+			// Stars
+			graphic->randomStars();
+
+			// Time
+			auto endTime = chrono::system_clock::now();
+			chrono::duration<double> elapsed_seconds = endTime - startTime;
+			int elapsed = elapsed_seconds.count();
+			graphic->progressBar(elapsed, songDuration[Level - 1], 20, 1);
+
+			//Score and Level
+			toVwstring(player->getBoundingBox().y / LANE_HEIGHT - 1, scoreCounter);
+			toVwstring(1, levelCounter);
+
+			graphic->setBuffer(graphic->getBuffer(score->getBufferKey()), 2, 1, BG, 7);
+			graphic->setBuffer(scoreCounter, 9, 1, BG, 7);
+			graphic->setBuffer(graphic->getBuffer(level->getBufferKey()), 2, 2, BG, 7);
+			graphic->setBuffer(levelCounter, 9, 2, BG, 7);
+
+
+			for (auto l : lanes) l->logic();
+			for (auto l : lanes) l->render(graphic, offset);
+			if (this->checkCollision(lanes)) {
+				graphic->glitch();
+				mciSendString(L"stop song_game_1.wav", NULL, 0, NULL);
+				gameoverScreen();
+				graphic->clearBuffer();
+				return 0;
+			}
+
+			player->render(graphic, offset);
+
+			graphic->createFrame(0, 0, 145, 40);
+
+			graphic->render();
+		}
+
+	}
 	int playScreen(int Level)
 	{
 		mciSendString(song_game_1, NULL, 0, NULL);
