@@ -1,23 +1,25 @@
-#pragma comment(lib, "winmm.lib")
+//#pragma comment(lib, "winmm.lib")
 #include <iostream>
 #include <windows.h>
 #include <mmsystem.h>
 using namespace std;
 
 int main() {
-    //PlaySound(TEXT("mywavsound.wav"), NULL, SND_FILENAME); - My erroring code
-    int n = 1;
-    LPCWSTR command2{ L"play intro.wav" };
-    LPCWSTR command1{ L"play game_over.wav" };
 
-    //while(cin >> n && n != 0)
-     //bool played = PlaySound(TEXT("game_over.wav"), NULL, SND_ASYNC);// - the correct code
-     //cout << played << endl;
-     //mciSendString(command1, NULL, 0, NULL);
-     mciSendString(command2, NULL, 0, NULL);
-     mciSendString(command1, NULL, 0, NULL);
-
-    int test = 0;
-    cin >> test;
+     mciSendString(L"play song_game_3.wav", NULL, 0, NULL);
+     int n;
+     cin >> n;
+     //mciSendString(L"pause song_game_3.wav", NULL, 0, NULL);
+     mciSendString(L"stop song_game_3.wav", NULL, 0, NULL);
+     mciSendString(L"play game_over.wav", NULL, 0, NULL);
+     cin >> n;
+     mciSendString(L"play song_game_3.wav", NULL, 0, NULL);
+     cin >> n;
     return 0;
+
+    //PlaySound(TEXT("song_game_3.wav"), NULL, SND_FILENAME | SND_ASYNC);
+    //int n;
+    //cin >> n;
+    //mciSendString(L"play game_over.wav", NULL, 0, NULL);
+    //cin >> n;
 }

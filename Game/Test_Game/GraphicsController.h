@@ -207,6 +207,7 @@ public:
 			}
 		}
 	}
+	// Default star
 	void randomStars() {
 		if (randomInterval != 10) {
 			randomInterval++;
@@ -232,6 +233,35 @@ public:
 			if (starBuffer[i] == L'.') {
 				buffer[i] = L'.';
 				color[i] = black * 16 + white;
+			}
+		}
+	}
+	// custom star
+	void randomStars(int bg, int ch) {
+		if (randomInterval != 10) {
+			randomInterval++;
+			copyStarBuffer(bg, ch);
+			return;
+		}
+
+		randomInterval -= 10;
+		for (int i = 0; i < 70; ++i) {
+			int a = rand() % (screenWidth * screenHeight);
+			starBuffer[a] = L'.';
+		}
+		copyStarBuffer(bg, ch);
+	}
+	void clearStars(int bg, int ch) {
+		if (randomInterval == 10)
+			for (int i = 0; i < screenWidth * screenHeight; ++i) {
+				starBuffer[i] = L' ';
+			}
+	}
+	void copyStarBuffer(int bg, int ch) {
+		for (int i = 0; i < screenWidth * screenHeight; ++i) {
+			if (starBuffer[i] == L'.') {
+				buffer[i] = L'.';
+				color[i] = bg * 16 + ch;
 			}
 		}
 	}

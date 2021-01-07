@@ -711,7 +711,7 @@ public:
 			}
 			// Check stage pass
 			if (elapsed >= duration[stage - 1]) {
-				stageClearScreen();
+				//stageClearScreen();
 				startStage(stage + 1);
 			}
 

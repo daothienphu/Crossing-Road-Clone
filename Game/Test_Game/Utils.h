@@ -7,11 +7,11 @@ using namespace std::chrono;
 #define screenHeight 41
 #define LANE_HEIGHT 7
 #define LEAST_SPACE 10
-#define NUM_ENEMY 4
+#define NUM_ENEMY 8
 #define MAX_ENEMY_WIDTH 10
 #define BG black
 #define YELLOW_LIGHT_SECS 1
-enum { blueDark = 0, blueLight, orange, yellow, green, purple, red, whiteDark, white, black };
+enum { blueDark = 0, blueLight, orange, yellow, green, purple, red, whiteDark, white, black, brown, pink };
 
 #pragma region structs 
 struct coord {
@@ -57,9 +57,10 @@ void fixSizedConsoleWindow() {
 	CONSOLE_SCREEN_BUFFER_INFOEX csbiex;
 	csbiex.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
 	GetConsoleScreenBufferInfoEx(hConsoleOutput, &csbiex);
+	// up to 16 colors
 	csbiex.ColorTable[0] = RGB(16, 16, 60); // Default background color - dark blue
 	csbiex.ColorTable[1] = RGB(63, 81, 181); // Light blue
-	csbiex.ColorTable[2] = RGB(255, 87, 34); // Orange
+	csbiex.ColorTable[2] = RGB(252, 186, 3); // Orange
 	csbiex.ColorTable[3] = RGB(255, 235, 59); // Yellow
 	csbiex.ColorTable[4] = RGB(76, 175, 80); // Green
 	csbiex.ColorTable[5] = RGB(156, 39, 176); // Purple
@@ -67,6 +68,8 @@ void fixSizedConsoleWindow() {
 	csbiex.ColorTable[7] = RGB(242, 242, 242); // Dark white
 	csbiex.ColorTable[8] = RGB(248, 248, 248); // White
 	csbiex.ColorTable[9] = RGB(20, 20, 20); // Black
+	csbiex.ColorTable[10] = RGB(156, 139, 93); // Brown
+	csbiex.ColorTable[11] = RGB(255, 110, 185); // Pink
 	SetConsoleScreenBufferInfoEx(hConsoleOutput, &csbiex);
 
 	//RECT windowRes;

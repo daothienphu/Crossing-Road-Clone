@@ -89,7 +89,7 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 		}
 	},
 	{
-		"enemy1",
+		"enemy1", // blue
 		vector<wstring>{
 		L". '.  .' .",
 		L"l.l'll'l.'",
@@ -98,7 +98,7 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 		}
 	},
 	{
-		"enemy2",
+		"enemy2", // yellow
 		vector<wstring>{
 		L" '...' ",
 		L" l'l'l ",
@@ -107,7 +107,7 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 		}
 	},
 	{
-		"enemy3",
+		"enemy3", // green
 		vector<wstring>{
 		L"  '..'  ",
 		L"l.'ll'.l",
@@ -116,15 +116,50 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 		}
 	},
 	{
-		"enemy4",
+		"enemy4", // red
 		vector<wstring>{
-		L" .'...'. ",
+		L" .l...l. ",
 		L"ll..l..ll",
 		L"l'l'l'l'l",
 		L" ' ' ' ' "
 		}
 	},
-	
+	{
+		"enemy5", // purple
+		vector<wstring>{
+		L"  .l..l.",
+		L".ll'll'll.",
+		L"l llllll l",
+		L"  .l  l."
+		} 
+	},
+	{
+		"enemy6", // orange
+		vector<wstring>{
+		L". '...' .",
+		L"l.l'l'l.l",
+		L" 'l'''l'",
+		L" '     '"
+		}
+	},
+	{
+		"enemy7", // brown
+		vector<wstring>{
+		L" ..lll.. ",
+		L"l''lll''l",
+		L"''l'''l''",
+		L".' ''' '."
+		}
+	},
+	{
+		"enemy8", // pink
+		vector<wstring>{
+		L"  '..'",
+		L"l.'ll'.l",
+		L"l'llll'l",
+		L"l. '' .l"
+		}
+	},
 	// select mode screen
 	{
 		"chooseTitle",
@@ -295,6 +330,10 @@ extern vector <string> CHAR_TO_BLOCK = {
 	"enemy2",
 	"enemy3",
 	"enemy4",
+	"enemy5",
+	"enemy6",
+	"enemy7",
+	"enemy8",
 	"title",
 	// "Some string here"
 };
@@ -306,4 +345,5 @@ extern vector <string> CLEAR_BUFFER = {
 	"enemy2",
 	"enemy3",
 	"enemy4",
+
 };
