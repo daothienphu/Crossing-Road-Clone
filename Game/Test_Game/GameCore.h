@@ -411,7 +411,7 @@ public:
 			if (bKeyGame[4] == 1 || GetAsyncKeyState(VK_ESCAPE)) {
 				if (soundOn)
 					mciSendString(enter, NULL, 0, NULL);
-				if (!pauseScreen(player->getBoundingBox().y / LANE_HEIGHT + baseScore), 0, level)
+				if (!pauseScreen(player->getBoundingBox().y / LANE_HEIGHT + baseScore, 0, Level))
 					return Level;
 				if (soundOn)
 					switch (Level) {
