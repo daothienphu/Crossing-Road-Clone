@@ -170,7 +170,7 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 	{
 		"levelMode",
 		vector<wstring>{
-		L"  LEVEL  MODE  "
+		L"  TIMED  MODE  "
 		}
 	},
 	{
@@ -223,6 +223,19 @@ extern unordered_map<string, vector<wstring>> BUFFER_MAP = {
 		"back",
 		vector<wstring>{
 		L"   BACK   "
+		}
+	},
+	// Clear level screen
+	{
+		"clearLevelTitle",
+		vector<wstring>{
+		L"▌│█║▌║▌║ LEVEL PASSED ! ║▌║▌║█│▌" //9 each side incl spaces
+		}
+	},
+	{
+		"continueButton",
+		vector<wstring>{
+		L"  CONTINUE  "
 		}
 	},
 
