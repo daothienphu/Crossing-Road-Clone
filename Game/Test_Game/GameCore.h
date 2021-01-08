@@ -508,6 +508,7 @@ public:
 				delay(400);
 				gameoverScreen();
 				graphic->clearBuffer();
+				for (auto l : lanes) delete l;
 				return 0;
 			}
 

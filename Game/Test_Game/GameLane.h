@@ -193,6 +193,11 @@ public:
 			curTime = random(0, red - 1);
 	}
 
+	~GameLane() {
+		for (auto o : obs)
+			delete o;
+	}
+
 	void setPassed(bool s) { passed = s; }
 	void setNewPassed(bool s) { newPass = s; }
 	bool Passed() { return passed; }
