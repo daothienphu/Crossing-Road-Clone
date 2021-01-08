@@ -783,7 +783,7 @@ public:
 					ofstream saveFile{ tmp };
 					saveFile << score;
 					saveFile << (mode ? " inf " : " lvl ");
-					if (mode)
+					if (!mode)
 						saveFile << level;
 					saveFile.close();
 					return;
