@@ -415,11 +415,33 @@ public:
 			graphic->setBuffer(graphic->getBuffer(level->getBufferKey()), 2, 2, bg, ch);
 			graphic->setBuffer(levelCounter, 9, 2, bg, ch);
 
-
-			for (auto l : lanes) l->logic();
+			// Lanes
+			for (auto l : lanes) l->logic(); // Lights
 			for (auto l : lanes) l->render(graphic, offset, bg);
 			if (this->checkCollision(lanes)) {
-				mciSendString(L"stop song_game_1.wav", NULL, 0, NULL);
+				switch (Level) {
+				case 1: {
+					mciSendString(L"pause song_game_1.wav", NULL, 0, NULL);
+					break;
+				}
+				case 2: {
+					mciSendString(L"pause song_game_2.wav", NULL, 0, NULL);
+					break;
+				}
+				case 3: {
+					mciSendString(L"pause song_game_3.wav", NULL, 0, NULL);
+					break;
+				}
+				case 4: {
+					mciSendString(L"pause song_game_4.wav", NULL, 0, NULL);
+					break;
+				}
+				case 5: {
+					mciSendString(L"pause song_game_5.wav", NULL, 0, NULL);
+					break;
+				}
+				default: break;
+				}
 				mciSendString(L"play crash.wav", NULL, 0, NULL);
 				graphic->glitch();
 
@@ -775,4 +797,5 @@ public:
 		}
 		return false;
 	}
+
 };
