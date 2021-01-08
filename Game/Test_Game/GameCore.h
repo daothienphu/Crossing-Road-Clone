@@ -23,6 +23,7 @@
 using namespace std;
 
 const vector<char> key = { 'W', 'A', 'S', 'D', 'P', 'R' };
+const vector<int> threshold = { 8, 13, 21, 34, 55 };
 
 // For sound
 LPCWSTR song_intro{ L"play song_intro.wav" };
@@ -42,7 +43,7 @@ LPCWSTR green_light{ L"play green_light.wav" };
 LPCWSTR red_light{ L"play red_light.wav" };
 LPCWSTR stage_clear{ L"play stage_clear.wav" };
 
-vector<int> songDuration = { 101, 119, 126, 145, 254 };
+vector<int> songDuration = { 60, 60, 60, 60, 60 };
 
 // For display time
 auto startTime = chrono::system_clock::now();
@@ -79,6 +80,7 @@ public:
 		delete player;
 		delete levelController;
 	}
+
 
 	void start() {
 		//introScreen();
@@ -196,7 +198,7 @@ public:
 						int level = 1;
 						while (level) {
 							if (play == 1)
-								level = playScreen1(level); //aaaaaaaaaaaaaaaaaaaaaaaaa
+								level = playScreen1(level, 0); //aaaaaaaaaaaaaaaaaaaaaaaaa
 							else level = playScreen(level);
 						}
 						if (soundOn)
@@ -232,6 +234,19 @@ public:
 			graphic->render();
 		}
 	}
+	void loadingScreen() {//cuz why not
+		graphic->clearBuffer();
+		graphic->createFrame(0, 0, 145, 40);
+		graphic->createFrame(31, 27, 84, 3);
+		for (int i = 1; i < 81; i += 5) {
+			vector<wstring> tmp = { L"█████" };
+			graphic->setBuffer(tmp, 32 + i, 28, BG, whiteDark);
+			graphic->render();
+			delay(83 - i);
+		}
+	}
+
+
 	int selectModeScreen() {
 		int top = 15;
 		int left = 58;
@@ -295,11 +310,84 @@ public:
 			graphic->render();
 		}
 	}
-	void stageClearScreen() {}
-	int playScreen1(int Level, int baseScore = 0)
+
+
+	void clearLevelScreen(int Level, int Score) {
+		int top = 15;
+		int left = 57;
+		graphic->openFrame(left, top, 34, 15);
+
+		GameMenu* clearLevelTitle = new Button("clearLevelTitle");
+		graphic->setBufferWhite(graphic->getBuffer(clearLevelTitle->getBufferKey()), left + 1, top + 2, 0, 7);
+		GameMenu* continueButton = new Button("continueButton");
+
+
+		int choice = 0;
+		bool* bKeyGame = new bool[key.size()]{ 0 }; // Check ingame input
+		while (1) {
+			delay(1000 / (FRAMERATE / 8));
+
+			//default color
+			graphic->setBuffer(L"YOU PASSED LEVEL " + to_wstring(Level) + L" WITH:", left + 4, top + 4, 0, 7);
+			graphic->setBuffer(to_wstring(Score), left + 15, top + 6, 0, 7);
+			graphic->setBuffer(L"SCORE TO PASS NEXT LEVEL: ", left + 4, top + 8, 0, 7);
+			graphic->setBuffer(to_wstring(threshold[Level]), left + 15, top + 10, 0, 7);
+			graphic->setBuffer(graphic->getBuffer(continueButton->getBufferKey()), left + 10, top + 12, 7, 0);
+
+			//input
+			for (int i = 0; i < key.size(); i++)
+				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
+			if (GetAsyncKeyState(VK_RETURN)) { // Enter - select
+				if (soundOn) {
+					mciSendString(enter, NULL, 0, NULL);
+					return;
+				}
+				Sleep(1000);
+			}
+
+			graphic->render();
+		}
+	}
+	void firstLevelScreen() {
+		int top = 15;
+		int left = 57;
+		graphic->clearBuffer(blueDark, white);
+		graphic->openFrame(left, top, 33, 9);
+
+		GameMenu* clearLevelTitle = new Button("clearLevelTitle");
+		//graphic->setBufferWhite(graphic->getBuffer(clearLevelTitle->getBufferKey()), left + 1, top + 2, 0, 7);
+		GameMenu* continueButton = new Button("continueButton");
+
+
+		int choice = 0;
+		bool* bKeyGame = new bool[key.size()]{ 0 }; // Check ingame input
+		while (1) {
+			delay(1000 / (FRAMERATE / 8));
+
+			//default color
+			graphic->setBuffer(L"SCORE TO PASS LEVEL 1:", left + 6, top + 2, 0, 7);
+			graphic->setBuffer(to_wstring(threshold[0]), left + 15, top + 4, 0, 7);
+			graphic->setBuffer(graphic->getBuffer(continueButton->getBufferKey()), left + 10, top + 6, 7, 0);
+
+			//input
+			for (int i = 0; i < key.size(); i++)
+				bKeyGame[i] = (GetAsyncKeyState(key.at(i))) != 0;
+			if (GetAsyncKeyState(VK_RETURN)) { // Enter - select
+				if (soundOn) {
+					mciSendString(enter, NULL, 0, NULL);
+					return;
+				}
+				Sleep(1000);
+			}
+
+			graphic->render();
+		}
+	}
+	int playScreen1(int Level, int baseScore)
 	{
 		// Stage clear
-		if (Level == 6) return 0;
+		if (Level == threshold.size() + 1) return 0;
+		if (Level == 1) firstLevelScreen();
 
 		// Music option
 		switch (Level) {
@@ -354,6 +442,7 @@ public:
 		levelController->getMap(lanes, graphic, bg, order, Level);
 		
 		// Score
+		int Score; // In the scope of this level
 		GameMenu* score = new Button("score");
 		GameMenu* level = new Button("level");
 		vector<wstring> scoreCounter, levelCounter;
@@ -364,6 +453,9 @@ public:
 		//scroll
 		int offset = 0;
 		int nLane = 7;
+
+		// Time
+		startTime = chrono::system_clock::now();
 
 		while (1)
 		{
@@ -377,32 +469,90 @@ public:
 			// Stars
 			graphic->randomStars(bg, ch);
 
-			// Time
-			/*auto endTime = chrono::system_clock::now();
-			chrono::duration<double> elapsed_seconds = endTime - startTime;
-			int elapsed = elapsed_seconds.count();
-			graphic->progressBar(elapsed, songDuration[Level-1], 20, 1);*/
-
 			//Lanes shananigans
-			for (auto l : lanes) l->logic();
+			for (auto l : lanes) l->logic(); // Lights
 			for (auto l : lanes) l->render(graphic, offset, bg);
 			if (this->checkCollision(lanes)) {
-				mciSendString(L"stop song_game_1.wav", NULL, 0, NULL);
-				mciSendString(L"stop song_game_2.wav", NULL, 0, NULL);
-				mciSendString(L"stop song_game_3.wav", NULL, 0, NULL);
-				mciSendString(L"stop song_game_4.wav", NULL, 0, NULL);
-				mciSendString(L"stop song_game_5.wav", NULL, 0, NULL);
+				switch (Level) {
+				case 1: {
+					mciSendString(L"pause song_game_1.wav", NULL, 0, NULL);
+					break;
+				}
+				case 2: {
+					mciSendString(L"pause song_game_2.wav", NULL, 0, NULL);
+					break;
+				}
+				case 3: {
+					mciSendString(L"pause song_game_3.wav", NULL, 0, NULL);
+					break;
+				}
+				case 4: {
+					mciSendString(L"pause song_game_4.wav", NULL, 0, NULL);
+					break;
+				}
+				case 5: {
+					mciSendString(L"pause song_game_5.wav", NULL, 0, NULL);
+					break;
+				}
+				default: break;
+				}
 				mciSendString(L"play crash.wav", NULL, 0, NULL);
 				graphic->glitch();
 
 				delay(400);
-				gameoverScreen();
+				gameoverScreen(Score);
 				graphic->clearBuffer();
 				return 0;
 			}
 
 			//player render
 			player->render(graphic, offset, bg, ch);
+
+			//score and level
+			Score = player->getBoundingBox().y / LANE_HEIGHT;
+			toVwstring(Score + baseScore, scoreCounter);
+			toVwstring(Level, levelCounter);
+			graphic->setBufferWhite(graphic->getBuffer(score->getBufferKey()), 2, 1, bg, ch);
+			graphic->setBufferWhite(scoreCounter, 9, 1, bg, ch);
+			graphic->setBufferWhite(graphic->getBuffer(level->getBufferKey()), 2, 2, bg, ch);
+			graphic->setBufferWhite(levelCounter, 9, 2, bg, ch);
+
+			// Time
+			auto endTime = chrono::system_clock::now();
+			chrono::duration<double> elapsed_seconds = endTime - startTime;
+			int elapsed = elapsed_seconds.count();
+			graphic->progressBar(elapsed, songDuration[Level - 1], 20, 1);
+
+			// Check score and level pass
+			if (elapsed > songDuration[Level - 1])
+			{
+				if (baseScore + Score >= threshold[Level - 1]) {
+					clearLevelScreen(Level, Score);
+					playScreen1(Level + 1, 0);
+					return 0;
+				}
+				else {
+					//if (elapsed > songDuration[Level - 1]) {
+						if (soundOn)
+							switch (Level) {
+							case 1:
+								mciSendString(L"stop song_game_1", NULL, 0, NULL); break;
+							case 2:
+								mciSendString(L"stop song_game_2", NULL, 0, NULL); break;
+							case 3:
+								mciSendString(L"stop song_game_3", NULL, 0, NULL); break;
+							case 4:
+								mciSendString(L"stop song_game_4", NULL, 0, NULL); break;
+							case 5:
+								mciSendString(L"stop song_game_5", NULL, 0, NULL); break;
+							default: break;
+							}
+						gameoverScreen(Score);
+						graphic->clearBuffer();
+						return 0;
+					//}
+				}
+			}
 
 			//Controls
 			for (int i = 0; i < key.size(); i++) { 	// Read input
@@ -449,18 +599,12 @@ public:
 				player->move(1, 0);
 			}
 
-			//Score and Level
-			toVwstring(player->getBoundingBox().y / LANE_HEIGHT, scoreCounter);
-			toVwstring(Level, levelCounter);
-			graphic->setBufferWhite(graphic->getBuffer(score->getBufferKey()), 2, 1, bg, ch);
-			graphic->setBufferWhite(scoreCounter, 9, 1, bg, ch);
-			graphic->setBufferWhite(graphic->getBuffer(level->getBufferKey()), 2, 2, bg, ch);
-			graphic->setBufferWhite(levelCounter, 9, 2, bg, ch);
-
 			graphic->render();
 		}
 
 	}
+
+
 	int playScreen(int Level, int baseScore = 0)
 	{
 		mciSendString(song_game_1, NULL, 0, NULL);
@@ -488,7 +632,7 @@ public:
 		while (1)
 		{
 			//Initialize
-			delay(1000 / (FRAMERATE ));
+			delay(1000 / (FRAMERATE - 20));
 			graphic->clearBuffer();
 			graphic->clearStars();
 			player->render(graphic, offset);
@@ -506,7 +650,7 @@ public:
 				graphic->glitch();
 
 				delay(400);
-				gameoverScreen();
+				gameoverScreen(player->getBoundingBox().y / LANE_HEIGHT + baseScore);
 				graphic->clearBuffer();
 				for (auto l : lanes) delete l;
 				return 0;
@@ -514,6 +658,14 @@ public:
 
 			//player render
 			player->render(graphic, offset);
+
+			//Score
+			toVwstring(player->getBoundingBox().y / LANE_HEIGHT + baseScore, scoreCounter);
+			graphic->setBufferWhite(graphic->getBuffer(score->getBufferKey()), 2, 1, BG, 7);
+			graphic->setBufferWhite(scoreCounter, 9, 1, BG, 7);
+
+			//frame around screen
+			graphic->createFrame(0, 0, 145, 40);
 
 			//Controls
 			for (int i = 0; i < key.size(); i++) { 	// Read input
@@ -547,28 +699,9 @@ public:
 				player->move(1, 0);
 			}
 
-			//Score
-			toVwstring(player->getBoundingBox().y / LANE_HEIGHT + baseScore, scoreCounter);
-			graphic->setBufferWhite(graphic->getBuffer(score->getBufferKey()), 2, 1, BG, 7);
-			graphic->setBufferWhite(scoreCounter, 9, 1, BG, 7);
-
-			//frame around screen
-			graphic->createFrame(0, 0, 145, 40);
-
 			graphic->render();
 		}
 
-	}
-	void loadingScreen() {//cuz why not
-		graphic->clearBuffer();
-		graphic->createFrame(0, 0, 145, 40);
-		graphic->createFrame(31, 27, 84, 3);
-		for (int i = 1; i < 81; i += 5) {
-			vector<wstring> tmp = { L"█████" };
-			graphic->setBuffer(tmp, 32 + i, 28, BG, whiteDark);
-			graphic->render();
-			delay(83 - i);
-		}
 	}
 	void saveScreen(int score, int mode = 0, int level = 0) {
 		int top = 8;
@@ -606,17 +739,19 @@ public:
 
 					string mode;
 					saveFile >> mode;
+					wstring tmpppp;
 					if (mode[0] == 'i') {
-						save[0] = L"Infinity";
+						save[0] = L"Endless. Score: ";
+						tmpppp = toWstring(tmpScore);
 					}
-					else save[0] = L"Level";
-
-					save[0] += L". Score: ";
+					else {
+						save[0] = L"Timed. Level: ";
+						tmpppp = toWstring(level);
+					}
+					save[0] += tmpppp;
 
 					int saveLength = save[0].length();
-
-					wstring tmpppp = toWstring(tmpScore);
-					save[0] = save[0] + tmpppp;
+					
 					int n = blank[0].length() - save[0].length();
 					for (int j = 0; j < n ; ++j) {
 						save[0] += L' ';
@@ -680,17 +815,19 @@ public:
 
 						string mode;
 						saveFile >> mode;
+						wstring tmpppp;
 						if (mode[0] == 'i') {
-							save[0] = L"Infinity";
+							save[0] = L"Endless. Score: ";
+							tmpppp = toWstring(tmpScore);
 						}
-						else save[0] = L"Level";
-
-						save[0] += L". Score: ";
+						else {
+							save[0] = L"Timed. Level: ";
+							tmpppp = toWstring(level);
+						}
+						save[0] += tmpppp;
 
 						int saveLength = save[0].length();
 
-						wstring tmpppp = toWstring(tmpScore);
-						save[0] = save[0] + tmpppp;
 						int n = blank[0].length() - save[0].length();
 						for (int j = 0; j < n; ++j) {
 							save[0] += L' ';
@@ -741,23 +878,26 @@ public:
 					tmp += char(i + '1');
 					tmp += ".txt";
 					ifstream saveFile{ tmp };
-
 					int tmpScore;
 					saveFile >> tmpScore;
 
 					string mode;
 					saveFile >> mode;
+					wstring tmpppp;
 					if (mode[0] == 'i') {
-						save[0] = L"Infinity";
+						save[0] = L"Endless. Score: ";
+						tmpppp = toWstring(tmpScore);
 					}
-					else save[0] = L"Level";
+					else {
+						int Level;
+						saveFile >> Level;
+						save[0] = L"Timed. Level: ";
+						tmpppp = toWstring(Level);
+					}
+					save[0] += tmpppp;
 
-					save[0] += L". Score: ";
-					
 					int saveLength = save[0].length();
 
-					wstring tmpppp = toWstring(tmpScore);
-					save[0] = save[0] + tmpppp;
 					int n = blank[0].length() - save[0].length();
 					for (int j = 0; j < n; ++j) {
 						save[0] += L' ';
@@ -806,7 +946,7 @@ public:
 						mciSendString(L"pause song_intro.wav", NULL, 0, NULL);
 						loadingScreen();
 						while (level) {
-							level = playScreen1(level, score);
+							level = playScreen1(level, 0);
 						}
 						if (soundOn)
 							mciSendString(L"resume song_intro.wav", NULL, 0, NULL);
@@ -838,23 +978,26 @@ public:
 					tmp += char(choice + '1');
 					tmp += ".txt";
 					ifstream saveFile{ tmp };
-
 					int tmpScore;
 					saveFile >> tmpScore;
 
 					string mode;
 					saveFile >> mode;
+					wstring tmpppp;
 					if (mode[0] == 'i') {
-						save[0] = L"Infinity";
+						save[0] = L"Endless. Score: ";
+						tmpppp = toWstring(tmpScore);
 					}
-					else save[0] = L"Level";
-
-					save[0] += L". Score: ";
+					else {
+						int Level;
+						saveFile >> Level;
+						save[0] = L"Timed. Level: ";
+						tmpppp = toWstring(Level);
+					}
+					save[0] += tmpppp;
 
 					int saveLength = save[0].length();
 
-					wstring tmpppp = toWstring(tmpScore);
-					save[0] = save[0] + tmpppp;
 					int n = blank[0].length() - save[0].length();
 					for (int j = 0; j < n; ++j) {
 						save[0] += L' ';
@@ -872,6 +1015,8 @@ public:
 			graphic->render();
 		}
 	};
+
+
 	void settingsScreen() {
 		int top = 19;
 		int left = 58;
@@ -1031,6 +1176,8 @@ public:
 			graphic->render();
 		}
 	};
+
+
 	void exitScreen() {
 		graphic->clearBuffer();
 		GameMenu* exitTitle = new Button("exitTitle");
@@ -1043,17 +1190,24 @@ public:
 				exit(0);
 		}
 	}
-	void gameoverScreen() {
+	void gameoverScreen(int score = 0) {
+		int top = 8;
+		int left = 46;
 		graphic->clearBuffer();
 		if (soundOn)
 			PlaySound(TEXT("gameOver.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		GameMenu* gameoverTitle = new Button("gameoverTitle");
 		GameMenu* inspirationalText = new Button("inspirationalText");
+		GameMenu* scoreThingi = new Button("score");
 		GameMenu* backButton = new Button("back");
-
-		graphic->setBuffer(graphic->getBuffer(gameoverTitle->getBufferKey()), 58, 8, 7, BG);
-		graphic->setBuffer(graphic->getBuffer(inspirationalText->getBufferKey()), 58, 28, BG, 7);
-		graphic->setBuffer(graphic->getBuffer(backButton->getBufferKey()), 68, 31, 7, BG);
+		vector<wstring> scoreCounter;
+		toVwstring(score, scoreCounter);
+		int length = (17 - (6 + scoreCounter[0].length())) / 2;
+		graphic->setBuffer(graphic->getBuffer(gameoverTitle->getBufferKey()), left, top, 7, BG);
+		graphic->setBufferWhite(graphic->getBuffer(scoreThingi->getBufferKey()), left + 34 + length, top + 6, 7, BG);
+		graphic->setBufferWhite(scoreCounter, left + 34 + length + 6, top + 6, 7, BG);
+		graphic->setBuffer(graphic->getBuffer(inspirationalText->getBufferKey()), left + 12, top + 20, BG, 7);
+		graphic->setBuffer(graphic->getBuffer(backButton->getBufferKey()), left + 21, top + 22, 7, BG);
 
 		graphic->createFrame(0, 0, 145, 40);
 		graphic->render();
@@ -1064,13 +1218,14 @@ public:
 				count++;
 			if (count == 10) {
 				GameMenu* easterEgg2 = new Button("easterEgg2");
-				graphic->setBuffer(graphic->getBuffer(easterEgg2->getBufferKey()), 57, 33, BG, 7);
+				graphic->setBuffer(graphic->getBuffer(easterEgg2->getBufferKey()), left + 11, top + 24, BG, 7);
 				graphic->render();
 			}
 		}
 		if (soundOn)
 			mciSendString(enter, NULL, 0, NULL);
 	}
+
 
 	bool checkCollision(vector<GameLane*> lanes)
 	{

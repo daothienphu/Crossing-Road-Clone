@@ -69,7 +69,7 @@ void fixSizedConsoleWindow() {
 	csbiex.ColorTable[8] = RGB(248, 248, 248); // White
 	csbiex.ColorTable[9] = RGB(20, 20, 20); // Black
 	csbiex.ColorTable[10] = RGB(156, 139, 93); // Brown
-	csbiex.ColorTable[11] = RGB(255, 110, 185); // Pink
+	csbiex.ColorTable[11] = RGB(16, 201, 158); // Pink
 	SetConsoleScreenBufferInfoEx(hConsoleOutput, &csbiex);
 
 	//RECT windowRes;

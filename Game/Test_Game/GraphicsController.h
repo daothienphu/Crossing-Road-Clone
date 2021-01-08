@@ -335,11 +335,12 @@ public:
 		wstring bar;
 		for (int i = 0; i < 100; i++)
 			bar += L' ';
-		setBuffer(bar, x, y, black, white);
+		setBuffer(bar, x, y, white, black);
 		// Draw progress
-		for (int i = 0; i < elapsed * 100 / duration; i++) {
-			if (i < 100)
-				setBuffer(L"█", x + i, y, blueDark, white);
+		for (int i = 100; i > 0; i--) {
+			if (i < elapsed * 100 / duration)
+				setBuffer(L"█", x + 100 - i, y, black, black);
+			else setBuffer(L"█", x + 100 - i, y, blueDark, white);
 		}
 		// Draw time
 		setBuffer(time_to_wstring(elapsed), x - 6, y, black, white);
