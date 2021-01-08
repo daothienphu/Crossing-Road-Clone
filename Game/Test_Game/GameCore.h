@@ -83,7 +83,7 @@ public:
 
 
 	void start() {
-		//introScreen();
+		introScreen();
 		titleScreen();
 	}
 	void introScreen() {
