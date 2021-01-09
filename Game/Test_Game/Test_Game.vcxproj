@@ -141,7 +141,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="GameCore.cpp" />
+    <ClCompile Include="GameLane.cpp" />
+    <ClCompile Include="GameLevel.cpp" />
+    <ClCompile Include="GameMenu.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GraphicsController.cpp" />
+    <ClCompile Include="Items.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="Obstacles.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BufferStorage.h" />

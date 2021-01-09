@@ -9,14 +9,11 @@ class Items {
 protected:
 	string bufferKey;
 public:
-	Items() : bufferKey("none") {}
+	Items() : bufferKey("none") {};
 
-	Items(string bufferKey) : bufferKey(bufferKey) {}
+	Items(string bufferKey) : bufferKey(bufferKey) {};
 
-	string getBufferKey() 
-	{
-		return bufferKey;
-	}
+	string getBufferKey();
 
 	virtual coord getPos() = 0;
 };

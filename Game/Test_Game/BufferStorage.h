@@ -2,7 +2,6 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
-
 using namespace std;
 
 //draw the sprite here, coresspondence with the variable name

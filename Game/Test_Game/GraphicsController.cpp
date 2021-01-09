@@ -1,21 +1,6 @@
-﻿#pragma once
-#include "BufferStorage.h"
-#include "Utils.h"
-#include "windows.h"
+﻿#include "GraphicsController.h"
 
-class GraphicsController {
-protected:
-	wchar_t* buffer, *starBuffer;
-	WORD* color;
-
-	HANDLE hConsole;
-	DWORD dwBytesWritten;
-
-	unordered_map<string, vector<wstring>> bufferStorage;
-
-	int randomInterval = 10;
-public:
-	GraphicsController()
+GraphicsController::GraphicsController()
 	{
 		buffer = new wchar_t[screenHeight * screenWidth]{L" "};
 		starBuffer = new wchar_t[screenHeight * screenWidth]{ L' ' };
@@ -31,13 +16,13 @@ public:
 		initCharToBlock();
 		initClearBuffer();
 	}
-	~GraphicsController() {
+GraphicsController::~GraphicsController() {
 		delete[] buffer;
 		delete[] starBuffer;
 		delete[] color;
 	}
 
-	void initClearBuffer() {
+	void GraphicsController::initClearBuffer() {
 		for (string c : CLEAR_BUFFER) {
 			wstring tmp = L"";
 			for (int i = 0; i < bufferStorage[c][0].size() /* width */; i++)
@@ -47,12 +32,12 @@ public:
 				bufferStorage[c + "_clear"].push_back(tmp);
 		}
 	}
-	void initCharToBlock() {
+	void GraphicsController::initCharToBlock() {
 		for (string c : CHAR_TO_BLOCK)
 			charToBlock(bufferStorage[c]);
 	}
 
-	void charToBlock(vector<wstring>& graphics) {
+	void GraphicsController::charToBlock(vector<wstring>& graphics) {
 		for (int i = 0; i < graphics.size(); ++i) {
 			for (int j = 0; j < graphics[i].length(); ++j) {
 				if (graphics[i][j] == L' ')
@@ -66,7 +51,7 @@ public:
 			}
 		}
 	}
-	void openFrame(int x, int y, int w, int h) {
+	void GraphicsController::openFrame(int x, int y, int w, int h) {
 		buffer[y * screenWidth + x] = bufferStorage["frame"][0][0];
 		buffer[y * screenWidth + x + w - 1] = bufferStorage["frame"][0][2];
 		color[y * screenWidth + x] = 7;
@@ -104,7 +89,7 @@ public:
 			delay(1000 / (FRAMERATE));
 		}
 	}
-	void createFrame(int x, int y, int w, int h, bool transparentBG = true, bool isBlackBG = true) {
+	void GraphicsController::createFrame(int x, int y, int w, int h, bool transparentBG = true, bool isBlackBG = true) {
 		int Bg = isBlackBG ? black : blueDark;
 		buffer[y * screenWidth + x] = bufferStorage["frame"][0][0];
 		buffer[y * screenWidth + x + w - 1] = bufferStorage["frame"][0][2];
@@ -136,16 +121,16 @@ public:
 		}
 	}
 
-	vector<wstring>& getBuffer(string key)
+	vector<wstring>& GraphicsController::getBuffer(string key)
 	{
 		return bufferStorage[key];
 	}
 
-	bool isInScreen(int y, int x) {
+	bool GraphicsController::isInScreen(int y, int x) {
 		return 0 <= y && y < screenHeight - 1 && 0 <= x && x <= screenWidth - 1;
 	}
 
-	void setBuffer(vector<wstring>& content, int x, int y, int bgColor, int fgColor) {
+	void GraphicsController::setBuffer(vector<wstring>& content, int x, int y, int bgColor, int fgColor) {
 		for (int i = 0; i < content.size(); ++i) {
 			for (int j = 0; j < content[i].length(); ++j) {
 				if (!isInScreen(y + i, x + j))
@@ -163,7 +148,7 @@ public:
 				color[(y + i) * screenWidth + x + content[i].length() + 1] = bgColor * 16 + fgColor;
 		}
 	}
-	void setBufferObject(vector<wstring>& content, int x, int y, int bgColor, int fgColor) {
+	void GraphicsController::setBufferObject(vector<wstring>& content, int x, int y, int bgColor, int fgColor) {
 		for (int i = 0; i < content.size(); ++i) {
 			for (int j = 0; j < content[i].length(); ++j) {
 				if (!isInScreen(y + i, x + j))
@@ -195,14 +180,14 @@ public:
 		if (isInScreen(y + content.size(), x + content[0].length()))
 			color[(y + content.size()) * screenWidth + x + content[0].length()] = bgColor * 16 + fgColor;
 	}
-	void setBuffer(wstring content, int x, int y, int bgColor, int fgColor) {
+	void GraphicsController::setBuffer(wstring content, int x, int y, int bgColor, int fgColor) {
 		for (int i = 0; i < content.length(); ++i) {
 			buffer[y * screenWidth + x + i] = content[i];
 			color[y * screenWidth + x + i] = bgColor * 16 + fgColor;
 		}
 	}
 
-	void setBufferWhite(vector<wstring>& content, int x, int y, int bgColor, int fgColor) {
+	void GraphicsController::setBufferWhite(vector<wstring>& content, int x, int y, int bgColor, int fgColor) {
 		for (int i = 0; i < content.size(); ++i) {
 			for (int j = 0; j < content[i].length(); ++j) {
 				buffer[(y + i) * screenWidth + x + j] = content[i].at(j);
@@ -210,23 +195,23 @@ public:
 			}
 		}
 	}
-	void clearBuffer() {
+	void GraphicsController::clearBuffer() {
 		for (int i = 0; i < screenWidth * screenHeight; ++i) {
 			color[i] = black * 16 + whiteDark;
 			buffer[i] = L' ';
 		}
 	}
-	void clearBuffer(int bg, int ch) {
+	void GraphicsController::clearBuffer(int bg, int ch) {
 		for (int i = 0; i < screenWidth * screenHeight; ++i) {
 			color[i] = bg * 16 + ch;
 			buffer[i] = L' ';
 		}
 	}
-	void render() {
+	void GraphicsController::render() {
 		WriteConsoleOutputAttribute(hConsole, color, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
 		WriteConsoleOutputCharacter(hConsole, buffer, screenWidth * screenHeight, { 0,0 }, &dwBytesWritten);
 	}
-	void renderAt(int x, int y, string key) {
+	void GraphicsController::renderAt(int x, int y, string key) {
 		vector<wstring> tmp = bufferStorage[key];
 		for (int i = 0; i < tmp.size(); i++)
 		{
@@ -241,7 +226,7 @@ public:
 		}
 	}
 	// Default star
-	void randomStars() {
+	void GraphicsController::randomStars() {
 		if (randomInterval != 10) {
 			randomInterval++;
 			copyStarBuffer();
@@ -255,13 +240,13 @@ public:
 		}
 		copyStarBuffer();
 	}
-	void clearStars() {
+	void GraphicsController::clearStars() {
 		if (randomInterval == 10)
 			for (int i = 0; i < screenWidth * screenHeight; ++i) {
 				starBuffer[i] = L' ';
 			}
 	}
-	void copyStarBuffer() {
+	void GraphicsController::copyStarBuffer() {
 		for (int i = 0; i < screenWidth * screenHeight; ++i) {
 			if (starBuffer[i] == L'.') {
 				buffer[i] = L'.';
@@ -270,7 +255,7 @@ public:
 		}
 	}
 	// custom star
-	void randomStars(int bg, int ch) {
+	void GraphicsController::randomStars(int bg, int ch) {
 		if (randomInterval != 10) {
 			randomInterval++;
 			copyStarBuffer(bg, ch);
@@ -284,13 +269,13 @@ public:
 		}
 		copyStarBuffer(bg, ch);
 	}
-	void clearStars(int bg, int ch) {
+	void GraphicsController::clearStars(int bg, int ch) {
 		if (randomInterval == 10)
 			for (int i = 0; i < screenWidth * screenHeight; ++i) {
 				starBuffer[i] = L' ';
 			}
 	}
-	void copyStarBuffer(int bg, int ch) {
+	void GraphicsController::copyStarBuffer(int bg, int ch) {
 		for (int i = 0; i < screenWidth * screenHeight; ++i) {
 			if (starBuffer[i] == L'.') {
 				buffer[i] = L'.';
@@ -298,7 +283,7 @@ public:
 			}
 		}
 	}
-	void glitch() {
+	void GraphicsController::glitch() {
 		for (int i = 0; i < screenWidth * screenHeight; ++i) {
 			color[i] = whiteDark * 16 + black;		
 		}
@@ -315,13 +300,13 @@ public:
 		render();
 		delay(125);
 	}
-	wstring line(wstring pattern, int length) {
+	wstring GraphicsController::line(wstring pattern, int length) {
 		wstring res;
 		for (int i = 0; i < length / pattern.length(); i++)
 			res += pattern;
 		return res;
 	}
-	wstring time_to_wstring(int t) { // From 125 to 02:05
+	wstring GraphicsController::time_to_wstring(int t) { // From 125 to 02:05
 		int m = t / 60;
 		int s = t % 60;
 		wstring res = L"0";
@@ -331,7 +316,7 @@ public:
 		res += L'0' + s % 10;
 		return res;
 	}
-	void progressBar(int elapsed, int duration, int x, int y) {
+	void GraphicsController::progressBar(int elapsed, int duration, int x, int y) {
 		// Draw bar
 		wstring bar;
 		for (int i = 0; i < 100; i++)
@@ -347,4 +332,3 @@ public:
 		setBuffer(time_to_wstring(elapsed), x - 6, y, black, white);
 		setBuffer(time_to_wstring(duration), x + 104, y, black, white);
 	}
-};

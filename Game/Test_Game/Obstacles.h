@@ -19,57 +19,19 @@ public:
 		fgColor(_fgColor)
 	{}
 
-	void move(int x, int y)
-	{
-		tick++;
+	void move(int x, int y);
+	virtual void resetPos(bool left = true);
 
-		// Check if enough ticks yet
-		if (tick < speed)
-			return; //Nah, not enough
-		
-		tick %= speed;
-		this->oldX = this->x;
-		this->oldY = this->y;
-		this->x += x;
-		this->y += y;
+	void render(GraphicsController*& graphic, int offset);
+	void render(GraphicsController*& graphic, int offset, int bg);
+	void render(GraphicsController*& graphic, int offset, int bg, int ch);
+	void clearOldPos(GraphicsController*& graphic);
 
-		if (isOutOfBound())
-			resetPos(x > 0);
-	}
-	virtual void resetPos(bool left = true) {
-		this->x = left? -MAX_ENEMY_WIDTH + 1 : screenWidth;
-	}
+	void setPos(int x, int y);
 
-	void render(GraphicsController*& graphic, int offset) {
-		//clearOldPos(graphic);
-		graphic->setBufferObject(graphic->getBuffer(bufferKey), this->x, this->y + offset, bgColor, fgColor);
-	}
-	void render(GraphicsController*& graphic, int offset, int bg) {
-		//clearOldPos(graphic);
-		graphic->setBufferObject(graphic->getBuffer(bufferKey), this->x, this->y + offset, bg, fgColor);
-	}
-	void render(GraphicsController*& graphic, int offset, int bg, int ch) {
-		//clearOldPos(graphic);
-		graphic->setBufferObject(graphic->getBuffer(bufferKey), this->x, this->y + offset, bg, ch);
-	}
-	void clearOldPos(GraphicsController*& graphic) {
-		GameObject::clearOldPos(graphic, bgColor, fgColor);
-	}
+	bool isOutOfBound();
 
-	void setPos(int x, int y) {
-		this->x = x;
-		this->oldX = x;
-		this->y = y;
-		this->oldY = y;
-	}
-
-	bool isOutOfBound() {
-		return x + MAX_ENEMY_WIDTH < 1 || x > screenWidth;
-	}
-
-	int getTick() {
-		return tick;
-	}
+	int getTick();
 };
 
 //fell free to declare more class using the above template

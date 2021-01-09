@@ -11,12 +11,6 @@ public:
 	GameMenu() : x(0), y(0), Items("GameMenu") {};
 	GameMenu(int x, int y, string key) : x(x), y(y), Items(key) {};
 	
-	coord getPos()
-	{
-		return { x,y };
-	}
-	void setPos(coord c){
-		x = c.x;
-		y = c.y;
-	}
+	coord getPos();
+	void setPos(coord c);
 };
